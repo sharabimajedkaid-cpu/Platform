@@ -88,6 +88,11 @@ export class SignalingService {
     return () => this.socket?.off('producer-closed', callback);
   }
 
+  async restartIce(): Promise<Record<string, unknown>> {
+    const result = await this.emitAndWait('restart-ice', 'ice-restarted');
+    return result as Record<string, unknown>;
+  }
+
   private emitAndWait<T = any>(event: string, responseEvent: string, data?: unknown): Promise<T> {
     return new Promise((resolve, reject) => {
       if (!this.socket?.connected) {

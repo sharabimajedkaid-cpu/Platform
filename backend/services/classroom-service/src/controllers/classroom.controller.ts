@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Put, Param, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ClassroomService } from '../services/classroom.service';
 import { WebRTCService } from '../services/webrtc.service';
 import { WhiteboardService } from '../services/whiteboard.service';
+import { TurnService } from '../services/turn.service';
+import { BreakoutRoomService } from '../services/breakout-room.service';
 
 @ApiTags('classrooms')
 @Controller('classrooms')
@@ -11,6 +13,8 @@ export class ClassroomController {
     private classroomService: ClassroomService,
     private webrtcService: WebRTCService,
     private whiteboardService: WhiteboardService,
+    private turnService: TurnService,
+    private breakoutService: BreakoutRoomService,
   ) {}
 
   @Get()
@@ -96,5 +100,59 @@ export class ClassroomController {
   @ApiOperation({ summary: 'Get router RTP capabilities' })
   getCapabilities(@Param('id') id: number) {
     return this.webrtcService.getRouterRtpCapabilities(id);
+  }
+
+  @Get('turn-credentials')
+  @ApiOperation({ summary: 'Get TURN server credentials' })
+  getTurnCredentials(@Query('userId') userId: string) {
+    return this.turnService.generateCredentials(userId || 'anonymous');
+  }
+
+  @Post(':id/breakout/create')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a breakout room' })
+  async createBreakout(@Param('id') id: number, @Body() body: { name: string; autoCloseMinutes?: number }) {
+    const breakoutId = await this.breakoutService.createBreakoutRoom(id, body.name, body.autoCloseMinutes);
+    return { id: breakoutId, name: body.name };
+  }
+
+  @Post('breakout/:breakoutId/join')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Join a breakout room' })
+  async joinBreakout(@Param('breakoutId') breakoutId: string, @Body() body: { userId: string }) {
+    await this.breakoutService.joinBreakoutRoom(body.userId, breakoutId);
+    return { success: true };
+  }
+
+  @Post('breakout/:breakoutId/leave')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Leave a breakout room' })
+  async leaveBreakout(@Param('breakoutId') breakoutId: string, @Body() body: { userId: string }) {
+    await this.breakoutService.leaveBreakoutRoom(body.userId);
+    return { success: true };
+  }
+
+  @Delete('breakout/:breakoutId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Close a breakout room' })
+  async closeBreakout(@Param('breakoutId') breakoutId: string) {
+    await this.breakoutService.closeBreakoutRoom(breakoutId);
+    return { success: true };
+  }
+
+  @Get(':id/breakouts')
+  @ApiOperation({ summary: 'List breakout rooms for classroom' })
+  listBreakouts(@Param('id') id: number) {
+    return this.breakoutService.getMainRoomBreakouts(id).map(b => ({
+      id: b.id, name: b.name, participantCount: b.participants.size,
+    }));
+  }
+
+  @Post('webrtc/restart-ice')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Restart ICE for a transport' })
+  async restartIce(@Body() body: { roomId: number; transportId: string }) {
+    const iceParameters = await this.webrtcService.restartIce(body.roomId, body.transportId);
+    return iceParameters;
   }
 }

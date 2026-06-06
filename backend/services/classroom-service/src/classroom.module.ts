@@ -3,8 +3,11 @@ import { ClassroomController } from './controllers/classroom.controller';
 import { ClassroomService } from './services/classroom.service';
 import { WebRTCService } from './services/webrtc.service';
 import { WhiteboardService } from './services/whiteboard.service';
+import { TurnService } from './services/turn.service';
+import { BreakoutRoomService } from './services/breakout-room.service';
 import { ClassroomGateway } from './gateways/classroom.gateway';
 import { SignalingGateway } from './gateways/signaling.gateway';
+import { BreakoutGateway } from './gateways/breakout.gateway';
 
 @Module({
   controllers: [ClassroomController],
@@ -12,9 +15,12 @@ import { SignalingGateway } from './gateways/signaling.gateway';
     ClassroomService,
     WebRTCService,
     WhiteboardService,
+    TurnService,
+    BreakoutRoomService,
     ClassroomGateway,
     SignalingGateway,
+    BreakoutGateway,
   ],
-  exports: [ClassroomService, WebRTCService],
+  exports: [ClassroomService, WebRTCService, TurnService, BreakoutRoomService],
 })
 export class ClassroomModule {}

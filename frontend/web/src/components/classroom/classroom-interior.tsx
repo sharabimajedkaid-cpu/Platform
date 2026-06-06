@@ -27,7 +27,7 @@ interface ClassroomInteriorProps {
 
 export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInteriorProps) {
   const { user } = useAuth()
-  const { isConnected, isMuted, isCameraOn, localStream, remoteParticipants, joinClassroom, leaveClassroom, toggleMic, toggleCamera } = useWebRTC()
+  const { isConnected, isMuted, isCameraOn, isScreenSharing, localStream, remoteParticipants, breakouts, currentBreakoutId, joinClassroom, leaveClassroom, toggleMic, toggleCamera, toggleScreenShare, createBreakout, joinBreakout, leaveBreakout, refreshBreakouts, restartIce } = useWebRTC()
   const [seconds, setSeconds] = useState(0)
   const [handRaised, setHandRaised] = useState(false)
   const [sideTab, setSideTab] = useState<'chat' | 'participants' | null>(null)
@@ -38,6 +38,9 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
   const [showMonkey, setShowMonkey] = useState(false)
   const [fullscreenTile, setFullscreenTile] = useState<string | null>(null)
   const [wbLayout, setWbLayout] = useState<'grid' | 'full'>('grid')
+  const [showBreakoutPanel, setShowBreakoutPanel] = useState(false)
+  const [breakoutName, setBreakoutName] = useState('')
+  const [breakoutAutoClose, setBreakoutAutoClose] = useState(15)
   const joinedRef = useRef(false)
   const chatIdCounter = useRef(1)
 
@@ -118,6 +121,16 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <button onClick={() => { refreshBreakouts(); setShowBreakoutPanel(!showBreakoutPanel) }}
+            className={`px-2.5 py-1 rounded-full text-[10px] font-medium transition ${showBreakoutPanel ? 'bg-orange-200 text-orange-700' : 'hover:bg-gray-100 text-gray-500'}`}>
+            🏠 Breakout
+            {breakouts.length > 0 && <span className="ml-1 text-[8px]">({breakouts.length})</span>}
+          </button>
+          {currentBreakoutId && (
+            <span className="text-[8px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
+              Breakout
+            </span>
+          )}
           <button onClick={() => setShowTimer(!showTimer)}
             className={`px-2.5 py-1 rounded-full text-[10px] font-medium transition ${showTimer ? 'bg-gold/20 text-navy' : 'hover:bg-gray-100 text-gray-500'}`}>
             ⏱ Timer
@@ -144,6 +157,39 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
       {joinError && (
         <div className="bg-red-50 border-b border-red-200 px-4 py-2 text-xs text-red-600">
           ⚠ {joinError}
+        </div>
+      )}
+
+      {showBreakoutPanel && (
+        <div className="border-b border-orange-200 bg-orange-50/80 px-4 py-2 flex items-center gap-3 flex-wrap">
+          <span className="text-[10px] font-bold text-orange-700">🏠 Breakout Rooms</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <input value={breakoutName} onChange={e => setBreakoutName(e.target.value)}
+              placeholder="Room name..." className="border border-orange-200 rounded px-2 py-0.5 text-[10px] w-28 outline-none focus:border-orange-400" />
+            <input type="number" min={1} max={120} value={breakoutAutoClose}
+              onChange={e => setBreakoutAutoClose(parseInt(e.target.value) || 15)}
+              className="border border-orange-200 rounded px-2 py-0.5 text-[10px] w-12 outline-none" />
+            <span className="text-[9px] text-orange-500">min</span>
+            <button onClick={async () => {
+              if (!breakoutName.trim()) return
+              await createBreakout(breakoutName.trim(), breakoutAutoClose)
+              setBreakoutName('')
+              refreshBreakouts()
+            }} className="bg-orange-500 text-white px-3 py-0.5 rounded text-[10px] font-bold hover:bg-orange-600 transition">
+              Create
+            </button>
+            <span className="text-[9px] text-orange-400">|</span>
+            <button onClick={leaveBreakout} className="text-[10px] text-orange-600 hover:text-orange-800 font-medium">
+              {currentBreakoutId ? '⬅ Leave Breakout' : '⟳ Refresh'}
+            </button>
+          </div>
+          {breakouts.map(b => (
+            <button key={b.id} onClick={() => joinBreakout(b.id)}
+              className={`text-[10px] px-2.5 py-0.5 rounded-full font-medium border transition
+                ${currentBreakoutId === b.id ? 'bg-orange-200 text-orange-800 border-orange-300' : 'bg-white text-orange-600 border-orange-200 hover:bg-orange-100'}`}>
+              {b.name} ({b.participantCount})
+            </button>
+          ))}
         </div>
       )}
 
@@ -194,6 +240,7 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
         {[
           { icon: isMuted ? '🔇' : '🎤', label: isMuted ? 'Unmute' : 'Mute', active: !isMuted, onClick: toggleMic },
           { icon: isCameraOn ? '📹' : '🚫📹', label: isCameraOn ? 'Camera' : 'Off', active: isCameraOn, onClick: toggleCamera },
+          { icon: isScreenSharing ? '🖥️' : '💻', label: isScreenSharing ? 'Stop Share' : 'Share', active: isScreenSharing, onClick: toggleScreenShare },
           { icon: '✋', label: handRaised ? 'Lower' : 'Hand', active: handRaised, onClick: () => setHandRaised(!handRaised) },
         ].map((btn, i) => (
           <button key={i} onClick={btn.onClick}

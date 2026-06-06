@@ -12,6 +12,7 @@ export class WebRTCService {
   private sendTransportId: string = '';
   private recvTransportId: string = '';
   private localStream: MediaStream | null = null;
+  private screenStream: MediaStream | null = null;
   private consumers: Map<string, mediasoupClient.types.Consumer> = new Map();
 
   async init(routerRtpCapabilities: RtpCapabilities): Promise<void> {
@@ -63,6 +64,40 @@ export class WebRTCService {
     return producer.id;
   }
 
+  async produceScreen(): Promise<string> {
+    if (!this.sendTransport) throw new Error('Send transport not created');
+    let displayStream: MediaStream | undefined;
+    try {
+      displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+    } catch {
+      throw new Error('Screen share cancelled or not supported');
+    }
+    const videoTrack = displayStream.getVideoTracks()[0];
+    if (!videoTrack) throw new Error('No screen track available');
+    const producer = await this.sendTransport.produce({ track: videoTrack });
+    this.screenStream = displayStream;
+    videoTrack.onended = () => this.stopScreenShare();
+    return producer.id;
+  }
+
+  async stopScreenShare(): Promise<void> {
+    if (this.screenStream) {
+      this.screenStream.getTracks().forEach(t => t.stop());
+      this.screenStream = null;
+    }
+  }
+
+  async restartIce(): Promise<void> {
+    if (!this.sendTransport && !this.recvTransport) return;
+    const iceParams = await signalingService.restartIce() as Record<string, { iceParameters: unknown }>;
+    if (this.sendTransport && iceParams[this.sendTransportId]) {
+      await (this.sendTransport as any).restartIce({ iceParameters: iceParams[this.sendTransportId] });
+    }
+    if (this.recvTransport && iceParams[this.recvTransportId]) {
+      await (this.recvTransport as any).restartIce({ iceParameters: iceParams[this.recvTransportId] });
+    }
+  }
+
   async consumeRemoteStream(producerId: string, consumerData: ConsumerData): Promise<MediaStream> {
     if (!this.recvTransport) throw new Error('Receive transport not created');
     const consumer = await this.recvTransport.consume({
@@ -105,6 +140,7 @@ export class WebRTCService {
     this.sendTransport?.close();
     this.recvTransport?.close();
     this.localStream?.getTracks().forEach(t => t.stop());
+    this.stopScreenShare();
     this.device = null;
     this.sendTransport = null;
     this.recvTransport = null;

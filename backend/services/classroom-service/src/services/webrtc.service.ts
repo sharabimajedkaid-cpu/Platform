@@ -214,6 +214,24 @@ export class WebRTCService implements OnModuleInit, OnModuleDestroy {
     return room.transports.size;
   }
 
+  getRouter(roomId: number): mediasoupTypes.Router | undefined {
+    return this.rooms.get(roomId)?.router;
+  }
+
+  getWorker(): mediasoupTypes.Worker {
+    return this.getNextWorker();
+  }
+
+  async restartIce(roomId: number, transportId: string): Promise<mediasoupTypes.IceParameters> {
+    const room = this.rooms.get(roomId);
+    if (!room) throw new Error(`Room ${roomId} not found`);
+    const transport = room.transports.get(transportId);
+    if (!transport) throw new Error(`Transport ${transportId} not found`);
+    const iceParameters = await transport.restartIce();
+    this.logger.log(`ICE restarted for transport ${transportId} in room ${roomId}`);
+    return iceParameters;
+  }
+
   getStats() {
     return {
       activeRooms: this.rooms.size,

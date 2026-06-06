@@ -191,4 +191,22 @@ export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnec
   handleIceCandidate(@ConnectedSocket() client: Socket, @MessageBody() data: { transportId: string; candidate: unknown }) {
     client.emit('ice-candidate-processed', { transportId: data.transportId });
   }
+
+  @SubscribeMessage('restart-ice')
+  async handleRestartIce(@ConnectedSocket() client: Socket) {
+    try {
+      const roomId = client.data.roomId;
+      if (!roomId) throw new Error('Not in a room');
+      const transportIds: string[] = client.data.transportIds || [];
+      const iceParams: Record<string, unknown> = {};
+      for (const tid of transportIds) {
+        iceParams[tid] = await this.webrtcService.restartIce(roomId, tid);
+      }
+      client.emit('ice-restarted', iceParams);
+      this.logger.log(`ICE restarted for client ${client.id} in room ${roomId}`);
+    } catch (err) {
+      this.logger.error(`restart-ice error: ${(err as Error).message}`);
+      client.emit('error', { message: 'Failed to restart ICE' });
+    }
+  }
 }
