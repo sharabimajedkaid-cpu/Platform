@@ -22,7 +22,7 @@ import { AiDevPage } from '@/pages/ai-dev'
 import { MarketingPage } from '@/pages/marketing'
 import { AutoMessagingPage } from '@/pages/auto-messaging'
 import { VideoEditorPage } from '@/pages/video-editor'
-import { ClassroomInterior } from '@/components/classroom/classroom-interior'
+import { ClassroomRoom } from '@/components/classroom/classroom-room'
 
 export type PageKey =
   | 'dashboard' | 'classrooms' | 'users' | 'teachers' | 'students' | 'mystudents'
@@ -39,7 +39,7 @@ export function DashboardLayout() {
 
   const renderPage = () => {
     if (classroomOpen !== null) {
-      return <ClassroomInterior roomId={classroomOpen} onClose={() => setClassroomOpen(null)} />
+      return <ClassroomRoom roomId={classroomOpen} onClose={() => setClassroomOpen(null)} />
     }
     switch (currentPage) {
       case 'dashboard': return <DashboardPage />

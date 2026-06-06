@@ -1,0 +1,117 @@
+import * as mediasoupClient from 'mediasoup-client';
+import type { types as mediasoupTypes } from 'mediasoup-client';
+import { type ConsumerData, signalingService } from './signaling';
+
+type RtpCapabilities = mediasoupTypes.RtpCapabilities;
+type MediaKind = mediasoupTypes.MediaKind;
+
+export class WebRTCService {
+  private device: mediasoupClient.types.Device | null = null;
+  private sendTransport: mediasoupClient.types.Transport | null = null;
+  private recvTransport: mediasoupClient.types.Transport | null = null;
+  private sendTransportId: string = '';
+  private recvTransportId: string = '';
+  private localStream: MediaStream | null = null;
+  private consumers: Map<string, mediasoupClient.types.Consumer> = new Map();
+
+  async init(routerRtpCapabilities: RtpCapabilities): Promise<void> {
+    this.device = new mediasoupClient.Device();
+    await this.device.load({ routerRtpCapabilities });
+  }
+
+  async createSendTransport(): Promise<void> {
+    if (!this.device) throw new Error('Device not initialized');
+    const params = await signalingService.createSendTransport();
+    this.sendTransportId = params.id;
+    this.sendTransport = this.device.createSendTransport(params);
+    this.sendTransport.on('connect', ({ dtlsParameters }, successCb, errorCb) => {
+      signalingService.connectTransport(params.id, dtlsParameters).then(successCb).catch(errorCb);
+    });
+    this.sendTransport.on('produce', ({ kind, rtpParameters }, successCb, errorCb) => {
+      signalingService.produce(params.id, kind, rtpParameters).then((id) => successCb({ id })).catch(errorCb);
+    });
+  }
+
+  async createRecvTransport(): Promise<void> {
+    if (!this.device) throw new Error('Device not initialized');
+    const params = await signalingService.createRecvTransport();
+    this.recvTransportId = params.id;
+    this.recvTransport = this.device.createRecvTransport(params);
+    this.recvTransport.on('connect', ({ dtlsParameters }, successCb, errorCb) => {
+      signalingService.connectTransport(params.id, dtlsParameters).then(successCb).catch(errorCb);
+    });
+  }
+
+  async startLocalMedia(audio: boolean = true, video: boolean = true): Promise<MediaStream> {
+    this.localStream = await navigator.mediaDevices.getUserMedia({ audio, video });
+    return this.localStream;
+  }
+
+  async produceAudio(): Promise<string> {
+    if (!this.localStream || !this.sendTransport) throw new Error('Missing local media or send transport');
+    const audioTrack = this.localStream.getAudioTracks()[0];
+    if (!audioTrack) throw new Error('No audio track available');
+    const producer = await this.sendTransport.produce({ track: audioTrack });
+    return producer.id;
+  }
+
+  async produceVideo(): Promise<string> {
+    if (!this.localStream || !this.sendTransport) throw new Error('Missing local media or send transport');
+    const videoTrack = this.localStream.getVideoTracks()[0];
+    if (!videoTrack) throw new Error('No video track available');
+    const producer = await this.sendTransport.produce({ track: videoTrack });
+    return producer.id;
+  }
+
+  async consumeRemoteStream(producerId: string, consumerData: ConsumerData): Promise<MediaStream> {
+    if (!this.recvTransport) throw new Error('Receive transport not created');
+    const consumer = await this.recvTransport.consume({
+      id: consumerData.id,
+      producerId: consumerData.producerId,
+      kind: consumerData.kind as MediaKind,
+      rtpParameters: consumerData.rtpParameters,
+    });
+    this.consumers.set(producerId, consumer);
+    return new MediaStream([consumer.track]);
+  }
+
+  getRecvTransportId(): string {
+    return this.recvTransportId;
+  }
+
+  toggleMic(): boolean {
+    if (!this.localStream) return false;
+    const track = this.localStream.getAudioTracks()[0];
+    if (!track) return false;
+    track.enabled = !track.enabled;
+    return track.enabled;
+  }
+
+  toggleCamera(): boolean {
+    if (!this.localStream) return false;
+    const track = this.localStream.getVideoTracks()[0];
+    if (!track) return false;
+    track.enabled = !track.enabled;
+    return track.enabled;
+  }
+
+  getLocalStream(): MediaStream | null {
+    return this.localStream;
+  }
+
+  close() {
+    this.consumers.forEach(c => c.close());
+    this.consumers.clear();
+    this.sendTransport?.close();
+    this.recvTransport?.close();
+    this.localStream?.getTracks().forEach(t => t.stop());
+    this.device = null;
+    this.sendTransport = null;
+    this.recvTransport = null;
+    this.localStream = null;
+    this.sendTransportId = '';
+    this.recvTransportId = '';
+  }
+}
+
+export const webRTCService = new WebRTCService();

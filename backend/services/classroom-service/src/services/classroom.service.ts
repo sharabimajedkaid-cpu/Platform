@@ -5,6 +5,9 @@ export interface Classroom {
   name: string;
   teacher: string;
   teacherId: string;
+  subject: string;
+  cefrLevel: string;
+  schedule: string;
   grade: string;
   students: number;
   status: 'active' | 'available' | 'upcoming' | 'archived';
@@ -36,18 +39,42 @@ export class ClassroomService {
   }
 
   private initializeClassrooms() {
-    const teachers = ['Prof. Anderson', 'Dr. Williams', 'Ms. Garcia', 'Mr. Brown', 'Mrs. Davis', 'Dr. Miller',
-      'T.Suhair Almojahid', "T.Wa'ad Alhammadi", 'T.Jamal Alshameeri', 'T.Amani Alsharabi',
-      'T.Khadeejah Alghaily', 'T.Shihab Alomary'];
-    for (let i = 1; i <= 240; i++) {
+    const teachers = [
+      { id: 'tch-001', name: 'T.Suhair Almojahid' },
+      { id: 'tch-002', name: "T.Wa'ad Alhammadi" },
+      { id: 'tch-003', name: 'T.Jamal Alshameeri' },
+      { id: 'tch-004', name: 'T.Amani Alsharabi' },
+      { id: 'tch-005', name: 'T.Khadeejah Alghaily' },
+      { id: 'tch-006', name: 'T.Shihab Alomary' },
+    ];
+    const subjects = [
+      'English Grammar', 'English Conversation', 'Academic Writing', 'Reading Comprehension',
+      'IELTS Preparation', 'Business English', 'English for Kids', 'Advanced Literature',
+    ];
+    const cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+    const schedules = [
+      'Sat-Mon 09:00-10:30', 'Sat-Mon 11:00-12:30', 'Sat-Mon 14:00-15:30',
+      'Sun-Tue 09:00-10:30', 'Sun-Tue 11:00-12:30', 'Sun-Tue 14:00-15:30',
+      'Wed-Thu 09:00-10:30', 'Wed-Thu 11:00-12:30', 'Wed-Thu 14:00-15:30',
+      'Mon-Wed 16:00-17:30',
+    ];
+
+    for (let i = 1; i <= 40; i++) {
+      const teacher = teachers[(i - 1) % teachers.length];
+      const subject = subjects[Math.floor((i - 1) / 5) % subjects.length];
+      const cefrLevel = cefrLevels[Math.floor((i - 1) / 7) % cefrLevels.length];
+      const schedule = schedules[(i - 1) % schedules.length];
       this.classrooms.set(i, {
         id: i,
         name: `Classroom ${i}`,
-        teacher: teachers[i % teachers.length],
-        teacherId: `tch-${String((i % 12) + 1).padStart(3, '0')}`,
-        grade: `Grade ${Math.floor((i - 1) / 20) + 1}`,
-        students: Math.floor(Math.random() * 25) + 5,
-        status: i <= 40 ? 'active' : i <= 80 ? 'available' : 'upcoming',
+        teacher: teacher.name,
+        teacherId: teacher.id,
+        subject,
+        cefrLevel,
+        schedule,
+        grade: `Grade ${Math.ceil(i / 4)}`,
+        students: Math.floor(Math.random() * 20) + 10,
+        status: i <= 10 ? 'active' : i <= 25 ? 'available' : 'upcoming',
         maxParticipants: 100,
         isRecording: false,
         participants: [],
@@ -71,7 +98,6 @@ export class ClassroomService {
     const room = this.classrooms.get(roomId);
     if (!room) throw new Error('Classroom not found');
     if (room.participants.length >= room.maxParticipants) throw new Error('Classroom is full');
-
     room.participants.push({ ...participant, joinedAt: new Date().toISOString() });
     if (room.status === 'upcoming') room.status = 'active';
     if (!room.startedAt) room.startedAt = new Date().toISOString();
@@ -118,8 +144,7 @@ export class ClassroomService {
   }
 
   getParticipants(roomId: number): ClassroomParticipant[] {
-    const room = this.classrooms.get(roomId);
-    return room?.participants || [];
+    return this.classrooms.get(roomId)?.participants || [];
   }
 
   getParticipantCount(roomId: number): number {

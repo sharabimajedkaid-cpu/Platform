@@ -25,13 +25,13 @@ function ClassroomDoor({ id, grade, teacher, link, onEnter }: ClassroomDoorProps
 
 export function ClassroomsPage({ onEnterClassroom }: { onEnterClassroom: (id: number) => void }) {
   const [page, setPage] = useState(0)
-  const pageSize = 48
-  const totalPages = Math.ceil(240 / pageSize)
+  const pageSize = 20
+  const totalPages = Math.ceil(40 / pageSize)
 
-  const classrooms = Array.from({ length: 240 }, (_, i) => ({
+  const classrooms = Array.from({ length: 40 }, (_, i) => ({
     id: i + 1,
-    grade: `Grade ${Math.floor(i / 20) + 1}`,
-    teacher: `Teacher ${String.fromCharCode(65 + (i % 26))}`,
+    grade: `Grade ${Math.ceil((i + 1) / 4)}`,
+    teacher: `T.${['Suhair Almojahid', "Wa'ad Alhammadi", 'Jamal Alshameeri', 'Amani Alsharabi', 'Khadeejah Alghaily', 'Shihab Alomary'][i % 6]}`,
     link: `https://britishce44.edu/classroom/${i + 1}`,
   }))
 
@@ -39,7 +39,7 @@ export function ClassroomsPage({ onEnterClassroom }: { onEnterClassroom: (id: nu
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-navy">🚪 240 Classrooms</h2>
+      <h2 className="text-2xl font-bold text-navy">🚪 40 Classrooms</h2>
       <p className="text-sm text-gray-500">Click any door to enter the live classroom.</p>
       <div className="flex gap-2 flex-wrap mb-3">
         {Array.from({ length: totalPages }, (_, i) => (
