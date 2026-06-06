@@ -1,12 +1,10 @@
-version: '3.8'
-
 name: britishce44
 
 services:
   api-gateway:
     build:
-      context: ../../backend/services/api-gateway
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: backend/services/api-gateway/Dockerfile
     ports: ['3000:3000']
     environment:
       - NODE_ENV=production
@@ -19,8 +17,8 @@ services:
 
   auth-service:
     build:
-      context: ../../backend/services/auth-service
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: backend/services/auth-service/Dockerfile
     ports: ['3001:3001']
     environment:
       - PORT=3001
@@ -32,8 +30,8 @@ services:
 
   classroom-service:
     build:
-      context: ../../backend/services/classroom-service
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: backend/services/classroom-service/Dockerfile
     ports: ['3002:3002']
     environment:
       - PORT=3002
@@ -44,8 +42,8 @@ services:
 
   lms-service:
     build:
-      context: ../../backend/services/lms-service
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: backend/services/lms-service/Dockerfile
     ports: ['3003:3003']
     environment:
       - PORT=3003
@@ -55,8 +53,8 @@ services:
 
   messaging-service:
     build:
-      context: ../../backend/services/messaging-service
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: backend/services/messaging-service/Dockerfile
     ports: ['3004:3004']
     environment:
       - PORT=3004
@@ -66,8 +64,8 @@ services:
 
   ai-orchestrator:
     build:
-      context: ../../backend/services/ai-orchestrator
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: backend/services/ai-orchestrator/Dockerfile
     ports: ['3005:3005']
     environment:
       - PORT=3005
@@ -77,8 +75,8 @@ services:
 
   erp-service:
     build:
-      context: ../../backend/services/erp-service
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: backend/services/erp-service/Dockerfile
     ports: ['3006:3006']
     environment:
       - PORT=3006
@@ -88,8 +86,8 @@ services:
 
   analytics-service:
     build:
-      context: ../../backend/services/analytics-service
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: backend/services/analytics-service/Dockerfile
     ports: ['3007:3007']
     environment:
       - PORT=3007
@@ -99,8 +97,8 @@ services:
 
   notification-service:
     build:
-      context: ../../backend/services/notification-service
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: backend/services/notification-service/Dockerfile
     ports: ['3008:3008']
     environment:
       - PORT=3008
@@ -110,8 +108,8 @@ services:
 
   recording-service:
     build:
-      context: ../../backend/services/recording-service
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: backend/services/recording-service/Dockerfile
     ports: ['3009:3009']
     environment:
       - PORT=3009
@@ -122,8 +120,8 @@ services:
 
   billing-service:
     build:
-      context: ../../backend/services/billing-service
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: backend/services/billing-service/Dockerfile
     ports: ['3010:3010']
     environment:
       - PORT=3010
@@ -133,8 +131,8 @@ services:
 
   search-service:
     build:
-      context: ../../backend/services/search-service
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: backend/services/search-service/Dockerfile
     ports: ['3011:3011']
     environment:
       - PORT=3011
@@ -145,8 +143,8 @@ services:
 
   frontend:
     build:
-      context: ../../frontend/web
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: frontend/web/Dockerfile
     ports: ['80:3000']
     environment:
       - API_GATEWAY_URL=http://api-gateway:3000
@@ -200,16 +198,6 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     command: server /data --console-address ":9001"
     volumes: [minio-data:/data]
-    networks: [b44-net]
-    restart: unless-stopped
-
-  nginx:
-    image: nginx:alpine
-    ports: ['443:443']
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./ssl:/etc/nginx/ssl
-    depends_on: [frontend]
     networks: [b44-net]
     restart: unless-stopped
 

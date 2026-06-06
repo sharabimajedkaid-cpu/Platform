@@ -16,7 +16,7 @@ import { ClassroomService } from '../services/classroom.service';
   namespace: '/classroom',
 })
 export class ClassroomGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer() server: Server;
+  @WebSocketServer() server!: Server;
   private logger = new Logger(ClassroomGateway.name);
   private userSockets: Map<string, Set<string>> = new Map();
 

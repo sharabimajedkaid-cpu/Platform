@@ -21,7 +21,7 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register new user' })
-  async register(@Body() userData: { email: string; password: string; firstName: string; lastName: string; role?: string; phone?: string; address?: string }) {
+  async register(@Body() userData: { email: string; password: string; firstName: string; lastName: string; role: string; phone?: string; address?: string }) {
     return this.authService.register(userData);
   }
 

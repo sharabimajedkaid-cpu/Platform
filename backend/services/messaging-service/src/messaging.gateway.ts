@@ -12,7 +12,7 @@ import { MessagingService } from './messaging.service';
   namespace: '/messenger',
 })
 export class MessagingGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer() server: Server;
+  @WebSocketServer() server!: Server;
   private logger = new Logger(MessagingGateway.name);
   private onlineUsers: Map<string, Set<string>> = new Map();
 

@@ -83,7 +83,7 @@ function RegisterForm({ onBack }: { onBack: () => void }) {
     if (form.password.length < 6) { toast.error('Password must be at least 6 characters'); return }
     setLoading(true)
     try {
-      await register(form)
+      await register({ ...form, role: form.role as 'admin' | 'supervisor' | 'teacher' | 'student' | 'parent' })
       toast.success('Registration successful! Please login.')
       onBack()
     } catch (err: any) {

@@ -54,9 +54,10 @@ export class ClassroomController {
       isScreenSharing: false,
       raisedHand: false,
     };
+    await this.webrtcService.createRoom(id);
     const classroom = await this.classroomService.joinClassroom(id, participant);
-    const rtcParticipant = await this.webrtcService.joinRoom(id, body.userId, body.name);
-    return { classroom, rtcParticipant };
+    const rtpCapabilities = this.webrtcService.getRouterRtpCapabilities(id);
+    return { classroom, routerRtpCapabilities: rtpCapabilities };
   }
 
   @Post(':id/leave')
@@ -64,7 +65,10 @@ export class ClassroomController {
   @ApiOperation({ summary: 'Leave a classroom' })
   async leave(@Param('id') id: number, @Body() body: { userId: string; participantId: string }) {
     await this.classroomService.leaveClassroom(id, body.userId);
-    await this.webrtcService.leaveRoom(id, body.participantId);
+    const roomSize = this.webrtcService.getRoomSize(id);
+    if (roomSize === 0) {
+      await this.webrtcService.closeRoom(id);
+    }
     return { success: true };
   }
 

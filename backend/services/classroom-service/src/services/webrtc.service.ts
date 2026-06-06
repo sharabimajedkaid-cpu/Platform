@@ -1,130 +1,226 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
+import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import * as mediasoup from 'mediasoup';
+import { types as mediasoupTypes } from 'mediasoup';
+import { mediasoupConfig } from '../config/mediasoup.config';
 
-export interface RTCParticipant {
-  id: string;
-  userId: string;
-  name: string;
-  roomId: number;
-  transportId?: string;
-  producerIds: string[];
-  consumerIds: string[];
-}
-
-export interface RTCTransport {
-  id: string;
-  participantId: string;
-  type: 'webrtc' | 'plain';
-  direction: 'send' | 'recv';
-}
-
-export interface RTCProducer {
-  id: string;
-  participantId: string;
-  transportId: string;
-  kind: 'audio' | 'video' | 'screen';
-  rtpParameters: unknown;
-}
-
-export interface RTCConsumer {
-  id: string;
-  participantId: string;
-  transportId: string;
-  producerId: string;
-  kind: 'audio' | 'video' | 'screen';
-  rtpParameters: unknown;
+interface RoomState {
+  router: mediasoupTypes.Router;
+  transports: Map<string, mediasoupTypes.WebRtcTransport>;
+  producers: Map<string, mediasoupTypes.Producer>;
+  consumers: Map<string, mediasoupTypes.Consumer>;
 }
 
 @Injectable()
-export class WebRTCService {
+export class WebRTCService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(WebRTCService.name);
-  private rooms: Map<number, {
-    participants: Map<string, RTCParticipant>;
-    transports: Map<string, RTCTransport>;
-    producers: Map<string, RTCProducer>;
-    consumers: Map<string, RTCConsumer>;
-  }> = new Map();
+  private workers: mediasoupTypes.Worker[] = [];
+  private workerIndex = 0;
+  private rooms: Map<number, RoomState> = new Map();
+
+  async onModuleInit() {
+    await this.createWorkers();
+    this.logger.log(`Mediasoup initialized with ${this.workers.length} workers`);
+  }
+
+  async onModuleDestroy() {
+    for (const room of this.rooms.values()) {
+      room.router.close();
+    }
+    for (const worker of this.workers) {
+      worker.close();
+    }
+    this.rooms.clear();
+    this.logger.log('Mediasoup workers closed');
+  }
+
+  private async createWorkers() {
+    const { worker: workerConfig } = mediasoupConfig;
+    for (let i = 0; i < workerConfig.numWorkers; i++) {
+      const worker = await mediasoup.createWorker({
+        logLevel: workerConfig.logLevel,
+        logTags: workerConfig.logTags,
+        rtcMinPort: workerConfig.rtcMinPort,
+        rtcMaxPort: workerConfig.rtcMaxPort,
+      });
+      worker.on('died', () => {
+        this.logger.error(`Mediasoup worker ${i} died, exiting`);
+        process.exit(1);
+      });
+      this.workers.push(worker);
+    }
+  }
+
+  private getNextWorker(): mediasoupTypes.Worker {
+    const worker = this.workers[this.workerIndex % this.workers.length];
+    this.workerIndex++;
+    return worker;
+  }
 
   async createRoom(roomId: number): Promise<void> {
-    if (!this.rooms.has(roomId)) {
-      this.rooms.set(roomId, {
-        participants: new Map(),
-        transports: new Map(),
-        producers: new Map(),
-        consumers: new Map(),
-      });
-      this.logger.log(`WebRTC room ${roomId} created`);
+    if (this.rooms.has(roomId)) return;
+    const worker = this.getNextWorker();
+    const router = await worker.createRouter({
+      mediaCodecs: mediasoupConfig.router.mediaCodecs,
+    });
+    this.rooms.set(roomId, {
+      router,
+      transports: new Map(),
+      producers: new Map(),
+      consumers: new Map(),
+    });
+    this.logger.log(`Room ${roomId} created with router`);
+  }
+
+  getRouterRtpCapabilities(roomId: number): mediasoupTypes.RtpCapabilities | null {
+    return this.rooms.get(roomId)?.router.rtpCapabilities || null;
+  }
+
+  async createSendTransport(roomId: number) {
+    return this.createTransport(roomId, 'send');
+  }
+
+  async createRecvTransport(roomId: number) {
+    return this.createTransport(roomId, 'recv');
+  }
+
+  private async createTransport(roomId: number, direction: 'send' | 'recv') {
+    const room = this.rooms.get(roomId);
+    if (!room) throw new Error(`Room ${roomId} not found`);
+    const transport = await room.router.createWebRtcTransport({
+      listenIps: mediasoupConfig.webRtcTransport.listenIps,
+      enableUdp: true,
+      enableTcp: true,
+      preferUdp: true,
+      initialAvailableOutgoingBitrate: mediasoupConfig.webRtcTransport.initialAvailableOutgoingBitrate,
+    });
+    if (mediasoupConfig.webRtcTransport.maxIncomingBitrate) {
+      try { await transport.setMaxIncomingBitrate(mediasoupConfig.webRtcTransport.maxIncomingBitrate); } catch {}
     }
-  }
-
-  async joinRoom(roomId: number, userId: string, name: string): Promise<RTCParticipant> {
-    await this.createRoom(roomId);
-    const room = this.rooms.get(roomId)!;
-    const participant: RTCParticipant = {
-      id: uuidv4(),
-      userId,
-      name,
-      roomId,
-      producerIds: [],
-      consumerIds: [],
+    transport.on('dtlsstatechange', (dtlsState) => {
+      if (dtlsState === 'closed') transport.close();
+    });
+    transport.on('sctpstatechange', (sctpState) => {
+      if (sctpState === 'closed') transport.close();
+    });
+    room.transports.set(transport.id, transport);
+    this.logger.log(`${direction} transport ${transport.id} created in room ${roomId}`);
+    return {
+      id: transport.id,
+      iceParameters: transport.iceParameters,
+      iceCandidates: transport.iceCandidates,
+      dtlsParameters: transport.dtlsParameters,
+      sctpParameters: transport.sctpParameters,
     };
-    room.participants.set(participant.id, participant);
-    this.logger.log(`Participant ${name} joined room ${roomId}`);
-    return participant;
   }
 
-  async leaveRoom(roomId: number, participantId: string): Promise<void> {
+  async connectTransport(roomId: number, transportId: string, dtlsParameters: mediasoupTypes.DtlsParameters) {
+    const room = this.rooms.get(roomId);
+    if (!room) throw new Error(`Room ${roomId} not found`);
+    const transport = room.transports.get(transportId);
+    if (!transport) throw new Error(`Transport ${transportId} not found`);
+    await transport.connect({ dtlsParameters });
+    this.logger.log(`Transport ${transportId} connected in room ${roomId}`);
+  }
+
+  async produce(roomId: number, transportId: string, kind: mediasoupTypes.MediaKind, rtpParameters: mediasoupTypes.RtpParameters): Promise<mediasoupTypes.Producer> {
+    const room = this.rooms.get(roomId);
+    if (!room) throw new Error(`Room ${roomId} not found`);
+    const transport = room.transports.get(transportId) as mediasoupTypes.WebRtcTransport;
+    if (!transport) throw new Error(`Transport ${transportId} not found`);
+    const producer = await transport.produce({ kind, rtpParameters });
+    room.producers.set(producer.id, producer);
+    producer.on('transportclose', () => {
+      producer.close();
+      room.producers.delete(producer.id);
+    });
+    this.logger.log(`Producer ${producer.id} (${kind}) created in room ${roomId}`);
+    return producer;
+  }
+
+  async consume(roomId: number, transportId: string, producerId: string, rtpCapabilities: mediasoupTypes.RtpCapabilities) {
+    const room = this.rooms.get(roomId);
+    if (!room) throw new Error(`Room ${roomId} not found`);
+    const transport = room.transports.get(transportId) as mediasoupTypes.WebRtcTransport;
+    if (!transport) throw new Error(`Transport ${transportId} not found`);
+    const producer = room.producers.get(producerId);
+    if (!producer) throw new Error(`Producer ${producerId} not found`);
+    if (!room.router.canConsume({ producerId, rtpCapabilities })) {
+      throw new Error(`Cannot consume producer ${producerId}`);
+    }
+    const consumer = await transport.consume({
+      producerId,
+      rtpCapabilities,
+      paused: false,
+    });
+    room.consumers.set(consumer.id, consumer);
+    consumer.on('transportclose', () => {
+      consumer.close();
+      room.consumers.delete(consumer.id);
+    });
+    consumer.on('producerclose', () => {
+      consumer.close();
+      room.consumers.delete(consumer.id);
+    });
+    this.logger.log(`Consumer ${consumer.id} created in room ${roomId}`);
+    return {
+      id: consumer.id,
+      producerId: consumer.producerId,
+      kind: consumer.kind,
+      rtpParameters: consumer.rtpParameters,
+      type: consumer.type,
+    };
+  }
+
+  async closeProducer(roomId: number, producerId: string) {
     const room = this.rooms.get(roomId);
     if (!room) return;
-    room.participants.delete(participantId);
-    room.producers.forEach((p, id) => {
-      if (p.participantId === participantId) room.producers.delete(id);
+    const producer = room.producers.get(producerId);
+    if (!producer) return;
+    producer.close();
+    room.producers.delete(producerId);
+    room.consumers.forEach((consumer, id) => {
+      if (consumer.producerId === producerId) {
+        consumer.close();
+        room.consumers.delete(id);
+      }
     });
-    room.consumers.forEach((c, id) => {
-      if (c.participantId === participantId) room.consumers.delete(id);
-    });
-    if (room.participants.size === 0) {
-      this.rooms.delete(roomId);
-      this.logger.log(`Room ${roomId} deleted (empty)`);
-    }
+    this.logger.log(`Producer ${producerId} closed in room ${roomId}`);
   }
 
-  getRoomParticipants(roomId: number): RTCParticipant[] {
-    return Array.from(this.rooms.get(roomId)?.participants.values() || []);
+  async closeTransport(roomId: number, transportId: string) {
+    const room = this.rooms.get(roomId);
+    if (!room) return;
+    const transport = room.transports.get(transportId);
+    if (!transport) return;
+    transport.close();
+    room.transports.delete(transportId);
+    this.logger.log(`Transport ${transportId} closed in room ${roomId}`);
+  }
+
+  async closeRoom(roomId: number) {
+    const room = this.rooms.get(roomId);
+    if (!room) return;
+    room.producers.forEach(p => p.close());
+    room.consumers.forEach(c => c.close());
+    room.transports.forEach(t => t.close());
+    room.router.close();
+    this.rooms.delete(roomId);
+    this.logger.log(`Room ${roomId} closed and removed`);
   }
 
   getRoomSize(roomId: number): number {
-    return this.rooms.get(roomId)?.participants.size || 0;
+    const room = this.rooms.get(roomId);
+    if (!room) return 0;
+    return room.transports.size;
   }
 
-  getRouterRtpCapabilities(roomId: number) {
-    return {
-      codecs: [
-        { kind: 'audio', mimeType: 'audio/opus', clockRate: 48000, channels: 2 },
-        { kind: 'video', mimeType: 'video/VP8', clockRate: 90000 },
-        { kind: 'video', mimeType: 'video/VP9', clockRate: 90000 },
-        { kind: 'video', mimeType: 'video/H264', clockRate: 90000, parameters: { 'profile-level-id': '42e01f' } },
-        { kind: 'video', mimeType: 'video/AV1', clockRate: 90000 },
-      ],
-      headerExtensions: [],
-      fecMechanisms: [],
-    };
-  }
-
-  getStats(): Record<string, number> {
-    let totalParticipants = 0;
-    let totalProducers = 0;
-    let totalConsumers = 0;
-    this.rooms.forEach(room => {
-      totalParticipants += room.participants.size;
-      totalProducers += room.producers.size;
-      totalConsumers += room.consumers.size;
-    });
+  getStats() {
     return {
       activeRooms: this.rooms.size,
-      totalParticipants,
-      totalProducers,
-      totalConsumers,
+      activeWorkers: this.workers.length,
+      totalTransports: Array.from(this.rooms.values()).reduce((s, r) => s + r.transports.size, 0),
+      totalProducers: Array.from(this.rooms.values()).reduce((s, r) => s + r.producers.size, 0),
+      totalConsumers: Array.from(this.rooms.values()).reduce((s, r) => s + r.consumers.size, 0),
     };
   }
 }

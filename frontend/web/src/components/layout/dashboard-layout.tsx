@@ -13,7 +13,7 @@ import { VideoArchivePage } from '@/pages/video-archive'
 import { TeacherEvalPage } from '@/pages/teacher-eval'
 import { DailyPerfPage } from '@/pages/daily-perf'
 import { ReportsPage } from '@/pages/reports'
-import { AntiCheatPage } from '@/pages/anticheat'
+import { AnticheatPage } from '@/pages/anticheat'
 import { PlacementsPage } from '@/pages/placements'
 import { SettingsPage } from '@/pages/settings'
 import { UsersPage } from '@/pages/users'
@@ -53,7 +53,7 @@ export function DashboardLayout() {
       case 'homework': return <HomeworkPage />
       case 'videoarchive': return <VideoArchivePage />
       case 'reports': return <ReportsPage />
-      case 'anticheat': return <AntiCheatPage />
+      case 'anticheat': return <AnticheatPage />
       case 'liveanalytics': return <LiveAnalyticsPage />
       case 'settings': return <SettingsPage />
       case 'aidev': return <AiDevPage />

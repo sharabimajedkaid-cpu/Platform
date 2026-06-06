@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from './config/config.service';
 
-interface ServiceInfo {
+export interface ServiceInfo {
   name: string;
   url: string;
   status: 'active' | 'inactive';

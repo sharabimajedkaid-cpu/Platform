@@ -2,7 +2,7 @@ import { Controller, Post, Get, Body, HttpCode, HttpStatus } from '@nestjs/commo
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AiService } from './ai.service';
 import { AiTeachingAssistant } from './teaching-assistant.service';
-import { AiAntiCheatService } from './anticheat.service';
+import { AiAntiCheatService, AntiCheatEvent } from './anticheat.service';
 
 @ApiTags('ai')
 @Controller('ai')
@@ -59,7 +59,10 @@ export class AiController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Analyze exam session for cheating' })
   async analyzeCheat(@Body() body: { sessionId: string; events: { type: string; data: unknown }[] }) {
-    return this.antiCheatService.analyzeSession(body.sessionId, body.events);
+    const events: AntiCheatEvent[] = body.events.map(e => ({
+      type: e.type as AntiCheatEvent['type'], data: e.data as Record<string, unknown>, timestamp: new Date().toISOString(),
+    }));
+    return this.antiCheatService.analyzeSession(body.sessionId, events);
   }
 
   @Get('health')

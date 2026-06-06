@@ -96,12 +96,14 @@ export class ClassroomService {
 
   async toggleMute(roomId: number, userId: string, muted: boolean): Promise<void> {
     const room = this.classrooms.get(roomId);
+    if (!room) throw new Error('Classroom not found');
     const participant = room.participants.find(p => p.userId === userId);
     if (participant) participant.isMuted = muted;
   }
 
   async toggleVideo(roomId: number, userId: string, on: boolean): Promise<void> {
     const room = this.classrooms.get(roomId);
+    if (!room) throw new Error('Classroom not found');
     const participant = room.participants.find(p => p.userId === userId);
     if (participant) participant.isVideoOn = on;
   }
