@@ -5,17 +5,24 @@ import { fabric } from 'fabric'
 
 type Tool = 'pen' | 'line' | 'rect' | 'circle' | 'triangle' | 'diamond' | 'arrow' | 'text' | 'eraser'
 type Position = 'main' | 'chat'
+type AILang = 'en' | 'ar'
 
 const COLORS = ['#000000', '#c8a84e', '#1e3a5f', '#ef4444', '#22c55e', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4']
 const STROKE_WIDTHS = [2, 4, 6, 10, 16]
-const AI_TOOLS = ['Explain', 'Translate', 'Quiz', 'Activity', 'Game']
+
+const AI_LABELS: Record<AILang, { explain: string; translate: string; quiz: string; activity: string; game: string }> = {
+  en: { explain: '🤖 Explain', translate: '🌐 Translate', quiz: '❓ Quiz', activity: '🎯 Activity', game: '🎮 Game' },
+  ar: { explain: '🤖 شرح', translate: '🌐 ترجمة', quiz: '❓ اختبار', activity: '🎯 نشاط', game: '🎮 لعبة' },
+}
 
 interface WhiteboardAreaProps {
   onSyncDraw?: (json: string) => void
   syncDrawings?: string[]
+  lang?: AILang
 }
 
-export function WhiteboardArea({ onSyncDraw, syncDrawings }: WhiteboardAreaProps) {
+export function WhiteboardArea({ onSyncDraw, syncDrawings, lang = 'en' }: WhiteboardAreaProps) {
+  const aiLabels = AI_LABELS[lang]
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fabricRef = useRef<fabric.Canvas | null>(null)
   const [tool, setTool] = useState<Tool>('pen')
@@ -228,12 +235,22 @@ export function WhiteboardArea({ onSyncDraw, syncDrawings }: WhiteboardAreaProps
             className={`px-2 py-1 rounded-lg text-[10px] font-medium transition ${pinnedSide === 'chat' ? 'bg-gold/20 text-navy' : 'hover:bg-gray-200 text-gray-600'}`}>
             💬 Chat Zone
           </button>
-          <div className="ml-auto flex items-center gap-1 text-[9px] text-gray-400">
-            {AI_TOOLS.map(ai => (
-              <button key={ai} className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 transition font-medium">
-                🤖 {ai}
-              </button>
-            ))}
+          <div className="ml-auto flex items-center gap-1 text-[9px] text-gray-400" dir={lang === 'ar' ? 'rtl' : undefined}>
+            <button className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 transition font-medium">
+              {aiLabels.explain}
+            </button>
+            <button className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 transition font-medium">
+              {aiLabels.translate}
+            </button>
+            <button className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 transition font-medium">
+              {aiLabels.quiz}
+            </button>
+            <button className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 transition font-medium">
+              {aiLabels.activity}
+            </button>
+            <button className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 transition font-medium">
+              {aiLabels.game}
+            </button>
           </div>
         </div>
 

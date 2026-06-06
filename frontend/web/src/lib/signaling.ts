@@ -1,5 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import type { types as mediasoupTypes } from 'mediasoup-client';
+import { offlineQueue } from './offline-queue';
 
 type RtpCapabilities = mediasoupTypes.RtpCapabilities;
 type RtpParameters = mediasoupTypes.RtpParameters;
@@ -47,6 +48,29 @@ export class SignalingService {
       this.socket.disconnect();
       this.socket = null;
     }
+  }
+
+  async smartReconnect(roomId: number, userId: string, name: string, maxRetries = 5): Promise<boolean> {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        this.disconnect()
+        await this.connect(roomId, userId, name)
+        return true
+      } catch (err) {
+        const baseDelay = Math.min(1000 * Math.pow(2, attempt - 1), 16000)
+        const jitter = Math.random() * 1000
+        const delay = baseDelay + jitter
+
+        offlineQueue.enqueue('reconnect-failed', {
+          roomId, userId, attempt, maxRetries, error: (err as Error).message,
+        })
+
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, delay))
+        }
+      }
+    }
+    return false
   }
 
   createSendTransport(): Promise<TransportParams> {

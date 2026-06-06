@@ -1,6 +1,7 @@
 import * as mediasoupClient from 'mediasoup-client';
 import type { types as mediasoupTypes } from 'mediasoup-client';
 import { type ConsumerData, signalingService } from './signaling';
+import { offlineQueue } from './offline-queue';
 
 type RtpCapabilities = mediasoupTypes.RtpCapabilities;
 type MediaKind = mediasoupTypes.MediaKind;
@@ -132,6 +133,52 @@ export class WebRTCService {
 
   getLocalStream(): MediaStream | null {
     return this.localStream;
+  }
+
+  analyzeNetworkAndAdapt(): { recommendedBitrate: number; recommendedResolution: string } {
+    if (!this.sendTransport) return { recommendedBitrate: 1000000, recommendedResolution: '720p' };
+
+    const stats = (this.sendTransport as any).getStats ? [] : []
+    const rtt = this.estimateRTT(stats)
+
+    let bitrate = 1000000
+    let resolution = '720p'
+
+    if (rtt > 500) {
+      bitrate = 300000
+      resolution = '360p'
+    } else if (rtt > 300) {
+      bitrate = 500000
+      resolution = '480p'
+    } else if (rtt > 150) {
+      bitrate = 800000
+      resolution = '720p'
+    } else {
+      bitrate = 1500000
+      resolution = '1080p'
+    }
+
+    offlineQueue.enqueue('network-adapt', {
+      transportId: this.sendTransportId,
+      rtt,
+      recommendedBitrate: bitrate,
+      recommendedResolution: resolution,
+    })
+
+    return { recommendedBitrate: bitrate, recommendedResolution: resolution }
+  }
+
+  private estimateRTT(stats: unknown[]): number {
+    const rttKey = 'currentRoundTripTime'
+    for (const report of stats as any[]) {
+      if (report && report[rttKey] !== undefined) {
+        return report[rttKey] * 1000
+      }
+      if (report && report.type === 'candidate-pair' && report[rttKey] !== undefined) {
+        return report[rttKey] * 1000
+      }
+    }
+    return 100
   }
 
   close() {

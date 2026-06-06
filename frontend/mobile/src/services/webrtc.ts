@@ -1,15 +1,21 @@
 import { Platform, PermissionsAndroid } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export interface RTCOptions {
-  audio: boolean;
-  video: boolean;
-  screenShare?: boolean;
+export interface ConsumerData {
+  id: string;
+  producerId: string;
+  kind: string;
+  rtpParameters: unknown;
 }
 
 export class MobileWebRTCService {
-  private peerConnection: RTCPeerConnection | null = null;
+  private socket: WebSocket | null = null;
   private localStream: MediaStream | null = null;
-  private signalingSocket: WebSocket | null = null;
+  private sendTransportId: string = '';
+  private recvTransportId: string = '';
+  private consumers: Map<string, { track: MediaStreamTrack }> = new Map();
+  private deviceLoaded = false;
+  private routerRtpCapabilities: unknown = null;
 
   async requestPermissions(): Promise<boolean> {
     if (Platform.OS === 'android') {
@@ -25,76 +31,75 @@ export class MobileWebRTCService {
     return true;
   }
 
-  async initializeMedia(options: RTCOptions): Promise<MediaStream | null> {
-    try {
-      const constraints: MediaStreamConstraints = {
-        audio: options.audio,
-        video: options.video ? { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } : false,
+  async joinClassroom(roomId: number, userId: string, token: string, signalingUrl: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.socket = new WebSocket(`${signalingUrl}/signaling?roomId=${roomId}&token=${token}&userId=${userId}`);
+
+      this.socket.onopen = () => {
+        this.socket!.send(JSON.stringify({ type: 'join-rtc-room', roomId, userId }));
       };
-      this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
-      return this.localStream;
-    } catch (err) {
-      console.error('Failed to get media:', err);
-      return null;
-    }
-  }
 
-  async joinClassroom(roomId: number, token: string, signalingUrl: string): Promise<void> {
-    this.signalingSocket = new WebSocket(`${signalingUrl}/signaling?roomId=${roomId}&token=${token}`);
+      this.socket.onmessage = async (event) => {
+        const msg = JSON.parse(event.data);
+        switch (msg.type) {
+          case 'rtc-joined':
+            this.routerRtpCapabilities = msg.routerRtpCapabilities;
+            this.deviceLoaded = true;
+            await this.createTransport(roomId, 'send');
+            await this.createTransport(roomId, 'recv');
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'user' } });
+            this.localStream = stream;
+            resolve();
+            break;
+          case 'send-transport-created':
+            this.sendTransportId = msg.id;
+            break;
+          case 'recv-transport-created':
+            this.recvTransportId = msg.id;
+            break;
+          case 'new-producer':
+            this.consumeRemoteStream(roomId, msg.producerId, this.routerRtpCapabilities);
+            break;
+          case 'consumed':
+            break;
+        }
+      };
 
-    this.signalingSocket.onopen = () => {
-      console.log('Signaling connected');
-      this.signalingSocket?.send(JSON.stringify({ type: 'join', roomId }));
-    };
-
-    this.signalingSocket.onmessage = async (event) => {
-      const msg = JSON.parse(event.data);
-      await this.handleSignalingMessage(msg);
-    };
-
-    this.peerConnection = new RTCPeerConnection({
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'turn:turn.britishce44.edu:3478', username: 'britishce44', credential: 'your-turn-credential' },
-      ],
+      this.socket.onerror = reject;
+      setTimeout(() => reject(new Error('Timeout')), 15000);
     });
-
-    if (this.localStream) {
-      this.localStream.getTracks().forEach(track => {
-        this.peerConnection?.addTrack(track, this.localStream!);
-      });
-    }
-
-    this.peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        this.signalingSocket?.send(JSON.stringify({ type: 'ice-candidate', candidate: event.candidate }));
-      }
-    };
   }
 
-  private async handleSignalingMessage(msg: any): Promise<void> {
-    switch (msg.type) {
-      case 'offer':
-        await this.peerConnection?.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-        const answer = await this.peerConnection?.createAnswer();
-        await this.peerConnection?.setLocalDescription(answer);
-        this.signalingSocket?.send(JSON.stringify({ type: 'answer', sdp: answer }));
-        break;
-      case 'answer':
-        await this.peerConnection?.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-        break;
-      case 'ice-candidate':
-        await this.peerConnection?.addIceCandidate(new RTCIceCandidate(msg.candidate));
-        break;
+  private async createTransport(roomId: number, direction: 'send' | 'recv'): Promise<void> {
+    this.sendMessage({ type: `create-${direction}-transport`, roomId });
+  }
+
+  private async consumeRemoteStream(roomId: number, producerId: string, rtpCapabilities: unknown): Promise<void> {
+    this.sendMessage({
+      type: 'consume',
+      roomId,
+      producerId,
+      rtpCapabilities,
+      transportId: this.recvTransportId,
+    });
+  }
+
+  private sendMessage(data: unknown): void {
+    if (this.socket?.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify(data));
     }
+  }
+
+  async getLocalStream(): Promise<MediaStream | null> {
+    return this.localStream;
   }
 
   async toggleMute(): Promise<boolean> {
     if (this.localStream) {
-      const audioTrack = this.localStream.getAudioTracks()[0];
-      if (audioTrack) {
-        audioTrack.enabled = !audioTrack.enabled;
-        return audioTrack.enabled;
+      const track = this.localStream.getAudioTracks()[0];
+      if (track) {
+        track.enabled = !track.enabled;
+        return track.enabled;
       }
     }
     return false;
@@ -102,10 +107,10 @@ export class MobileWebRTCService {
 
   async toggleVideo(): Promise<boolean> {
     if (this.localStream) {
-      const videoTrack = this.localStream.getVideoTracks()[0];
-      if (videoTrack) {
-        videoTrack.enabled = !videoTrack.enabled;
-        return videoTrack.enabled;
+      const track = this.localStream.getVideoTracks()[0];
+      if (track) {
+        track.enabled = !track.enabled;
+        return track.enabled;
       }
     }
     return false;
@@ -121,16 +126,17 @@ export class MobileWebRTCService {
   }
 
   disconnect(): void {
-    this.peerConnection?.close();
-    this.signalingSocket?.close();
+    this.socket?.close();
     this.localStream?.getTracks().forEach(t => t.stop());
-    this.peerConnection = null;
-    this.signalingSocket = null;
+    this.socket = null;
     this.localStream = null;
+    this.sendTransportId = '';
+    this.recvTransportId = '';
+    this.consumers.clear();
   }
 
   isConnected(): boolean {
-    return this.peerConnection?.connectionState === 'connected';
+    return this.socket?.readyState === WebSocket.OPEN;
   }
 }
 
