@@ -11,6 +11,9 @@ import { TimerPopup } from './timer-popup'
 import { ComponentModal } from './component-modal'
 import { MonkeyBot } from './monkey-bot'
 import { EmojiReaction } from './emoji-reaction'
+import { RecordingIndicator } from './recording-indicator'
+import { TeacherPanel } from './teacher-panel'
+import { PollWidget } from './poll-widget'
 
 interface ChatMessage {
   id: string
@@ -41,6 +44,16 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
   const [showBreakoutPanel, setShowBreakoutPanel] = useState(false)
   const [breakoutName, setBreakoutName] = useState('')
   const [breakoutAutoClose, setBreakoutAutoClose] = useState(15)
+  const [isRecording, setIsRecording] = useState(false)
+  const [recordingTime, setRecordingTime] = useState(0)
+  const [recordingQuality, setRecordingQuality] = useState<string>('1080p')
+  const [isRecordingPaused, setIsRecordingPaused] = useState(false)
+  const [roomLocked, setRoomLocked] = useState(false)
+  const [showTeacherPanel, setShowTeacherPanel] = useState(false)
+  const [showPollCreate, setShowPollCreate] = useState(false)
+  const [activePoll, setActivePoll] = useState<any>(null)
+  const [liveResults, setLiveResults] = useState<any>(null)
+  const [pollHistory, setPollHistory] = useState<any[]>([])
   const joinedRef = useRef(false)
   const chatIdCounter = useRef(1)
 
@@ -51,6 +64,12 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
     const timer = setInterval(() => setSeconds(s => s + 1), 1000)
     return () => clearInterval(timer)
   }, [])
+
+  useEffect(() => {
+    if (!isRecording || isRecordingPaused) return
+    const timer = setInterval(() => setRecordingTime(s => s + 1), 1000)
+    return () => clearInterval(timer)
+  }, [isRecording, isRecordingPaused])
 
   useEffect(() => {
     if (!user || joinedRef.current) return
@@ -105,6 +124,75 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
     // In production, emit whiteboard-update via socket
   }, [])
 
+  const isTeacher = user?.role === 'teacher'
+
+  const handleStartRecording = useCallback(async (quality?: string) => {
+    setIsRecording(true)
+    setRecordingTime(0)
+    setRecordingQuality(quality || '1080p')
+    setIsRecordingPaused(false)
+  }, [])
+
+  const handleStopRecording = useCallback(async () => {
+    setIsRecording(false)
+    setRecordingTime(0)
+    setIsRecordingPaused(false)
+  }, [])
+
+  const handlePauseRecording = useCallback(() => {
+    setIsRecordingPaused(true)
+  }, [])
+
+  const handleResumeRecording = useCallback(() => {
+    setIsRecordingPaused(false)
+  }, [])
+
+  const handleMuteAll = useCallback(() => {
+    // In production, emit 'mute-all' via classroom socket
+  }, [])
+
+  const handleSpotlight = useCallback((userId: string) => {
+    // In production, emit 'spotlight' via classroom socket
+  }, [])
+
+  const handleLockRoom = useCallback((locked: boolean) => {
+    setRoomLocked(locked)
+  }, [])
+
+  const handleEject = useCallback((userId: string) => {
+    // In production, emit 'eject-user' via classroom socket
+  }, [])
+
+  const handleCreatePoll = useCallback((question: string, options: string[]) => {
+    const poll = { id: `poll-${Date.now()}`, question, options: options.map((text: string) => ({ id: `opt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, text, votes: 0 })), totalVotes: 0, isActive: true }
+    setActivePoll(poll)
+    setShowPollCreate(false)
+  }, [])
+
+  const handleVote = useCallback((pollId: string, optionId: string) => {
+    if (!activePoll) return
+    const updated = {
+      ...activePoll,
+      options: activePoll.options.map((o: any) => o.id === optionId ? { ...o, votes: o.votes + 1 } : o),
+      totalVotes: activePoll.totalVotes + 1,
+    }
+    setActivePoll(updated)
+    setLiveResults({
+      id: updated.id,
+      options: updated.options.map((o: any) => ({
+        text: o.text, votes: o.votes, percent: updated.totalVotes > 0 ? Math.round((o.votes / updated.totalVotes) * 100) : 0,
+      })),
+      totalVotes: updated.totalVotes,
+    })
+  }, [activePoll])
+
+  const handleEndPoll = useCallback((pollId: string) => {
+    if (activePoll) {
+      setPollHistory(prev => [...prev, { ...activePoll, isActive: false, endedAt: new Date().toISOString() }])
+      setActivePoll(null)
+    }
+  }, [activePoll])
+
   return (
     <div dir={dir} className="flex flex-col h-full bg-white rounded-2xl overflow-hidden shadow-2xl border border-gold/20">
       <header className="flex items-center justify-between px-4 py-2.5 bg-white border-b border-gold/20">
@@ -121,6 +209,9 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <RecordingIndicator isRecording={isRecording} elapsed={recordingTime} quality={recordingQuality}
+            isPaused={isRecordingPaused} isTeacher={isTeacher}
+            onPause={handlePauseRecording} onResume={handleResumeRecording} onStop={handleStopRecording} />
           <button onClick={() => { refreshBreakouts(); setShowBreakoutPanel(!showBreakoutPanel) }}
             className={`px-2.5 py-1 rounded-full text-[10px] font-medium transition ${showBreakoutPanel ? 'bg-orange-200 text-orange-700' : 'hover:bg-gray-100 text-gray-500'}`}>
             🏠 Breakout
@@ -251,6 +342,29 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
           </button>
         ))}
 
+        {isTeacher && (
+          <>
+            <button onClick={() => handleStartRecording(isRecording ? undefined : recordingQuality)}
+              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl text-[10px] font-medium transition
+                ${isRecording ? 'bg-red-500 text-white' : 'hover:bg-white/10 text-white/80'}`}>
+              <span className="text-lg">{isRecording ? '⏹' : '🔴'}</span>
+              <span>{isRecording ? 'Stop' : 'Record'}</span>
+            </button>
+            <button onClick={() => setShowTeacherPanel(!showTeacherPanel)}
+              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl text-[10px] font-medium transition
+                ${showTeacherPanel ? 'bg-gold text-navy' : 'hover:bg-white/10 text-white/80'}`}>
+              <span className="text-lg">👨‍🏫</span>
+              <span>Manage</span>
+            </button>
+            <button onClick={() => setShowPollCreate(!showPollCreate)}
+              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl text-[10px] font-medium transition
+                ${showPollCreate || activePoll ? 'bg-purple-500 text-white' : 'hover:bg-white/10 text-white/80'}`}>
+              <span className="text-lg">📊</span>
+              <span>{activePoll ? 'Poll' : 'Poll'}</span>
+            </button>
+          </>
+        )}
+
         <EmojiReaction onReact={handleReact} />
 
         <button onClick={() => setShowMonkey(!showMonkey)}
@@ -273,6 +387,16 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
         </button>
       </div>
 
+      {showTeacherPanel && (
+        <TeacherPanel isOpen={showTeacherPanel} onClose={() => setShowTeacherPanel(false)}
+          participants={allParticipants}
+          onMuteAll={handleMuteAll} onSpotlight={handleSpotlight}
+          onLockRoom={handleLockRoom} onEject={handleEject}
+          roomLocked={roomLocked} />
+      )}
+      <PollWidget isOpen={showPollCreate || !!activePoll} onClose={() => { setShowPollCreate(false); setActivePoll(null) }}
+        isTeacher={isTeacher} activePoll={activePoll} liveResults={liveResults}
+        onCreatePoll={handleCreatePoll} onVote={handleVote} onEndPoll={handleEndPoll} />
       <TimerPopup isOpen={showTimer} onClose={() => setShowTimer(false)} />
       <ComponentModal isOpen={showModal} onClose={() => setShowModal(false)} />
       <MonkeyBot isOpen={showMonkey} onClose={() => setShowMonkey(false)} />

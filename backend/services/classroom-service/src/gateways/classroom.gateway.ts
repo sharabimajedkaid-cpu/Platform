@@ -10,6 +10,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { ClassroomService } from '../services/classroom.service';
+import { PollService } from '../services/poll.service';
 
 @WebSocketGateway({
   cors: { origin: '*', credentials: true },
@@ -20,7 +21,10 @@ export class ClassroomGateway implements OnGatewayConnection, OnGatewayDisconnec
   private logger = new Logger(ClassroomGateway.name);
   private userSockets: Map<string, Set<string>> = new Map();
 
-  constructor(private classroomService: ClassroomService) {}
+  constructor(
+    private classroomService: ClassroomService,
+    private pollService: PollService,
+  ) {}
 
   handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
@@ -41,10 +45,10 @@ export class ClassroomGateway implements OnGatewayConnection, OnGatewayDisconnec
       this.userSockets.set(data.userId, new Set());
     }
     this.userSockets.get(data.userId)!.add(client.id);
+    client.data.roomId = data.roomId;
+    client.data.userRole = data.role;
     this.server.to(`room:${data.roomId}`).emit('user-joined', {
-      userId: data.userId,
-      name: data.name,
-      role: data.role,
+      userId: data.userId, name: data.name, role: data.role,
     });
     this.logger.log(`${data.name} joined room ${data.roomId}`);
   }
@@ -56,6 +60,97 @@ export class ClassroomGateway implements OnGatewayConnection, OnGatewayDisconnec
     this.logger.log(`User ${data.userId} left room ${data.roomId}`);
   }
 
+  // --- Teacher controls ---
+  @SubscribeMessage('mute-all')
+  handleMuteAll(@ConnectedSocket() client: Socket, @MessageBody() data: { roomId: number }) {
+    if (client.data.userRole !== 'teacher') return;
+    this.server.to(`room:${data.roomId}`).emit('mute-all');
+    this.logger.log(`Teacher muted all in room ${data.roomId}`);
+  }
+
+  @SubscribeMessage('spotlight')
+  handleSpotlight(@ConnectedSocket() client: Socket, @MessageBody() data: { roomId: number; userId: string }) {
+    if (client.data.userRole !== 'teacher') return;
+    this.server.to(`room:${data.roomId}`).emit('spotlight-changed', { userId: data.userId });
+    this.logger.log(`Teacher spotlighted ${data.userId} in room ${data.roomId}`);
+  }
+
+  @SubscribeMessage('lock-room')
+  handleLockRoom(@ConnectedSocket() client: Socket, @MessageBody() data: { roomId: number; locked: boolean }) {
+    if (client.data.userRole !== 'teacher') return;
+    this.server.to(`room:${data.roomId}`).emit('room-locked', { locked: data.locked });
+    this.logger.log(`Room ${data.roomId} ${data.locked ? 'locked' : 'unlocked'}`);
+  }
+
+  @SubscribeMessage('eject-user')
+  handleEjectUser(@ConnectedSocket() client: Socket, @MessageBody() data: { roomId: number; userId: string }) {
+    if (client.data.userRole !== 'teacher') return;
+    this.server.to(`room:${data.roomId}`).emit('user-ejected', { userId: data.userId });
+    this.logger.log(`User ${data.userId} ejected from room ${data.roomId}`);
+  }
+
+  // --- Polls ---
+  @SubscribeMessage('create-poll')
+  handleCreatePoll(@ConnectedSocket() client: Socket, @MessageBody() data: { roomId: number; question: string; options: string[] }) {
+    if (client.data.userRole !== 'teacher') return;
+    const poll = this.pollService.createPoll(data.roomId, data.question, data.options, client.data.userId);
+    this.server.to(`room:${data.roomId}`).emit('poll-created', poll);
+    this.logger.log(`Poll created in room ${data.roomId}: "${data.question}"`);
+  }
+
+  @SubscribeMessage('vote')
+  handleVote(@ConnectedSocket() client: Socket, @MessageBody() data: { pollId: string; optionId: string }) {
+    const result = this.pollService.vote(data.pollId, client.data.userId, data.optionId);
+    if (result.error) {
+      client.emit('vote-error', { error: result.error });
+      return;
+    }
+    const roomId = client.data.roomId;
+    this.server.to(`room:${roomId}`).emit('poll-updated', result.poll);
+    const active = this.pollService.getActivePoll(roomId);
+    if (active) {
+      this.server.to(`room:${roomId}`).emit('live-poll-results', {
+        id: active.id, options: active.options.map(o => ({ text: o.text, votes: o.votes, percent: active.totalVotes > 0 ? Math.round((o.votes / active.totalVotes) * 100) : 0 })), totalVotes: active.totalVotes,
+      });
+    }
+  }
+
+  @SubscribeMessage('end-poll')
+  handleEndPoll(@ConnectedSocket() client: Socket, @MessageBody() data: { pollId: string }) {
+    if (client.data.userRole !== 'teacher') return;
+    const poll = this.pollService.endPoll(data.pollId);
+    if (poll) {
+      this.server.to(`room:${client.data.roomId}`).emit('poll-ended', poll);
+    }
+  }
+
+  @SubscribeMessage('request-poll-state')
+  handleRequestPollState(@ConnectedSocket() client: Socket) {
+    const active = this.pollService.getActivePoll(client.data.roomId);
+    if (active) {
+      client.emit('poll-created', active);
+      client.emit('live-poll-results', {
+        id: active.id, options: active.options.map(o => ({ text: o.text, votes: o.votes, percent: active.totalVotes > 0 ? Math.round((o.votes / active.totalVotes) * 100) : 0 })), totalVotes: active.totalVotes,
+      });
+    }
+  }
+
+  // --- Recording events ---
+  @SubscribeMessage('start-recording')
+  handleStartRecording(@ConnectedSocket() client: Socket, @MessageBody() data: { roomId: number; quality?: string }) {
+    if (client.data.userRole !== 'teacher') return;
+    this.server.to(`room:${data.roomId}`).emit('recording-started', {
+      startedBy: client.data.userId, quality: data.quality || '1080p', startedAt: new Date().toISOString(),
+    });
+  }
+
+  @SubscribeMessage('stop-recording')
+  handleStopRecording(@ConnectedSocket() client: Socket, @MessageBody() data: { roomId: number }) {
+    if (client.data.userRole !== 'teacher') return;
+    this.server.to(`room:${data.roomId}`).emit('recording-stopped', { stoppedBy: client.data.userId });
+  }
+
+  // --- Existing events ---
   @SubscribeMessage('raise-hand')
   handleRaiseHand(@MessageBody() data: { roomId: number; userId: string; raised: boolean }) {
     this.server.to(`room:${data.roomId}`).emit('hand-raised', data);
@@ -89,8 +184,7 @@ export class ClassroomGateway implements OnGatewayConnection, OnGatewayDisconnec
   @SubscribeMessage('send-message')
   handleSendMessage(@MessageBody() data: { roomId: number; userId: string; name: string; text: string }) {
     this.server.to(`room:${data.roomId}`).emit('new-message', {
-      ...data,
-      timestamp: new Date().toISOString(),
+      ...data, timestamp: new Date().toISOString(),
     });
   }
 

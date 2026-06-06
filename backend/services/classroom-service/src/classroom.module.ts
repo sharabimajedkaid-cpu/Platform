@@ -5,6 +5,7 @@ import { WebRTCService } from './services/webrtc.service';
 import { WhiteboardService } from './services/whiteboard.service';
 import { TurnService } from './services/turn.service';
 import { BreakoutRoomService } from './services/breakout-room.service';
+import { PollService } from './services/poll.service';
 import { ClassroomGateway } from './gateways/classroom.gateway';
 import { SignalingGateway } from './gateways/signaling.gateway';
 import { BreakoutGateway } from './gateways/breakout.gateway';
@@ -17,6 +18,7 @@ import { BreakoutGateway } from './gateways/breakout.gateway';
     WhiteboardService,
     TurnService,
     BreakoutRoomService,
+    PollService,
     ClassroomGateway,
     SignalingGateway,
     BreakoutGateway,
