@@ -4,6 +4,7 @@ import { useWebRTC } from '../webrtc/webrtc-provider'
 import { useAuth } from '../providers/auth-provider'
 import { ParticipantTile } from './participant-tile'
 import type { TileParticipant } from './participant-tile'
+import { MonitorStrip } from './monitor-strip'
 import { SidePanel } from './side-panel'
 import { WhiteboardArea } from './whiteboard-area'
 import { TimerPopup } from './timer-popup'
@@ -16,14 +17,12 @@ import { PollWidget } from './poll-widget'
 import { BreakoutManager } from './breakout-manager'
 import { ResourceBrowser } from './resource-browser'
 
-type WbLayout = 'grid' | 'full' | 'minimized'
+type WbLayout = 'whiteboard' | 'resources' | 'grid'
 
-interface ChatMessage {
-  id: string; sender: string; text: string; timestamp: number
-}
-interface ClassroomInteriorProps {
-  roomId: number; onClose: () => void; dir?: 'ltr' | 'rtl'
-}
+interface ChatMessage { id: string; sender: string; text: string; timestamp: number }
+interface ClassroomInteriorProps { roomId: number; onClose: () => void; dir?: 'ltr' | 'rtl' }
+
+const DEFAULT_STRIP_H = 160
 
 export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInteriorProps) {
   const { user } = useAuth()
@@ -37,13 +36,13 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
   const [sideTab, setSideTab] = useState<'chat' | 'participants' | null>(null)
   const [joinError, setJoinError] = useState<string | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: '0', sender: 'System', text: 'Welcome to the classroom!', timestamp: Date.now() }
+    { id: '0', sender: 'System', text: '👋 Welcome to the classroom!', timestamp: Date.now() }
   ])
   const [showTimer, setShowTimer] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [showMonkey, setShowMonkey] = useState(false)
   const [fullscreenTile, setFullscreenTile] = useState<string | null>(null)
-  const [wbLayout, setWbLayout] = useState<WbLayout>('grid')
+  const [wbLayout, setWbLayout] = useState<WbLayout>('whiteboard')
   const [showBreakoutManager, setShowBreakoutManager] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [recordingTime, setRecordingTime] = useState(0)
@@ -55,6 +54,9 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
   const [activePoll, setActivePoll] = useState<any>(null)
   const [liveResults, setLiveResults] = useState<any>(null)
   const [arabicAlertBanner, setArabicAlertBanner] = useState<{ student: string; phrase: string } | null>(null)
+  const [stripHeight, setStripHeight] = useState(DEFAULT_STRIP_H)
+  const [stripCollapsed, setStripCollapsed] = useState(false)
+  const [attendance, setAttendance] = useState<Record<string, boolean>>({})
   const joinedRef = useRef(false)
   const chatIdCounter = useRef(1)
 
@@ -80,7 +82,6 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
     return () => { leaveClassroom(); joinedRef.current = false }
   }, [user, roomId, userId, userName, joinClassroom, leaveClassroom])
 
-  // Auto-dismiss Arabic alert after 5s
   useEffect(() => {
     if (!arabicAlertBanner) return
     const t = setTimeout(() => setArabicAlertBanner(null), 5000)
@@ -95,8 +96,8 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
     if (user) {
       list.push({
         id: 'local', name: userName, role: user.role,
-        isTeacher: user.role === 'teacher', isLocal: true,
-        stream: localStream, isMuted, isCameraOn, handRaised,
+        isTeacher: user.role === 'teacher' || user.role === 'admin',
+        isLocal: true, stream: localStream, isMuted, isCameraOn, handRaised,
       })
     }
     remoteParticipants.forEach(p => {
@@ -117,12 +118,6 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
 
   const handleWbSync = useCallback((_json: string) => {}, [])
 
-  const cycleWbLayout = useCallback(() => {
-    setWbLayout(prev =>
-      prev === 'grid' ? 'full' : prev === 'full' ? 'minimized' : 'grid'
-    )
-  }, [])
-
   const handleStartRecording = useCallback(() => {
     setIsRecording(true); setRecordingTime(0); setIsRecordingPaused(false)
   }, [])
@@ -133,7 +128,7 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
   const handleCreatePoll = useCallback((question: string, options: string[]) => {
     setActivePoll({
       id: `poll-${Date.now()}`, question,
-      options: options.map(text => ({ id: `opt-${Date.now()}-${Math.random().toString(36).slice(2,6)}`, text, votes: 0 })),
+      options: options.map(text => ({ id: `opt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, text, votes: 0 })),
       totalVotes: 0, isActive: true,
     })
     setShowPollCreate(false)
@@ -157,25 +152,36 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
     })
   }, [activePoll])
 
-  const handleEndPoll = useCallback((pollId: string) => {
-    setActivePoll(null)
+  const handleEndPoll = useCallback((_pollId: string) => { setActivePoll(null) }, [])
+
+  const toggleAttendance = useCallback((id: string) => {
+    setAttendance(prev => ({ ...prev, [id]: !prev[id] }))
   }, [])
 
-  const wbIcon = wbLayout === 'grid' ? '⊟' : wbLayout === 'full' ? '⊞' : '▭'
-  const wbTitle = wbLayout === 'grid' ? 'Expand whiteboard' : wbLayout === 'full' ? 'Minimize to resources' : 'Restore grid view'
+  const effectiveStripH = stripCollapsed ? 36 : stripHeight
 
   return (
-    <div dir={dir} className="flex flex-col h-full bg-white rounded-2xl overflow-hidden shadow-2xl border border-gold/20">
+    <div dir={dir} className="flex flex-col h-full overflow-hidden rounded-2xl shadow-2xl"
+      style={{ background: '#080f22', border: '1px solid rgba(99,102,241,0.15)' }}>
 
       {/* ── Header ── */}
-      <header className="flex items-center justify-between px-4 py-2.5 bg-white border-b border-gold/20 shrink-0">
+      <header className="flex items-center justify-between px-4 py-2.5 shrink-0 relative"
+        style={{ background: '#060b18', borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
+        <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-indigo-500/60 via-violet-500/40 to-amber-500/40" />
         <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-gold to-amber-600 flex items-center justify-center text-white text-[9px] font-black shadow-sm">BC</div>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[9px] font-black shadow-sm"
+            style={{ background: 'linear-gradient(135deg,#c47d00,#f0a500)', color: '#060b18' }}>BC</div>
           <div>
-            <h2 className="font-semibold text-navy text-sm">Classroom {roomId}</h2>
-            <p className="text-[9px] text-gray-400 flex items-center gap-1">
-              <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-400' : 'bg-amber-400'} inline-block`} />
-              {isConnected ? 'Live' : 'Connecting...'} · {formatTime(seconds)}
+            <h2 className="font-bold text-white text-sm">Classroom {roomId}</h2>
+            <p className="text-[9px] flex items-center gap-1.5" style={{ color: 'rgba(165,180,252,0.6)' }}>
+              <span className={`w-1.5 h-1.5 rounded-full inline-block ${isConnected ? 'bg-emerald-400' : 'bg-amber-400'}`}
+                style={{ boxShadow: isConnected ? '0 0 6px #34d399' : '0 0 6px #fbbf24' }} />
+              {isConnected ? 'Live' : 'Connecting…'} · {formatTime(seconds)}
+              {isTeacher && (
+                <span className="ml-1 text-amber-400/70">
+                  · {allParticipants.filter(p => !p.isTeacher).length} students
+                </span>
+              )}
             </p>
           </div>
         </div>
@@ -185,119 +191,140 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
             isPaused={isRecordingPaused} isTeacher={isTeacher}
             onPause={() => setIsRecordingPaused(true)} onResume={() => setIsRecordingPaused(false)} onStop={handleStopRecording} />
 
-          <button onClick={() => setShowBreakoutManager(!showBreakoutManager)}
-            className={`px-2.5 py-1 rounded-full text-[10px] font-medium transition
-              ${showBreakoutManager ? 'bg-orange-200 text-orange-700' : 'hover:bg-gray-100 text-gray-500'}`}>
-            🏠 Breakout
-          </button>
+          {isTeacher && (
+            <button onClick={() => setShowBreakoutManager(!showBreakoutManager)}
+              className={`px-2.5 py-1 rounded-full text-[10px] font-medium transition
+                ${showBreakoutManager ? 'bg-orange-500/20 text-orange-300' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}>
+              🏠 Breakout
+            </button>
+          )}
 
           <button onClick={() => setShowTimer(!showTimer)}
             className={`px-2.5 py-1 rounded-full text-[10px] font-medium transition
-              ${showTimer ? 'bg-gold/20 text-navy' : 'hover:bg-gray-100 text-gray-500'}`}>
+              ${showTimer ? 'bg-amber-500/20 text-amber-300' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}>
             ⏱ Timer
           </button>
 
-          <button onClick={cycleWbLayout} title={wbTitle}
-            className={`px-2 py-1 rounded-full text-sm transition
-              ${wbLayout === 'minimized' ? 'bg-navy text-white' : 'hover:bg-gray-100 text-gray-500'}`}>
-            {wbIcon}
-          </button>
+          {/* Layout buttons */}
+          {(['whiteboard', 'grid', 'resources'] as WbLayout[]).map(l => (
+            <button key={l} onClick={() => setWbLayout(l)}
+              className={`px-2.5 py-1 rounded-full text-[9px] font-medium transition
+                ${wbLayout === l ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}>
+              {l === 'whiteboard' ? '✏ Board' : l === 'grid' ? '⊞ Grid' : '🖥 Resources'}
+            </button>
+          ))}
 
           <button onClick={() => setSideTab(sideTab === 'chat' ? null : 'chat')}
-            className={`p-1.5 rounded-full transition text-sm ${sideTab === 'chat' ? 'bg-gold/20' : 'hover:bg-gray-100 text-gray-500'}`}>
+            className={`p-1.5 rounded-full transition text-sm ${sideTab === 'chat' ? 'bg-indigo-500/20 text-indigo-300' : 'text-gray-500 hover:text-white hover:bg-white/10'}`}>
             💬
           </button>
           <button onClick={() => setSideTab(sideTab === 'participants' ? null : 'participants')}
-            className={`p-1.5 rounded-full transition text-sm ${sideTab === 'participants' ? 'bg-gold/20' : 'hover:bg-gray-100 text-gray-500'}`}>
+            className={`p-1.5 rounded-full transition text-sm ${sideTab === 'participants' ? 'bg-indigo-500/20 text-indigo-300' : 'text-gray-500 hover:text-white hover:bg-white/10'}`}>
             👥
           </button>
-          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-red-50 text-red-400 hover:text-red-600 transition text-xs">✕</button>
+          <button onClick={onClose}
+            className="p-1.5 rounded-full hover:bg-red-500/20 text-red-400/60 hover:text-red-300 transition text-xs">✕</button>
         </div>
       </header>
 
-      {/* ── Banners ── */}
+      {/* ── Alert banners ── */}
       {joinError && (
-        <div className="bg-amber-50 border-b border-amber-200 px-4 py-1.5 text-xs text-amber-700 flex items-center gap-2 shrink-0">
+        <div className="px-4 py-1.5 text-xs flex items-center gap-2 shrink-0"
+          style={{ background: 'rgba(251,191,36,0.08)', borderBottom: '1px solid rgba(251,191,36,0.2)', color: '#fbbf24' }}>
           <span>⚠</span>
-          <span>Camera/mic unavailable — you are in the classroom without video. {joinError}</span>
+          <span>Camera/mic unavailable — participating without video. {joinError}</span>
+        </div>
+      )}
+      {arabicAlertBanner && (
+        <div className="px-4 py-1.5 text-xs flex items-center gap-2 shrink-0 animate-pulse"
+          style={{ background: 'rgba(239,68,68,0.08)', borderBottom: '1px solid rgba(239,68,68,0.25)', color: '#fca5a5' }}>
+          <span>🛑</span>
+          <span><strong>{arabicAlertBanner.student}</strong> spoke Arabic: <em dir="rtl">{arabicAlertBanner.phrase}</em></span>
+          <button className="ml-auto text-[9px] text-red-400 hover:text-white" onClick={() => setArabicAlertBanner(null)}>✕</button>
         </div>
       )}
 
-      {arabicAlertBanner && (
-        <div className="bg-red-50 border-b border-red-300 px-4 py-1.5 text-xs text-red-700 flex items-center gap-2 shrink-0 animate-pulse">
-          <span>🛑</span>
-          <span><strong>{arabicAlertBanner.student}</strong> spoke Arabic: <em dir="rtl">{arabicAlertBanner.phrase}</em></span>
+      {/* ── MONITOR STRIP (always at top) ── */}
+      {!stripCollapsed ? (
+        <MonitorStrip
+          participants={allParticipants}
+          isTeacher={isTeacher}
+          stripHeight={stripHeight}
+          onStripHeightChange={setStripHeight}
+        />
+      ) : (
+        <div className="flex items-center justify-between px-3 py-1.5 shrink-0"
+          style={{ background: '#080f22', borderBottom: '1px solid rgba(99,102,241,0.10)', height: 36 }}>
+          <span className="text-[9px] text-gray-600">Monitor strip hidden · {allParticipants.length} online</span>
+          {isTeacher && (
+            <button onClick={() => setStripCollapsed(false)}
+              className="text-[9px] text-indigo-400 hover:text-indigo-300 transition">
+              ▲ Show monitors
+            </button>
+          )}
         </div>
       )}
 
       {/* ── Main content ── */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden min-h-0">
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-          {/* ── MINIMIZED: compact tile strip + resource browser ── */}
-          {wbLayout === 'minimized' && (
-            <>
-              {/* Compact participant strip at top */}
-              <div className="h-20 bg-gray-900 flex items-center gap-2 px-2 overflow-x-auto shrink-0 border-b border-gray-700">
-                {allParticipants.map(p => (
-                  <div key={p.id} className="relative h-16 w-24 shrink-0 rounded-lg overflow-hidden bg-navy/20 border border-white/10">
-                    {p.stream ? (
-                      <video autoPlay playsInline muted={p.isLocal} ref={el => { if (el && p.stream) el.srcObject = p.stream }}
-                        className="absolute inset-0 w-full h-full object-cover" />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white
-                          ${p.isTeacher ? 'bg-gold' : 'bg-navy/60'}`}>
-                          {p.name.charAt(0).toUpperCase()}
-                        </div>
-                      </div>
-                    )}
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 px-1 py-0.5">
-                      <span className="text-white text-[8px] truncate block">{p.name.split(' ')[0]}</span>
-                    </div>
-                    {p.isMuted && <div className="absolute top-0.5 left-0.5 w-2 h-2 rounded-full bg-red-500" />}
-                  </div>
-                ))}
-                <div className="ml-auto px-2 shrink-0">
-                  <button onClick={() => setWbLayout('grid')}
-                    className="text-[9px] text-gray-400 hover:text-white px-2 py-1 rounded hover:bg-white/10 transition">
-                    ⊟ Restore Whiteboard
-                  </button>
-                </div>
-              </div>
-              {/* Resource browser fills rest */}
-              <div className="flex-1 overflow-hidden">
-                <ResourceBrowser onMinimize={() => setWbLayout('grid')} />
-              </div>
-            </>
+          {/* Strip collapse control for teacher */}
+          {isTeacher && !stripCollapsed && (
+            <div className="flex justify-center py-1 shrink-0"
+              style={{ background: 'rgba(8,15,34,0.8)' }}>
+              <button onClick={() => setStripCollapsed(true)}
+                className="text-[8px] text-gray-700 hover:text-gray-400 transition flex items-center gap-1 px-3 py-0.5 rounded-full hover:bg-white/5">
+                ▼ Collapse monitor strip
+              </button>
+            </div>
           )}
 
-          {/* ── FULL: whiteboard only ── */}
-          {wbLayout === 'full' && (
-            <WhiteboardArea onSyncDraw={handleWbSync} />
+          {/* ── WHITEBOARD mode ── */}
+          {wbLayout === 'whiteboard' && (
+            <div className="flex-1 overflow-hidden">
+              <WhiteboardArea onSyncDraw={handleWbSync} />
+            </div>
           )}
 
-          {/* ── GRID: participant tiles + whiteboard strip ── */}
+          {/* ── GRID mode: participant tiles ── */}
           {wbLayout === 'grid' && (
-            <div className="flex flex-1 min-h-0">
-              <div className="flex-1 flex flex-col min-w-0">
-                <div className="flex-1 grid grid-cols-4 grid-rows-2 gap-2 p-2 bg-gray-50/80">
-                  {allParticipants.map(p => (
-                    <ParticipantTile key={p.id} participant={p}
-                      onDoubleClick={() => setFullscreenTile(fullscreenTile === p.id ? null : p.id)}
-                      className={fullscreenTile === p.id ? 'col-span-4 row-span-2 row-start-1 z-10' : ''}
-                      style={fullscreenTile && fullscreenTile !== p.id ? { display: 'none' } : undefined} />
-                  ))}
-                  {allParticipants.length === 0 && (
-                    <div className="col-span-4 row-span-2 flex items-center justify-center text-gray-400 text-xs">
-                      Waiting for participants…
-                    </div>
-                  )}
+            <div className="flex-1 grid grid-cols-4 grid-rows-2 gap-2 p-2 min-h-0"
+              style={{ background: 'rgba(13,20,37,0.6)' }}>
+              {allParticipants.map(p => (
+                <ParticipantTile key={p.id} participant={p}
+                  onDoubleClick={() => setFullscreenTile(fullscreenTile === p.id ? null : p.id)}
+                  className={fullscreenTile === p.id ? 'col-span-4 row-span-2 row-start-1 z-10' : ''}
+                  style={fullscreenTile && fullscreenTile !== p.id ? { display: 'none' } : undefined} />
+              ))}
+              {allParticipants.length === 0 && (
+                <div className="col-span-4 row-span-2 flex flex-col items-center justify-center gap-2">
+                  <div className="text-4xl">👥</div>
+                  <p className="text-sm text-gray-500">Waiting for participants…</p>
+                  <p className="text-xs text-gray-600">Students will appear here when they join</p>
                 </div>
-                <div className="h-44 border-t border-gray-200 bg-white shrink-0">
-                  <WhiteboardArea onSyncDraw={handleWbSync} />
+              )}
+              {isTeacher && allParticipants.length > 0 && (
+                <div className="absolute bottom-2 right-2 z-20">
+                  <div className="bg-black/60 backdrop-blur rounded-xl px-3 py-1.5 border border-white/10">
+                    <p className="text-[9px] text-gray-400 mb-1">Attendance</p>
+                    {allParticipants.filter(p => !p.isTeacher).map(p => (
+                      <div key={p.id} className="flex items-center gap-2 py-0.5">
+                        <button onClick={() => toggleAttendance(p.id)}
+                          className={`w-3 h-3 rounded border transition ${attendance[p.id] ? 'bg-emerald-500 border-emerald-400' : 'border-gray-600 hover:border-gray-400'}`} />
+                        <span className="text-[9px] text-gray-400">{p.name.split(' ')[0]}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+            </div>
+          )}
+
+          {/* ── RESOURCES mode ── */}
+          {wbLayout === 'resources' && (
+            <div className="flex-1 overflow-hidden">
+              <ResourceBrowser onMinimize={() => setWbLayout('whiteboard')} />
             </div>
           )}
         </div>
@@ -316,47 +343,48 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
       </div>
 
       {/* ── Control bar ── */}
-      <div className="h-16 bg-gradient-to-r from-navy to-navy/95 backdrop-blur border-t border-gold/20 flex items-center justify-center gap-1 px-3 shrink-0">
+      <div className="h-14 flex items-center justify-center gap-1 px-3 shrink-0 relative"
+        style={{ background: 'linear-gradient(to right,#060b18,#080f22)', borderTop: '1px solid rgba(240,165,0,0.1)' }}>
+        {/* Subtle glow line */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
+
         {[
           { icon: isMuted ? '🔇' : '🎤', label: isMuted ? 'Unmute' : 'Mute', active: !isMuted, onClick: toggleMic },
           { icon: isCameraOn ? '📹' : '🚫', label: isCameraOn ? 'Camera' : 'Cam Off', active: isCameraOn, onClick: toggleCamera },
-          { icon: isScreenSharing ? '🖥️' : '💻', label: isScreenSharing ? 'Stop Share' : 'Share', active: isScreenSharing, onClick: toggleScreenShare },
+          { icon: isScreenSharing ? '🖥️' : '💻', label: isScreenSharing ? 'Stop' : 'Share', active: isScreenSharing, onClick: toggleScreenShare },
           { icon: '✋', label: handRaised ? 'Lower' : 'Hand', active: handRaised, onClick: () => setHandRaised(!handRaised) },
         ].map((btn, i) => (
           <button key={i} onClick={btn.onClick}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl text-white text-[10px] font-medium transition
-              ${btn.active ? 'bg-gold text-navy font-bold shadow-md' : 'hover:bg-white/10 text-white/80'}`}>
-            <span className="text-lg leading-none">{btn.icon}</span>
-            <span className="leading-none">{btn.label}</span>
+            className={`flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-xl text-[9px] font-medium transition
+              ${btn.active
+                ? 'text-[#060b18] font-bold shadow-lg'
+                : 'text-gray-400 hover:text-white hover:bg-white/8'}`}
+            style={btn.active ? { background: 'linear-gradient(135deg,#c47d00,#f0a500)', boxShadow: '0 2px 10px rgba(240,165,0,0.25)' } : {}}>
+            <span className="text-base leading-none">{btn.icon}</span>
+            <span>{btn.label}</span>
           </button>
         ))}
 
         {isTeacher && (
           <>
+            <div className="w-px h-8 bg-white/10 mx-0.5" />
             <button onClick={isRecording ? handleStopRecording : handleStartRecording}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl text-[10px] font-medium transition
-                ${isRecording ? 'bg-red-500 text-white' : 'hover:bg-white/10 text-white/80'}`}>
-              <span className="text-lg">{isRecording ? '⏹' : '🔴'}</span>
+              className={`flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-xl text-[9px] font-medium transition
+                ${isRecording ? 'bg-red-500 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/8'}`}>
+              <span className="text-base">{isRecording ? '⏹' : '🔴'}</span>
               <span>{isRecording ? 'Stop' : 'Record'}</span>
             </button>
             <button onClick={() => setShowTeacherPanel(!showTeacherPanel)}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl text-[10px] font-medium transition
-                ${showTeacherPanel ? 'bg-gold text-navy' : 'hover:bg-white/10 text-white/80'}`}>
-              <span className="text-lg">👨‍🏫</span>
+              className={`flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-xl text-[9px] font-medium transition
+                ${showTeacherPanel ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white hover:bg-white/8'}`}>
+              <span className="text-base">👨‍🏫</span>
               <span>Manage</span>
             </button>
             <button onClick={() => setShowPollCreate(!showPollCreate)}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl text-[10px] font-medium transition
-                ${showPollCreate || activePoll ? 'bg-purple-500 text-white' : 'hover:bg-white/10 text-white/80'}`}>
-              <span className="text-lg">📊</span>
+              className={`flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-xl text-[9px] font-medium transition
+                ${showPollCreate || activePoll ? 'bg-violet-600 text-white' : 'text-gray-400 hover:text-white hover:bg-white/8'}`}>
+              <span className="text-base">📊</span>
               <span>Poll</span>
-            </button>
-            <button
-              onClick={() => setWbLayout(prev => prev === 'minimized' ? 'grid' : 'minimized')}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl text-[10px] font-medium transition
-                ${wbLayout === 'minimized' ? 'bg-indigo-500 text-white' : 'hover:bg-white/10 text-white/80'}`}>
-              <span className="text-lg">🖥️</span>
-              <span>Resources</span>
             </button>
           </>
         )}
@@ -364,31 +392,30 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
         <EmojiReaction onReact={handleReact} />
 
         <button onClick={() => setShowMonkey(!showMonkey)}
-          className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl text-white text-[10px] font-medium transition
-            ${showMonkey ? 'bg-gold text-navy' : 'hover:bg-white/10 text-white/80'}`}>
-          <span className="text-lg">🐵</span>
+          className={`flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-xl text-[9px] font-medium transition
+            ${showMonkey ? 'text-[#060b18] shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/8'}`}
+          style={showMonkey ? { background: 'linear-gradient(135deg,#c47d00,#f0a500)' } : {}}>
+          <span className="text-base">🐵</span>
           <span>Quiz</span>
         </button>
 
         <button onClick={() => setShowModal(true)}
-          className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl hover:bg-white/10 text-white/80 text-[10px] font-medium transition">
-          <span className="text-lg">📱</span>
+          className="flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-xl text-gray-400 hover:text-white hover:bg-white/8 text-[9px] font-medium transition">
+          <span className="text-base">📱</span>
           <span>More</span>
         </button>
 
         <button onClick={onClose}
-          className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl hover:bg-red-500/20 text-red-300 text-[10px] font-medium transition ml-auto">
-          <span className="text-lg">🚪</span>
+          className="flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-xl text-red-400/60 hover:text-red-300 hover:bg-red-500/10 text-[9px] font-medium transition ml-auto">
+          <span className="text-base">🚪</span>
           <span>Leave</span>
         </button>
       </div>
 
       {/* ── Floating overlays ── */}
       {showBreakoutManager && (
-        <BreakoutManager
-          teacherName={userName}
-          onArabicAlert={alert => setArabicAlertBanner({ student: alert.student, phrase: alert.phrase })}
-        />
+        <BreakoutManager teacherName={userName}
+          onArabicAlert={alert => setArabicAlertBanner({ student: alert.student, phrase: alert.phrase })} />
       )}
 
       <PollWidget isOpen={showPollCreate || !!activePoll}
