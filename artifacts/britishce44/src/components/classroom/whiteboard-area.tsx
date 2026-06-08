@@ -42,8 +42,10 @@ export function WhiteboardArea({ onSyncDraw, syncDrawings, lang = 'en' }: Whiteb
       isDrawingMode: true,
       backgroundColor: '#ffffff',
     })
-    canvas.freeDrawingBrush.color = '#000000'
-    canvas.freeDrawingBrush.width = 3
+    const brush = new fabric.PencilBrush(canvas)
+    brush.color = '#000000'
+    brush.width = 3
+    canvas.freeDrawingBrush = brush
     fabricRef.current = canvas
 
     const saveState = () => {
@@ -84,12 +86,12 @@ export function WhiteboardArea({ onSyncDraw, syncDrawings, lang = 'en' }: Whiteb
   }, [tool])
 
   useEffect(() => {
-    if (!fabricRef.current) return
+    if (!fabricRef.current?.freeDrawingBrush) return
     fabricRef.current.freeDrawingBrush.color = color
   }, [color])
 
   useEffect(() => {
-    if (!fabricRef.current) return
+    if (!fabricRef.current?.freeDrawingBrush) return
     fabricRef.current.freeDrawingBrush.width = strokeWidth
   }, [strokeWidth])
 
