@@ -1,6 +1,6 @@
-# [Project name]
+# Britishce44 — AI Digital School Platform
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+An all-in-one educational platform for Britishce44 Online Digital School (Taiz, Yemen) with 40 WebRTC classrooms, LMS, AI assistant, exam system, and enterprise management.
 
 ## Run & Operate
 
@@ -22,15 +22,28 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/britishce44/src/` — React + Vite frontend
+- `artifacts/britishce44/src/components/` — layout, auth, classroom, webrtc components
+- `artifacts/britishce44/src/pages/` — page components (dashboard, classrooms, etc.)
+- `artifacts/britishce44/src/lib/` — WebRTC, signaling, offline-queue utilities
+- `artifacts/api-server/src/routes/auth.ts` — auth endpoints (login/register)
+- `artifacts/britishce44/src/index.css` — global theme (navy/gold color system)
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- App uses state-based navigation (no URL routing) — `DashboardLayout` renders pages via switch on `PageKey`
+- Auth state persisted in `localStorage` (`b44_user`, `b44_token`)
+- Login calls `/api/v1/auth/login` on the Express API server; api-server has in-memory demo users
+- WebRTC via mediasoup-client + socket.io-client; whiteboard uses fabric.js v5 (wildcard import `* as fabric`)
+- Tailwind CSS v4 with custom CSS variables for navy/gold/champagne theme colors
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Role-based dashboard (admin, supervisor, teacher, student, parent)
+- 240 virtual classrooms with WebRTC video, whiteboard, polls, breakout rooms, recording
+- Exam system (100 exams, anti-cheat monitor), placement tests, homework dropbox
+- CE4 Messenger, AI teacher evaluation, daily performance, triple reports, live analytics
+- Auto-messaging AI, marketing suite, AI video editor, video archive
 
 ## User preferences
 
