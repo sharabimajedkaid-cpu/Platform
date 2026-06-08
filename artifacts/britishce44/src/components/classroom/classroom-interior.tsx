@@ -324,6 +324,13 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
             onClose={() => setSideTab(null)}
           />
         )}
+        {showTeacherPanel && (
+          <TeacherPanel isOpen={showTeacherPanel} onClose={() => setShowTeacherPanel(false)}
+            participants={allParticipants}
+            onMuteAll={handleMuteAll} onSpotlight={handleSpotlight}
+            onLockRoom={handleLockRoom} onEject={handleEject}
+            roomLocked={roomLocked} />
+        )}
       </div>
 
       <div className="h-16 bg-gradient-to-r from-navy to-navy/95 backdrop-blur border-t border-gold/20 flex items-center justify-center gap-1 px-3">
@@ -386,13 +393,6 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
         </button>
       </div>
 
-      {showTeacherPanel && (
-        <TeacherPanel isOpen={showTeacherPanel} onClose={() => setShowTeacherPanel(false)}
-          participants={allParticipants}
-          onMuteAll={handleMuteAll} onSpotlight={handleSpotlight}
-          onLockRoom={handleLockRoom} onEject={handleEject}
-          roomLocked={roomLocked} />
-      )}
       <PollWidget isOpen={showPollCreate || !!activePoll} onClose={() => { setShowPollCreate(false); setActivePoll(null) }}
         isTeacher={isTeacher} activePoll={activePoll} liveResults={liveResults}
         onCreatePoll={handleCreatePoll} onVote={handleVote} onEndPoll={handleEndPoll} />

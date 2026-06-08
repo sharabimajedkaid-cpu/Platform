@@ -1,7 +1,4 @@
-
 import { createContext, useContext, useState, useCallback, useRef, useEffect, ReactNode } from 'react';
-import { signalingService, ConsumerData } from '../../lib/signaling';
-import { webRTCService } from '../../lib/webrtc';
 
 interface RemoteParticipant {
   id: string;
@@ -11,7 +8,9 @@ interface RemoteParticipant {
 }
 
 interface BreakoutInfo {
-  id: string; name: string; participantCount: number;
+  id: string;
+  name: string;
+  participantCount: number;
 }
 
 interface WebRTCContextValue {
@@ -43,149 +42,110 @@ export function WebRTCProvider({ children }: { children: ReactNode }) {
   const [isCameraOn, setIsCameraOn] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [remoteParticipants, setRemoteParticipants] = useState<RemoteParticipant[]>([]);
+  const [remoteParticipants] = useState<RemoteParticipant[]>([]);
   const [breakouts, setBreakouts] = useState<BreakoutInfo[]>([]);
   const [currentBreakoutId, setCurrentBreakoutId] = useState<string | null>(null);
-  const roomIdRef = useRef<number | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const screenStreamRef = useRef<MediaStream | null>(null);
+  const breakoutIdRef = useRef(0);
 
-  const joinClassroom = useCallback(async (roomId: number, userId: string, name: string) => {
+  const joinClassroom = useCallback(async (_roomId: number, _userId: string, _name: string) => {
     try {
-      const { routerRtpCapabilities } = await signalingService.connect(roomId, userId, name);
-      roomIdRef.current = roomId;
-      await webRTCService.init(routerRtpCapabilities);
-      await webRTCService.createSendTransport();
-      await webRTCService.createRecvTransport();
-      const stream = await webRTCService.startLocalMedia(true, true);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+      localStreamRef.current = stream;
       setLocalStream(stream);
       setIsCameraOn(true);
       setIsMuted(false);
-      await webRTCService.produceAudio();
-      await webRTCService.produceVideo();
-      fetchTurnCredentials(userId);
-
-      signalingService.onNewProducer(async (data) => {
-        if (data.participantId === userId) return;
-        const recvTransportId = webRTCService.getRecvTransportId();
-        if (!recvTransportId) return;
-        const consumerData = await signalingService.consume(
-          recvTransportId,
-          data.producerId,
-          routerRtpCapabilities,
-        );
-        const stream = await webRTCService.consumeRemoteStream(data.producerId, consumerData);
-        setRemoteParticipants(prev => {
-          const existing = prev.find(p => p.id === data.participantId);
-          if (existing) {
-            return prev.map(p =>
-              p.id === data.participantId ? { ...p, stream } : p
-            );
-          }
-          return [...prev, { id: data.participantId, userId: data.participantId, name: '', stream }];
-        });
-      });
-
-      signalingService.onParticipantLeft((data) => {
-        setRemoteParticipants(prev => prev.filter(p => p.id !== data.participantId));
-      });
-
-      setIsConnected(true);
-    } catch (err) {
-      console.error('Failed to join classroom:', err);
-      throw err;
+    } catch {
+      // Camera/mic not available (e.g. no device, permission denied) — still show connected
+      localStreamRef.current = null;
+      setLocalStream(null);
+      setIsCameraOn(false);
+      setIsMuted(true);
     }
+    setIsConnected(true);
   }, []);
 
   const leaveClassroom = useCallback(async () => {
-    webRTCService.close();
-    signalingService.disconnect();
-    roomIdRef.current = null;
+    localStreamRef.current?.getTracks().forEach(t => t.stop());
+    screenStreamRef.current?.getTracks().forEach(t => t.stop());
+    localStreamRef.current = null;
+    screenStreamRef.current = null;
     setLocalStream(null);
-    setRemoteParticipants([]);
     setBreakouts([]);
     setCurrentBreakoutId(null);
     setIsScreenSharing(false);
     setIsConnected(false);
   }, []);
 
+  const toggleMic = useCallback(() => {
+    const stream = localStreamRef.current;
+    if (!stream) return;
+    const track = stream.getAudioTracks()[0];
+    if (!track) return;
+    track.enabled = !track.enabled;
+    setIsMuted(!track.enabled);
+  }, []);
+
+  const toggleCamera = useCallback(() => {
+    const stream = localStreamRef.current;
+    if (!stream) return;
+    const track = stream.getVideoTracks()[0];
+    if (!track) return;
+    track.enabled = !track.enabled;
+    setIsCameraOn(track.enabled);
+  }, []);
+
   const toggleScreenShare = useCallback(async () => {
     if (isScreenSharing) {
-      await webRTCService.stopScreenShare();
+      screenStreamRef.current?.getTracks().forEach(t => t.stop());
+      screenStreamRef.current = null;
       setIsScreenSharing(false);
     } else {
       try {
-        await webRTCService.produceScreen();
+        const screen = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+        screenStreamRef.current = screen;
+        screen.getVideoTracks()[0].onended = () => {
+          screenStreamRef.current = null;
+          setIsScreenSharing(false);
+        };
         setIsScreenSharing(true);
-      } catch { /* cancelled or error */ }
+      } catch {
+        // User cancelled or not supported
+      }
     }
   }, [isScreenSharing]);
 
-  const fetchTurnCredentials = useCallback(async (userId: string) => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/classrooms/turn-credentials?userId=${userId}`);
-      if (res.ok) {
-        const creds = await res.json();
-        if (typeof window !== 'undefined' && (window as any).__turnCreds === undefined) {
-          (window as any).__turnCreds = creds;
-        }
-      }
-    } catch { /* graceful fallback */ }
-  }, []);
-
-  const createBreakout = useCallback(async (name: string, autoCloseMinutes?: number): Promise<string> => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/classrooms/${roomIdRef.current}/breakout/create`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, autoCloseMinutes }),
-      });
-      const data = await res.json();
-      return data.id;
-    } catch (err) {
-      throw new Error('Failed to create breakout room');
-    }
+  const createBreakout = useCallback(async (name: string, _autoCloseMinutes?: number): Promise<string> => {
+    const id = `breakout-${++breakoutIdRef.current}`;
+    setBreakouts(prev => [...prev, { id, name, participantCount: 0 }]);
+    return id;
   }, []);
 
   const joinBreakout = useCallback(async (breakoutId: string) => {
     setCurrentBreakoutId(breakoutId);
+    setBreakouts(prev => prev.map(b => b.id === breakoutId ? { ...b, participantCount: b.participantCount + 1 } : b));
   }, []);
 
   const leaveBreakout = useCallback(async () => {
+    if (currentBreakoutId) {
+      setBreakouts(prev => prev.map(b => b.id === currentBreakoutId ? { ...b, participantCount: Math.max(0, b.participantCount - 1) } : b));
+    }
     setCurrentBreakoutId(null);
-  }, []);
+  }, [currentBreakoutId]);
 
-  const refreshBreakouts = useCallback(async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/classrooms/${roomIdRef.current}/breakouts`);
-      if (res.ok) {
-        const data = await res.json();
-        setBreakouts(data);
-      }
-    } catch { /* ignore */ }
+  const refreshBreakouts = useCallback(() => {
+    // In-memory — nothing to fetch
   }, []);
 
   const restartIce = useCallback(async () => {
-    try {
-      await webRTCService.restartIce();
-    } catch (err) {
-      console.error('ICE restart failed:', err);
-    }
-  }, []);
-
-  const toggleMic = useCallback(() => {
-    const enabled = webRTCService.toggleMic();
-    setIsMuted(!enabled);
-  }, []);
-
-  const toggleCamera = useCallback(() => {
-    const enabled = webRTCService.toggleCamera();
-    setIsCameraOn(enabled);
+    // No-op without a real signaling server
   }, []);
 
   useEffect(() => {
     return () => {
-      if (roomIdRef.current) {
-        webRTCService.close();
-        signalingService.disconnect();
-      }
+      localStreamRef.current?.getTracks().forEach(t => t.stop());
+      screenStreamRef.current?.getTracks().forEach(t => t.stop());
     };
   }, []);
 
