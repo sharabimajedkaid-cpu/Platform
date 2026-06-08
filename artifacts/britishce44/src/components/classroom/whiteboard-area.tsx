@@ -49,9 +49,9 @@ export function WhiteboardArea({ onSyncDraw, syncDrawings, lang = 'en' }: Whiteb
     fabricRef.current = canvas
 
     const saveState = () => {
-      undoStack.current.push(JSON.stringify(canvas.toJSON(['id'])))
+      undoStack.current.push(JSON.stringify(canvas.toJSON()))
       if (undoStack.current.length > 50) undoStack.current.shift()
-      const json = JSON.stringify(canvas.toJSON(['id']))
+      const json = JSON.stringify(canvas.toJSON())
       onSyncDraw?.(json)
     }
 
@@ -120,7 +120,7 @@ export function WhiteboardArea({ onSyncDraw, syncDrawings, lang = 'en' }: Whiteb
         ], { ...opts })
         break
       case 'arrow': {
-        const points = [100, 100, 200, 100]
+        const points: [number, number, number, number] = [100, 100, 200, 100]
         const dx = points[2] - points[0], dy = points[3] - points[1]
         const angle = Math.atan2(dy, dx)
         const headLen = 12
