@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { useAuth } from '@/components/providers/auth-provider'
 import { Sidebar } from './sidebar'
 import { TopBar } from './topbar'
+import { MaintenanceProvider } from '@/components/maintenance/maintenance-provider'
+import { DesignStudioKit } from '@/components/maintenance/design-studio-kit'
 import { DashboardPage } from '@/pages/dashboard'
 import { ClassroomsPage } from '@/pages/classrooms'
 import { MessengerPage } from '@/pages/messenger'
@@ -30,7 +32,7 @@ export type PageKey =
   | 'subscriptions' | 'liveanalytics' | 'homework' | 'chat' | 'meetlive'
   | 'videoarchive' | 'examroom' | 'aidev' | 'settings'
 
-export function DashboardLayout() {
+function DashboardInner() {
   const { user, logout } = useAuth()
   const [currentPage, setCurrentPage] = useState<PageKey>('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -64,7 +66,7 @@ export function DashboardLayout() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-futuristic">
       <TopBar
         user={user}
         onLogout={logout}
@@ -78,10 +80,29 @@ export function DashboardLayout() {
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />
-        <main className="flex-1 overflow-y-auto custom-scroll bg-[#f0f2f5] p-4 md:p-6">
-          {renderPage()}
+        <main className="flex-1 overflow-y-auto custom-scroll relative">
+          {/* Subtle grid overlay for futuristic feel */}
+          <div className="absolute inset-0 pointer-events-none opacity-[0.015]"
+            style={{
+              backgroundImage: 'linear-gradient(rgba(99,102,241,1) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,1) 1px, transparent 1px)',
+              backgroundSize: '48px 48px',
+            }} />
+          <div className="relative z-10 p-4 md:p-6">
+            {renderPage()}
+          </div>
         </main>
       </div>
+
+      {/* Design Studio Kit — floats over everything */}
+      <DesignStudioKit />
     </div>
+  )
+}
+
+export function DashboardLayout() {
+  return (
+    <MaintenanceProvider>
+      <DashboardInner />
+    </MaintenanceProvider>
   )
 }

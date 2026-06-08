@@ -1,0 +1,2 @@
+- [Maintenance Mode System](maintenance-mode.md) — Admin-only context provider + 8-tab Design Studio Kit; must wrap DashboardLayout with MaintenanceProvider
+- [Futuristic Theme](futuristic-theme.md) — Space navy + electric indigo + vivid gold color system; all CSS vars live in index.css :root
