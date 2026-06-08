@@ -82,7 +82,7 @@ export function ParticipantTile({ participant, className = '', style, onDoubleCl
           {p.isLocal && <span className="text-[8px] text-gold bg-navy/60 px-1 rounded">You</span>}
           {p.isLocal && (
             <span className="ml-auto text-[9px] text-gray-300">
-              {window.innerWidth > 768 ? `${Math.floor(Math.random() * 4 + 1)}×${Math.floor(Math.random() * 4 + 1)}` : ''}
+              {window.innerWidth > 768 ? 'HD' : ''}
             </span>
           )}
         </div>
