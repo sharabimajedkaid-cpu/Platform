@@ -113,6 +113,14 @@ function ClassicTabLayout() {
       <Tabs.Screen name="users" options={hiddenTab} />
       <Tabs.Screen name="video-archive" options={hiddenTab} />
       <Tabs.Screen name="placements" options={hiddenTab} />
+      <Tabs.Screen name="daily-perf" options={hiddenTab} />
+      <Tabs.Screen name="anticheat" options={hiddenTab} />
+      <Tabs.Screen name="ai-dev" options={hiddenTab} />
+      <Tabs.Screen name="marketing" options={hiddenTab} />
+      <Tabs.Screen name="auto-messaging" options={hiddenTab} />
+      <Tabs.Screen name="video-editor" options={hiddenTab} />
+      <Tabs.Screen name="academic-room" options={hiddenTab} />
+      <Tabs.Screen name="classroom-room" options={hiddenTab} />
     </Tabs>
   );
 }

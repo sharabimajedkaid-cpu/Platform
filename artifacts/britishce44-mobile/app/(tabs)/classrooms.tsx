@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   FlatList,
@@ -89,7 +90,10 @@ function ClassroomCard({ item }: { item: (typeof CLASSROOMS)[0] }) {
           {item.status === "live" && (
             <Pressable
               style={{ backgroundColor: colors.primary, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 }}
-              onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                router.push({ pathname: "/(tabs)/classroom-room", params: { id: item.id, name: item.name } });
+              }}
             >
               <Text style={{ fontSize: 12, fontFamily: "Inter_700Bold", color: colors.primaryForeground }}>Join</Text>
             </Pressable>

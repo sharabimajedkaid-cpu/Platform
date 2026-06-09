@@ -61,14 +61,17 @@ export default function MoreScreen() {
       items: [
         { id: "homework", icon: "book-outline", label: "Homework Dropbox", sublabel: "Submit & track assignments", color: "#6366f1", badge: "3 Due", route: "/(tabs)/homework" },
         { id: "placements", icon: "clipboard-outline", label: "Placement Tests", sublabel: "Level assessment & entry tests", color: "#7c3aed", route: "/(tabs)/placements" },
-        { id: "teacher-eval", icon: "ribbon-outline", label: "Teacher Evaluation", sublabel: "AI-powered ratings", color: "#f0a500", route: "/(tabs)/teacher-eval" },
+        { id: "academic-room", icon: "school-outline", label: "Academic Room", sublabel: "Tutoring, study groups & office hours", color: "#0891b2", route: "/(tabs)/academic-room" },
+        { id: "anticheat", icon: "eye-outline", label: "Exam Monitor", sublabel: "Anti-cheat & proctoring status", color: "#e11d48", route: "/(tabs)/anticheat" },
       ],
     },
     {
       title: "Analytics & Reports",
       items: [
         { id: "analytics", icon: "stats-chart-outline", label: "Live Analytics", sublabel: "Real-time platform metrics", color: "#059669", route: "/(tabs)/analytics" },
+        { id: "daily-perf", icon: "bar-chart-outline", label: "Daily Performance", sublabel: "Student & teacher progress", color: "#0891b2", route: "/(tabs)/daily-perf" },
         { id: "reports", icon: "document-text-outline", label: "Reports", sublabel: "Triple reports & summaries", color: "#d97706", route: "/(tabs)/reports" },
+        { id: "teacher-eval", icon: "ribbon-outline", label: "Teacher Evaluation", sublabel: "AI-powered ratings", color: "#f0a500", route: "/(tabs)/teacher-eval" },
       ],
     },
     {
@@ -76,8 +79,10 @@ export default function MoreScreen() {
       items: [
         { id: "users", icon: "people-outline", label: "Users & Students", sublabel: "Manage accounts & enrollments", color: "#6366f1", route: "/(tabs)/users" },
         { id: "video-archive", icon: "videocam-outline", label: "Video Archive", sublabel: "Recorded class library", color: "#7c3aed", badge: "240+", route: "/(tabs)/video-archive" },
-        { id: "automessaging", icon: "chatbox-ellipses-outline", label: "Auto Messaging AI", sublabel: "Automated parent notifications", color: "#059669" },
-        { id: "marketing", icon: "megaphone-outline", label: "Marketing Suite", sublabel: "Campaigns & enrollment tools", color: "#0891b2" },
+        { id: "auto-messaging", icon: "chatbox-ellipses-outline", label: "Auto Messaging AI", sublabel: "Automated parent notifications", color: "#059669", route: "/(tabs)/auto-messaging" },
+        { id: "marketing", icon: "megaphone-outline", label: "Marketing Suite", sublabel: "Campaigns & enrollment tools", color: "#0891b2", route: "/(tabs)/marketing" },
+        { id: "video-editor", icon: "film-outline", label: "AI Video Editor", sublabel: "Create & publish course content", color: "#7c3aed", route: "/(tabs)/video-editor" },
+        { id: "ai-dev", icon: "sparkles-outline", label: "AI Development", sublabel: "Smart tools for educators", color: "#6366f1", route: "/(tabs)/ai-dev" },
       ],
     },
     {
