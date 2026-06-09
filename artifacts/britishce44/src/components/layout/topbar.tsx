@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useMaintenanceMode } from '../maintenance/maintenance-provider'
+import { useI18n } from '@/lib/i18n'
 
 interface TopBarProps {
   user: { firstName: string; lastName: string; role: string; email?: string } | null
@@ -11,6 +12,7 @@ export function TopBar({ user, onLogout, onToggleSidebar }: TopBarProps) {
   const [time, setTime] = useState(new Date())
   const isAdmin = user?.role === 'admin' || user?.role === 'supervisor'
   const { isMaintenanceMode, toggleMaintenance, isSaving, showDesignKit, setShowDesignKit } = useMaintenanceMode()
+  const { t, lang, toggleLang, locked } = useI18n()
 
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000)
@@ -20,7 +22,7 @@ export function TopBar({ user, onLogout, onToggleSidebar }: TopBarProps) {
   return (
     <header className="h-14 bg-[#060b18] flex items-center justify-between px-4 flex-shrink-0 z-30 relative select-none">
       {/* Accent gradient line */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-500 via-violet-500 to-amber-400" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-700 via-blue-500 to-amber-400" />
 
       {/* Left: Logo + toggle */}
       <div className="flex items-center gap-3">
@@ -41,7 +43,7 @@ export function TopBar({ user, onLogout, onToggleSidebar }: TopBarProps) {
           </div>
           <div>
             <span className="text-white font-bold text-sm tracking-wide">Britishce44</span>
-            <p className="text-[9px] text-indigo-300/50 leading-none hidden md:block">Digital School Platform</p>
+            <p className="text-[9px] text-blue-300/50 leading-none hidden md:block">{t('chrome.platformTag')}</p>
           </div>
         </div>
 
@@ -49,7 +51,7 @@ export function TopBar({ user, onLogout, onToggleSidebar }: TopBarProps) {
         {isMaintenanceMode && (
           <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            <span className="text-amber-400 text-[10px] font-bold tracking-wide">MAINTENANCE MODE</span>
+            <span className="text-amber-400 text-[10px] font-bold tracking-wide">{t('topbar.maintenanceMode')}</span>
           </div>
         )}
       </div>
@@ -66,16 +68,30 @@ export function TopBar({ user, onLogout, onToggleSidebar }: TopBarProps) {
 
       {/* Right: Actions */}
       <div className="flex items-center gap-2">
+        {/* Language switcher */}
+        {!locked ? (
+          <button onClick={toggleLang} title={t('common.language')}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-bold bg-white/5 text-gray-300 border border-white/10 hover:border-amber-400/40 hover:text-amber-400 transition">
+            <span>🌐</span>
+            <span>{lang === 'ar' ? 'EN' : 'ع'}</span>
+          </button>
+        ) : (
+          <span title={t('common.englishLocked')}
+            className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-bold bg-blue-500/10 text-blue-300/70 border border-blue-500/20 cursor-default">
+            <span>🔒</span><span>EN</span>
+          </span>
+        )}
+
         {isAdmin && (
           <>
             {isMaintenanceMode && (
               <button onClick={() => setShowDesignKit(!showDesignKit)}
                 className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold transition shadow-lg
                   ${showDesignKit
-                    ? 'bg-violet-500 text-white shadow-violet-500/30'
-                    : 'bg-violet-500/10 text-violet-400 border border-violet-500/30 hover:bg-violet-500/20'}`}>
+                    ? 'bg-blue-600 text-white shadow-blue-600/30'
+                    : 'bg-blue-600/10 text-blue-400 border border-blue-500/30 hover:bg-blue-600/20'}`}>
                 <span>🎨</span>
-                <span>Design Studio</span>
+                <span>{t('topbar.designStudio')}</span>
               </button>
             )}
             <button onClick={toggleMaintenance}
@@ -84,9 +100,9 @@ export function TopBar({ user, onLogout, onToggleSidebar }: TopBarProps) {
                   ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20'
                   : 'bg-white/5 text-gray-400 border border-white/10 hover:text-amber-400 hover:border-amber-400/30'}`}>
               {isSaving ? (
-                <><span className="animate-spin">⚙</span><span>Deploying…</span></>
+                <><span className="animate-spin">⚙</span><span>{t('topbar.deploying')}</span></>
               ) : (
-                <><span>🔧</span><span>{isMaintenanceMode ? 'Exit Maintenance' : 'Maintenance'}</span></>
+                <><span>🔧</span><span>{isMaintenanceMode ? t('topbar.exitMaintenance') : t('topbar.maintenance')}</span></>
               )}
             </button>
           </>
@@ -94,23 +110,23 @@ export function TopBar({ user, onLogout, onToggleSidebar }: TopBarProps) {
 
         {user && (
           <>
-            <button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-amber-400 hover:bg-amber-400/10 rounded-full transition text-sm" title="Notifications">
+            <button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-amber-400 hover:bg-amber-400/10 rounded-full transition text-sm" title={t('topbar.notifications')}>
               🔔
             </button>
             <div className="flex items-center gap-2 pl-2 border-l border-white/10">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-indigo-500/20">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-600/20">
                 <span className="text-white font-bold text-[10px]">
                   {user.firstName.charAt(0)}{user.lastName.charAt(0)}
                 </span>
               </div>
               <div className="hidden sm:block">
                 <p className="text-white text-xs font-semibold leading-none">{user.firstName} {user.lastName}</p>
-                <p className="text-[8px] text-indigo-300/60 leading-none mt-0.5 uppercase tracking-widest">{user.role}</p>
+                <p className="text-[8px] text-blue-300/60 leading-none mt-0.5 uppercase tracking-widest">{t(`role.${user.role}`)}</p>
               </div>
             </div>
             <button onClick={onLogout}
               className="text-gray-500 hover:text-red-400 hover:bg-red-400/10 text-[10px] px-2.5 py-1.5 rounded-full border border-white/10 hover:border-red-400/30 transition font-medium">
-              Logout
+              {t('topbar.logout')}
             </button>
           </>
         )}

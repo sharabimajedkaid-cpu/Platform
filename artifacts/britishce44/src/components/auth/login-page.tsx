@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/providers/auth-provider'
 import { OnboardingFlow } from '@/pages/onboarding'
 import toast from 'react-hot-toast'
+import { playWelcomeVoice } from '@/lib/welcome-voice'
+import { isEnglishLocked } from '@/lib/i18n'
 
 /* Background photo slideshow images from britishce4.com */
 const BG_PHOTOS = [
@@ -98,6 +100,11 @@ export function LoginPage() {
     setLoading(true)
     try {
       await login(email, password)
+      try {
+        const stored = JSON.parse(localStorage.getItem('b44_user') || 'null')
+        const lang = isEnglishLocked(stored) ? 'en' : (localStorage.getItem('b44_lang') === 'ar' ? 'ar' : 'en')
+        playWelcomeVoice(lang)
+      } catch {}
       toast.success('Welcome to Britishce44!')
     } catch (err: any) {
       toast.error(err.message || 'Login failed')

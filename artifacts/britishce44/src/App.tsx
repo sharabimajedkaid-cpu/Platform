@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider, useAuth } from './components/providers/auth-provider'
+import { LanguageProvider } from './lib/i18n'
 import { LoginPage } from './components/auth/login-page'
 import { DashboardLayout } from './components/layout/dashboard-layout'
 import { useState } from 'react'
@@ -36,14 +37,16 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppContent />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 3000,
-            style: { background: '#0a1628', color: '#fff', borderRadius: '12px', fontSize: '14px' },
-          }}
-        />
+        <LanguageProvider>
+          <AppContent />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
+              style: { background: '#0a1628', color: '#fff', borderRadius: '12px', fontSize: '14px' },
+            }}
+          />
+        </LanguageProvider>
       </AuthProvider>
     </QueryClientProvider>
   )
