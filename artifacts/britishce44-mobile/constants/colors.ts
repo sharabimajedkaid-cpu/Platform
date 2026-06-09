@@ -1,37 +1,42 @@
 const colors = {
   light: {
-    text: "#e2e8f4",
-    tint: "#f0a500",
+    text: "#dde6f8",
+    tint: "#c8940a",
 
-    background: "#080f22",
-    foreground: "#e2e8f4",
+    background: "#07102a",       /* deep royal navy (logo navy) */
+    foreground: "#dde6f8",
 
-    card: "#0d1a35",
-    cardForeground: "#e2e8f4",
+    card: "#0d1e48",             /* royal blue tint card */
+    cardForeground: "#dde6f8",
 
-    primary: "#f0a500",
-    primaryForeground: "#080f22",
+    primary: "#c8940a",          /* logo Big Ben / rays gold */
+    primaryForeground: "#07102a",
 
-    secondary: "#131f38",
-    secondaryForeground: "#e2e8f4",
+    secondary: "#1b3ea6",        /* logo shield royal blue */
+    secondaryForeground: "#ffffff",
 
-    muted: "#131f38",
-    mutedForeground: "#6b7fa3",
+    muted: "#101e46",
+    mutedForeground: "#6b87be",  /* blue-tinted muted text */
 
-    accent: "#f0a500",
-    accentForeground: "#080f22",
+    accent: "#c8940a",
+    accentForeground: "#07102a",
 
     destructive: "#e11d48",
     destructiveForeground: "#ffffff",
 
-    border: "#1e2f52",
-    input: "#1e2f52",
+    border: "#1e3a7a",           /* royal blue border */
+    input: "#1e3a7a",
 
-    surface2: "#131f38",
-    navy: "#080f22",
-    gold: "#f0a500",
-    indigo: "#6366f1",
+    surface2: "#122247",         /* royal blue surface */
+    navy: "#07102a",
+    gold: "#c8940a",
+    royalBlue: "#1b3ea6",        /* logo shield blue */
+    brightBlue: "#2563eb",       /* brighter blue variant */
+    indigo: "#2563eb",           /* shifted to royal blue family */
     emerald: "#059669",
+    violet: "#7c3aed",
+    rose: "#e11d48",
+    amber: "#d97706",
   },
 
   radius: 12,
