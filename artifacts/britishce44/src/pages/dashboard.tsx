@@ -1,5 +1,411 @@
 
+import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { useAuth } from '@/components/providers/auth-provider'
+
+/* ─────────────────────────────────────────────────── */
+/*  Course data                                         */
+/* ─────────────────────────────────────────────────── */
+
+interface Course {
+  id: string; title: string; series: string; level: string
+  category: 'phonics' | 'kids' | 'teens'
+  color: { from: string; to: string; badge: string; text: string }
+  cover: { emoji: string; pattern: string }
+  goals: [string, string, string, string]
+  students?: number; tag?: string
+}
+
+const COURSES: Course[] = [
+  /* ── Pre-diploma Phonics ── */
+  {
+    id: 'phonics-1', series: 'Oxford Phonics World', title: 'Oxford Phonics 1',
+    level: 'Level 1', category: 'phonics',
+    color: { from: '#dc2626', to: '#b91c1c', badge: '#fef2f2', text: '#dc2626' },
+    cover: { emoji: '🔤', pattern: 'radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.12) 0%, transparent 60%)' },
+    goals: [
+      'Learn all 26 alphabet letters & their sounds',
+      'Master uppercase & lowercase letter writing',
+      'Associate letters with their starting sounds',
+      'Build a strong phonological awareness foundation',
+    ],
+    students: 12, tag: 'Starter',
+  },
+  {
+    id: 'phonics-2', series: 'Oxford Phonics World', title: 'Oxford Phonics 2',
+    level: 'Level 2', category: 'phonics',
+    color: { from: '#ea580c', to: '#c2410c', badge: '#fff7ed', text: '#ea580c' },
+    cover: { emoji: '🅰', pattern: 'radial-gradient(ellipse at 70% 30%, rgba(255,255,255,0.12) 0%, transparent 60%)' },
+    goals: [
+      'Master all 5 short vowel sounds (a, e, i, o, u)',
+      'Read & write 3-letter CVC words confidently',
+      'Sound blending: consonant + vowel + consonant',
+      'Recognise word families and rhyming patterns',
+    ],
+    students: 10, tag: 'Beginner',
+  },
+  {
+    id: 'phonics-3', series: 'Oxford Phonics World', title: 'Oxford Phonics 3',
+    level: 'Level 3', category: 'phonics',
+    color: { from: '#d97706', to: '#b45309', badge: '#fffbeb', text: '#d97706' },
+    cover: { emoji: '📖', pattern: 'radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.15) 0%, transparent 55%)' },
+    goals: [
+      'Identify long vowel sounds & the silent-e rule',
+      'Read words with vowel combinations (ai, ee, oa…)',
+      'Transition from decoding to fluent reading',
+      'Expand vocabulary through phonics patterns',
+    ],
+    students: 9, tag: 'Elementary',
+  },
+
+  /* ── Kids — Gogo Loves English ── */
+  {
+    id: 'gogo-1', series: 'Gogo Loves English', title: 'Gogo Loves English 1',
+    level: 'Level 1', category: 'kids',
+    color: { from: '#16a34a', to: '#15803d', badge: '#f0fdf4', text: '#16a34a' },
+    cover: { emoji: '🐸', pattern: 'radial-gradient(ellipse at 25% 35%, rgba(255,255,255,0.15) 0%, transparent 55%)' },
+    goals: [
+      'Introduce basic greetings and everyday expressions',
+      'Learn core vocabulary through songs and chants',
+      'Recognise letters and simple sight words',
+      'Build listening and speaking confidence from day one',
+    ],
+    students: 18, tag: 'Starter',
+  },
+  {
+    id: 'gogo-2', series: 'Gogo Loves English', title: 'Gogo Loves English 2',
+    level: 'Level 2', category: 'kids',
+    color: { from: '#0891b2', to: '#0e7490', badge: '#ecfeff', text: '#0891b2' },
+    cover: { emoji: '🌟', pattern: 'radial-gradient(ellipse at 75% 25%, rgba(255,255,255,0.12) 0%, transparent 55%)' },
+    goals: [
+      'Expand vocabulary with everyday objects and actions',
+      'Use simple present tense sentences naturally',
+      'Ask and answer basic questions with confidence',
+      'Develop reading through guided graded sentences',
+    ],
+    students: 16, tag: 'Beginner',
+  },
+  {
+    id: 'gogo-3', series: 'Gogo Loves English', title: 'Gogo Loves English 3',
+    level: 'Level 3', category: 'kids',
+    color: { from: '#7c3aed', to: '#6d28d9', badge: '#f5f3ff', text: '#7c3aed' },
+    cover: { emoji: '🚀', pattern: 'radial-gradient(ellipse at 40% 60%, rgba(255,255,255,0.12) 0%, transparent 55%)' },
+    goals: [
+      'Master 200+ core vocabulary words in context',
+      'Use present continuous and simple past tenses',
+      'Read short paragraphs and illustrated stories',
+      'Write simple sentences and short descriptions',
+    ],
+    students: 14, tag: 'Elementary',
+  },
+  {
+    id: 'gogo-4', series: 'Gogo Loves English', title: 'Gogo Loves English 4',
+    level: 'Level 4', category: 'kids',
+    color: { from: '#db2777', to: '#be185d', badge: '#fdf2f8', text: '#db2777' },
+    cover: { emoji: '🌈', pattern: 'radial-gradient(ellipse at 60% 40%, rgba(255,255,255,0.12) 0%, transparent 55%)' },
+    goals: [
+      'Learn comparative and superlative adjectives',
+      'Expand to 350+ vocabulary words across topics',
+      'Read and understand short illustrated stories',
+      'Write structured sentences and short paragraphs',
+    ],
+    students: 13, tag: 'Pre-intermediate',
+  },
+  {
+    id: 'gogo-5', series: 'Gogo Loves English', title: 'Gogo Loves English 5',
+    level: 'Level 5', category: 'kids',
+    color: { from: '#0284c7', to: '#0369a1', badge: '#eff6ff', text: '#0284c7' },
+    cover: { emoji: '✨', pattern: 'radial-gradient(ellipse at 30% 70%, rgba(255,255,255,0.12) 0%, transparent 55%)' },
+    goals: [
+      'Use complex sentence structures with confidence',
+      'Master future and past tenses in authentic context',
+      'Develop reading fluency with longer graded texts',
+      'Express opinions, feelings, and ideas in writing',
+    ],
+    students: 11, tag: 'Intermediate',
+  },
+  {
+    id: 'gogo-6', series: 'Gogo Loves English', title: 'Gogo Loves English 6',
+    level: 'Level 6', category: 'kids',
+    color: { from: '#059669', to: '#047857', badge: '#f0fdf4', text: '#059669' },
+    cover: { emoji: '🏆', pattern: 'radial-gradient(ellipse at 70% 70%, rgba(255,255,255,0.12) 0%, transparent 55%)' },
+    goals: [
+      'Communicate in a wide range of real-life situations',
+      'Consolidate all grammar from Gogo levels 1–5',
+      'Read and interpret extended texts independently',
+      'Write with accuracy, variety, and creativity',
+    ],
+    students: 10, tag: 'Upper-intermediate',
+  },
+
+  /* ── Teens & Adults — American Speakout ── */
+  {
+    id: 'speakout-elem', series: 'American Speakout', title: 'Speakout Elementary',
+    level: 'Elementary', category: 'teens',
+    color: { from: '#1d4ed8', to: '#1e40af', badge: '#eff6ff', text: '#1d4ed8' },
+    cover: { emoji: '🗣', pattern: 'radial-gradient(ellipse at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%)' },
+    goals: [
+      'Communicate basic needs and personal information',
+      'Master present/past tenses and key grammar structures',
+      'Build survival vocabulary for everyday English life',
+      'Develop real-world listening with BBC video content',
+    ],
+    students: 8, tag: 'A1–A2',
+  },
+  {
+    id: 'speakout-pre', series: 'American Speakout', title: 'Speakout Pre-Intermediate',
+    level: 'Pre-Intermediate', category: 'teens',
+    color: { from: '#4338ca', to: '#3730a3', badge: '#eef2ff', text: '#4338ca' },
+    cover: { emoji: '💬', pattern: 'radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)' },
+    goals: [
+      'Talk about experiences using present perfect tense',
+      'Express opinions and discuss familiar topics fluently',
+      'Read and understand authentic texts with confidence',
+      'Use BBC real English for practical communication',
+    ],
+    students: 9, tag: 'A2–B1',
+  },
+  {
+    id: 'speakout-int', series: 'American Speakout', title: 'Speakout Intermediate',
+    level: 'Intermediate', category: 'teens',
+    color: { from: '#6366f1', to: '#4f46e5', badge: '#eef2ff', text: '#6366f1' },
+    cover: { emoji: '🎯', pattern: 'radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)' },
+    goals: [
+      'Discuss complex topics with confidence and accuracy',
+      'Master conditionals, modals, and passive voice',
+      'Listen to and comprehend natural-speed English speech',
+      'Write formal and informal texts effectively',
+    ],
+    students: 7, tag: 'B1–B2',
+  },
+  {
+    id: 'speakout-upper', series: 'American Speakout', title: 'Speakout Upper-Intermediate',
+    level: 'Upper-Intermediate', category: 'teens',
+    color: { from: '#7c3aed', to: '#6d28d9', badge: '#f5f3ff', text: '#7c3aed' },
+    cover: { emoji: '📡', pattern: 'radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)' },
+    goals: [
+      'Express nuanced ideas in professional contexts',
+      'Master advanced grammar: inversion and cleft sentences',
+      'Engage with authentic BBC documentary content',
+      'Write cohesive essays and professional communications',
+    ],
+    students: 6, tag: 'B2–C1',
+  },
+  {
+    id: 'speakout-adv', series: 'American Speakout', title: 'Speakout Advanced',
+    level: 'Advanced', category: 'teens',
+    color: { from: '#312e81', to: '#1e1b4b', badge: '#eef2ff', text: '#4338ca' },
+    cover: { emoji: '🎓', pattern: 'radial-gradient(ellipse at 70% 80%, rgba(255,255,255,0.1) 0%, transparent 50%)' },
+    goals: [
+      'Achieve near-native fluency and idiomatic expression',
+      'Discuss abstract and academic topics with precision',
+      'Analyse and evaluate complex BBC documentary content',
+      'Write at a full academic and professional standard',
+    ],
+    students: 5, tag: 'C1–C2',
+  },
+]
+
+const CAT_CONFIG = {
+  phonics: { label: 'Pre-Diploma Phonics', emoji: '🔤', color: '#dc2626', bg: 'rgba(220,38,38,0.06)', border: 'rgba(220,38,38,0.15)' },
+  kids:    { label: 'Kids English',        emoji: '🐸', color: '#16a34a', bg: 'rgba(22,163,74,0.06)',  border: 'rgba(22,163,74,0.15)' },
+  teens:   { label: 'Teens & Adults',      emoji: '🎓', color: '#6366f1', bg: 'rgba(99,102,241,0.06)', border: 'rgba(99,102,241,0.15)' },
+}
+
+/* ─────────────────────────────────────────────────── */
+/*  Book Cover Card                                     */
+/* ─────────────────────────────────────────────────── */
+
+function CourseCard({ course }: { course: Course }) {
+  const [flipped, setFlipped] = useState(false)
+  const c = course.color
+
+  return (
+    <motion.div
+      layout
+      whileHover={{ y: -4 }}
+      className="rounded-2xl overflow-hidden cursor-pointer select-none"
+      style={{
+        background: 'white',
+        border: `1px solid ${c.from}22`,
+        boxShadow: `0 4px 20px rgba(0,0,0,0.07), 0 0 0 1px ${c.from}10`,
+        transition: 'box-shadow 0.2s',
+      }}
+      onMouseEnter={e => (e.currentTarget as HTMLElement).style.boxShadow = `0 12px 32px ${c.from}22, 0 0 0 1px ${c.from}20`}
+      onMouseLeave={e => (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 20px rgba(0,0,0,0.07), 0 0 0 1px ${c.from}10`}
+      onClick={() => setFlipped(f => !f)}>
+
+      {/* ── Book Cover ── */}
+      <div className="relative h-44 flex flex-col items-center justify-center overflow-hidden"
+        style={{ background: `linear-gradient(145deg, ${c.from} 0%, ${c.to} 100%)` }}>
+
+        {/* Pattern overlay */}
+        <div className="absolute inset-0 opacity-60" style={{ background: course.cover.pattern }} />
+
+        {/* Spine accent */}
+        <div className="absolute left-0 top-0 bottom-0 w-2.5 opacity-30"
+          style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.3), transparent)' }} />
+
+        {/* Halftone dots overlay */}
+        <div className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)',
+            backgroundSize: '12px 12px',
+          }} />
+
+        {/* Top row */}
+        <div className="absolute top-3 left-4 right-4 flex items-center justify-between">
+          <span className="text-[9px] font-black uppercase tracking-[0.15em] text-white/70">
+            {course.series}
+          </span>
+          <span className="text-[8px] font-bold px-2 py-0.5 rounded-full"
+            style={{ background: 'rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.9)', border: '1px solid rgba(255,255,255,0.15)' }}>
+            {course.tag}
+          </span>
+        </div>
+
+        {/* Central emoji icon */}
+        <div className="relative z-10 flex flex-col items-center gap-2">
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-xl"
+            style={{ background: 'rgba(255,255,255,0.18)', border: '1.5px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(8px)' }}>
+            {course.cover.emoji}
+          </div>
+        </div>
+
+        {/* Bottom title bar */}
+        <div className="absolute bottom-0 left-0 right-0 px-4 py-3"
+          style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.45), transparent)' }}>
+          <p className="text-white font-black text-sm leading-tight drop-shadow">{course.title}</p>
+          <p className="text-white/60 text-[9px] mt-0.5">{course.level}</p>
+        </div>
+
+        {/* Student count badge */}
+        <div className="absolute top-3 left-4">
+          {/* overridden above — level pill instead */}
+        </div>
+      </div>
+
+      {/* ── Goals section ── */}
+      <div className="px-4 py-3.5 space-y-2">
+        <p className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: c.from }}>
+          📌 Top Learning Goals
+        </p>
+        {course.goals.map((goal, i) => (
+          <div key={i} className="flex items-start gap-2">
+            <div className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black flex-shrink-0 mt-0.5"
+              style={{ background: `${c.from}14`, color: c.from }}>
+              {i + 1}
+            </div>
+            <p className="text-[10px] text-gray-600 leading-snug">{goal}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Footer ── */}
+      <div className="px-4 pb-3.5 flex items-center justify-between">
+        <span className="text-[9px] text-gray-400 flex items-center gap-1">
+          <span>👥</span> {course.students} students enrolled
+        </span>
+        <button className="text-[9px] font-bold px-3 py-1.5 rounded-full transition"
+          style={{ background: `${c.from}12`, color: c.from, border: `1px solid ${c.from}20` }}
+          onClick={e => e.stopPropagation()}>
+          View Course →
+        </button>
+      </div>
+    </motion.div>
+  )
+}
+
+/* ─────────────────────────────────────────────────── */
+/*  Courses Section                                     */
+/* ─────────────────────────────────────────────────── */
+
+function CoursesSection() {
+  const [activeCategory, setActiveCategory] = useState<'all' | 'phonics' | 'kids' | 'teens'>('all')
+
+  const filtered = activeCategory === 'all' ? COURSES : COURSES.filter(c => c.category === activeCategory)
+  const grouped = {
+    phonics: filtered.filter(c => c.category === 'phonics'),
+    kids:    filtered.filter(c => c.category === 'kids'),
+    teens:   filtered.filter(c => c.category === 'teens'),
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Section header */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
+            📚 Our Courses
+          </h3>
+          <p className="text-xs text-gray-400 mt-0.5">
+            {COURSES.length} books across 3 programmes · {COURSES.reduce((a, c) => a + (c.students || 0), 0)} students enrolled
+          </p>
+        </div>
+        {/* Category filter pills */}
+        <div className="flex gap-1.5 flex-wrap">
+          {([
+            { id: 'all', label: 'All Courses', emoji: '📖' },
+            { id: 'phonics', label: 'Phonics', emoji: '🔤' },
+            { id: 'kids', label: 'Kids', emoji: '🐸' },
+            { id: 'teens', label: 'Teens & Adults', emoji: '🎓' },
+          ] as const).map(f => (
+            <button key={f.id} onClick={() => setActiveCategory(f.id)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition"
+              style={activeCategory === f.id ? {
+                background: 'linear-gradient(135deg,#6366f1,#7c3aed)',
+                color: '#fff', boxShadow: '0 2px 10px rgba(99,102,241,0.3)',
+              } : {
+                background: '#f3f4f6', color: '#6b7280',
+              }}>
+              <span>{f.emoji}</span>{f.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Render each category group */}
+      {(['phonics', 'kids', 'teens'] as const).map(cat => {
+        const books = grouped[cat]
+        if (!books.length) return null
+        const cfg = CAT_CONFIG[cat]
+        return (
+          <div key={cat}>
+            {/* Category header */}
+            <div className="flex items-center gap-3 mb-4 pb-2"
+              style={{ borderBottom: `1.5px solid ${cfg.border}` }}>
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base"
+                style={{ background: cfg.bg, border: `1px solid ${cfg.border}` }}>
+                {cfg.emoji}
+              </div>
+              <div>
+                <h4 className="text-sm font-black" style={{ color: cfg.color }}>{cfg.label}</h4>
+                <p className="text-[10px] text-gray-400">{books.length} {books.length === 1 ? 'book' : 'books'}</p>
+              </div>
+              <div className="ml-auto h-px flex-1 max-w-xs" style={{ background: `linear-gradient(to right, ${cfg.border}, transparent)` }} />
+            </div>
+
+            {/* Cards grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+              {books.map((course, i) => (
+                <motion.div key={course.id}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.06, duration: 0.35 }}>
+                  <CourseCard course={course} />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────────────── */
+/*  Existing helper components                          */
+/* ─────────────────────────────────────────────────── */
 
 const STAT_COLORS = [
   { from: '#6366f1', to: '#7c3aed', glow: 'rgba(99,102,241,0.20)' },
@@ -8,41 +414,30 @@ const STAT_COLORS = [
   { from: '#059669', to: '#047857', glow: 'rgba(5,150,105,0.20)' },
 ]
 
-interface StatCardProps {
-  label: string; value: string; icon: string; idx: number; sub?: string
-}
-
-function StatCard({ label, value, icon, idx, sub }: StatCardProps) {
+function StatCard({ label, value, icon, idx, sub }: { label: string; value: string; icon: string; idx: number; sub?: string }) {
   const c = STAT_COLORS[idx % STAT_COLORS.length]
   return (
     <div className="rounded-2xl p-5 relative overflow-hidden transition-all duration-200 hover:-translate-y-1 cursor-default"
-      style={{
-        background: 'white',
-        border: '1px solid rgba(230,235,255,0.9)',
-        boxShadow: `0 2px 12px rgba(8,15,34,0.06), 0 0 0 1px rgba(230,235,255,0.5)`,
-      }}
+      style={{ background: 'white', border: '1px solid rgba(230,235,255,0.9)', boxShadow: '0 2px 12px rgba(8,15,34,0.06)' }}
       onMouseEnter={e => {
         const el = e.currentTarget as HTMLElement
-        el.style.boxShadow = `0 8px 28px ${c.glow}, 0 2px 8px rgba(8,15,34,0.08)`
+        el.style.boxShadow = `0 8px 28px ${c.glow}`
         el.style.borderColor = c.from + '40'
       }}
       onMouseLeave={e => {
         const el = e.currentTarget as HTMLElement
-        el.style.boxShadow = `0 2px 12px rgba(8,15,34,0.06), 0 0 0 1px rgba(230,235,255,0.5)`
+        el.style.boxShadow = '0 2px 12px rgba(8,15,34,0.06)'
         el.style.borderColor = 'rgba(230,235,255,0.9)'
       }}>
-      {/* Gradient corner accent */}
       <div className="absolute top-0 right-0 w-16 h-16 rounded-bl-full opacity-10"
         style={{ background: `linear-gradient(135deg, ${c.from}, ${c.to})` }} />
       <div className="flex items-start justify-between mb-3">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm"
-          style={{ background: `linear-gradient(135deg, ${c.from}18, ${c.to}28)`, border: `1px solid ${c.from}25` }}>
+          style={{ background: `${c.from}18`, border: `1px solid ${c.from}25` }}>
           {icon}
         </div>
         <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full"
-          style={{ color: c.from, background: `${c.from}12` }}>
-          Live
-        </span>
+          style={{ color: c.from, background: `${c.from}12` }}>Live</span>
       </div>
       <p className="text-3xl font-black mb-0.5"
         style={{ background: `linear-gradient(135deg, ${c.from}, ${c.to})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
@@ -57,22 +452,9 @@ function StatCard({ label, value, icon, idx, sub }: StatCardProps) {
 function QuickActionBtn({ label, color }: { label: string; color: string }) {
   return (
     <button className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all hover:-translate-y-0.5"
-      style={{
-        background: `${color}10`,
-        border: `1px solid ${color}25`,
-        color: color,
-        boxShadow: `0 2px 8px ${color}10`,
-      }}
-      onMouseEnter={e => {
-        const el = e.currentTarget
-        el.style.background = `${color}20`
-        el.style.boxShadow = `0 4px 16px ${color}20`
-      }}
-      onMouseLeave={e => {
-        const el = e.currentTarget
-        el.style.background = `${color}10`
-        el.style.boxShadow = `0 2px 8px ${color}10`
-      }}>
+      style={{ background: `${color}10`, border: `1px solid ${color}25`, color, boxShadow: `0 2px 8px ${color}10` }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = `${color}20` }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = `${color}10` }}>
       {label}
     </button>
   )
@@ -89,58 +471,42 @@ function SectionHeader({ title, sub }: { title: string; sub?: string }) {
   )
 }
 
+/* ─────────────────────────────────────────────────── */
+/*  Dashboard page                                      */
+/* ─────────────────────────────────────────────────── */
+
 export function DashboardPage() {
   const { user } = useAuth()
 
   if (user?.role === 'admin' || user?.role === 'supervisor') {
     return (
       <div className="space-y-6 animate-fade-in">
-        {/* Hero header */}
+        {/* Hero */}
         <div className="rounded-2xl p-6 relative overflow-hidden"
-          style={{
-            background: 'linear-gradient(135deg, #080f22 0%, #131f40 50%, #1a2550 100%)',
-            border: '1px solid rgba(99,102,241,0.20)',
-            boxShadow: '0 8px 32px rgba(8,15,34,0.25)',
-          }}>
+          style={{ background: 'linear-gradient(135deg, #080f22 0%, #131f40 50%, #1a2550 100%)', border: '1px solid rgba(99,102,241,0.20)', boxShadow: '0 8px 32px rgba(8,15,34,0.25)' }}>
           <div className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: 'linear-gradient(rgba(99,102,241,1) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,1) 1px, transparent 1px)',
-              backgroundSize: '32px 32px',
-            }} />
+            style={{ backgroundImage: 'linear-gradient(rgba(99,102,241,1) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,1) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
           <div className="absolute top-0 right-0 w-64 h-full opacity-10 pointer-events-none"
             style={{ background: 'radial-gradient(ellipse at right, #6366f1, transparent)' }} />
           <div className="relative">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg"
-                style={{ background: 'linear-gradient(135deg, #c47d00, #f0a500)', color: '#060b18', boxShadow: '0 4px 16px rgba(240,165,0,0.30)' }}>
-                B
-              </div>
+                style={{ background: 'linear-gradient(135deg, #c47d00, #f0a500)', color: '#060b18', boxShadow: '0 4px 16px rgba(240,165,0,0.30)' }}>B</div>
               <div>
                 <p className="text-xs text-indigo-300/50 uppercase tracking-widest">Admin Control Panel</p>
                 <h2 className="text-xl font-bold text-white leading-tight">Welcome back, {user.firstName}</h2>
               </div>
             </div>
-            <p className="text-sm text-gray-400">
-              Britishce44 Online Digital School · Taiz, Yemen · All systems operational
-            </p>
+            <p className="text-sm text-gray-400">Britishce44 Online Digital School · Taiz, Yemen · All systems operational</p>
             <div className="flex items-center gap-3 mt-3">
-              <span className="flex items-center gap-1.5 text-[10px] text-emerald-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Platform Online
-              </span>
-              <span className="flex items-center gap-1.5 text-[10px] text-indigo-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                240 Classrooms Ready
-              </span>
-              <span className="flex items-center gap-1.5 text-[10px] text-amber-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                AI Systems Active
-              </span>
+              <span className="flex items-center gap-1.5 text-[10px] text-emerald-400"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />Platform Online</span>
+              <span className="flex items-center gap-1.5 text-[10px] text-indigo-400"><span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />240 Classrooms Ready</span>
+              <span className="flex items-center gap-1.5 text-[10px] text-amber-400"><span className="w-1.5 h-1.5 rounded-full bg-amber-400" />AI Systems Active</span>
             </div>
           </div>
         </div>
 
-        {/* Stats grid */}
+        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard label="Total Users" value="60+" icon="👥" idx={0} sub="Active accounts" />
           <StatCard label="Students" value="50" icon="🎓" idx={1} sub="Enrolled" />
@@ -150,25 +516,17 @@ export function DashboardPage() {
 
         {/* Quick actions + overview */}
         <div className="grid md:grid-cols-2 gap-4">
-          <div className="rounded-2xl p-5 bg-white border border-gray-100/80"
-            style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
+          <div className="rounded-2xl p-5 bg-white border border-gray-100/80" style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
             <SectionHeader title="⚡ Quick Actions" sub="Most-used admin tools" />
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label: '👥 Manage Users', color: '#6366f1' },
-                { label: '🚪 Classrooms', color: '#7c3aed' },
-                { label: '💬 CE4 Messenger', color: '#059669' },
-                { label: '📝 Exam System', color: '#f0a500' },
-                { label: '⭐ Teacher Eval', color: '#0891b2' },
-                { label: '⚙️ Settings', color: '#6b7280' },
-              ].map(b => (
-                <QuickActionBtn key={b.label} label={b.label} color={b.color} />
-              ))}
+                { label: '👥 Manage Users', color: '#6366f1' }, { label: '🚪 Classrooms', color: '#7c3aed' },
+                { label: '💬 CE4 Messenger', color: '#059669' }, { label: '📝 Exam System', color: '#f0a500' },
+                { label: '⭐ Teacher Eval', color: '#0891b2' }, { label: '⚙️ Settings', color: '#6b7280' },
+              ].map(b => <QuickActionBtn key={b.label} label={b.label} color={b.color} />)}
             </div>
           </div>
-
-          <div className="rounded-2xl p-5 bg-white border border-gray-100/80"
-            style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
+          <div className="rounded-2xl p-5 bg-white border border-gray-100/80" style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
             <SectionHeader title="📋 Platform Overview" sub="Real-time platform status" />
             <div className="space-y-2.5">
               {[
@@ -179,11 +537,9 @@ export function DashboardPage() {
                 { icon: '🛡️', label: 'Anti-Cheat', value: 'Active · Real-time', color: '#e11d48' },
                 { icon: '📊', label: 'Reports', value: 'Triple reports enabled', color: '#059669' },
               ].map(item => (
-                <div key={item.label} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 transition group">
+                <div key={item.label} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 transition">
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center text-sm shrink-0"
-                    style={{ background: `${item.color}12`, border: `1px solid ${item.color}20` }}>
-                    {item.icon}
-                  </div>
+                    style={{ background: `${item.color}12`, border: `1px solid ${item.color}20` }}>{item.icon}</div>
                   <span className="text-xs font-semibold text-gray-700 flex-1">{item.label}</span>
                   <span className="text-[10px] font-medium" style={{ color: item.color }}>{item.value}</span>
                 </div>
@@ -192,9 +548,13 @@ export function DashboardPage() {
           </div>
         </div>
 
+        {/* ── COURSES SECTION ── */}
+        <div className="rounded-2xl p-5 bg-white border border-gray-100/80" style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
+          <CoursesSection />
+        </div>
+
         {/* Recent activity */}
-        <div className="rounded-2xl p-5 bg-white border border-gray-100/80"
-          style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
+        <div className="rounded-2xl p-5 bg-white border border-gray-100/80" style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
           <SectionHeader title="🔔 Recent Activity" sub="Latest platform events" />
           <div className="space-y-2">
             {[
@@ -205,13 +565,8 @@ export function DashboardPage() {
               { icon: '📢', text: 'Marketing newsletter sent · 340 recipients', time: '2 hr ago', color: '#7c3aed' },
             ].map((a, i) => (
               <div key={i} className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-gray-50 transition">
-                <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0 mt-0.5"
-                  style={{ background: `${a.color}12` }}>
-                  {a.icon}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-gray-700">{a.text}</p>
-                </div>
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0 mt-0.5" style={{ background: `${a.color}12` }}>{a.icon}</div>
+                <p className="text-xs text-gray-700 flex-1">{a.text}</p>
                 <span className="text-[9px] text-gray-400 shrink-0">{a.time}</span>
               </div>
             ))}
@@ -246,10 +601,15 @@ export function DashboardPage() {
             ))}
           </div>
         </div>
+        {/* Courses for teacher */}
+        <div className="rounded-2xl p-5 bg-white border border-gray-100/80" style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
+          <CoursesSection />
+        </div>
       </div>
     )
   }
 
+  /* Student / Parent */
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="rounded-2xl p-6 relative overflow-hidden"
@@ -265,22 +625,9 @@ export function DashboardPage() {
         <StatCard label="Upcoming" value="3" icon="📅" idx={2} sub="This week" />
         <StatCard label="Grade" value="A+" icon="⭐" idx={3} />
       </div>
+      {/* Courses for student/parent */}
       <div className="rounded-2xl p-5 bg-white border border-gray-100/80" style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
-        <SectionHeader title="📚 My Courses" />
-        <div className="space-y-2">
-          {['English Grammar — Advanced', 'Reading & Writing — Intermediate', 'Conversation Practice — Beginner'].map((c, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50/50 transition cursor-pointer">
-              <div className="w-2 h-8 rounded-full" style={{ background: STAT_COLORS[i].from }} />
-              <span className="text-sm text-gray-700 font-medium">{c}</span>
-              <div className="ml-auto flex items-center gap-1">
-                <div className="w-20 h-1.5 rounded-full bg-gray-100 overflow-hidden">
-                  <div className="h-full rounded-full" style={{ width: `${[75, 50, 30][i]}%`, background: STAT_COLORS[i].from }} />
-                </div>
-                <span className="text-[9px] text-gray-400">{[75, 50, 30][i]}%</span>
-              </div>
-            </div>
-          ))}
-        </div>
+        <CoursesSection />
       </div>
     </div>
   )
