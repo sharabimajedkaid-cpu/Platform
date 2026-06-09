@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   FlatList,
@@ -11,6 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
+import { useNotifications } from "@/hooks/useNotifications";
 
 type ExamStatus = "live" | "upcoming" | "completed" | "draft";
 
@@ -50,10 +52,15 @@ const FILTERS: Array<{ key: string; label: string }> = [
   { key: "completed", label: "Done" },
 ];
 
-function ExamCard({ item }: { item: (typeof EXAMS)[0] }) {
+function ExamCard({ item, onStart, onRemind }: {
+  item: (typeof EXAMS)[0];
+  onStart: (exam: (typeof EXAMS)[0]) => void;
+  onRemind: (exam: (typeof EXAMS)[0]) => void;
+}) {
   const colors = useColors();
   const status = STATUS_CONFIG[item.status];
   const isLive = item.status === "live";
+  const isUpcoming = item.status === "upcoming";
   const isDone = item.status === "completed";
 
   return (
@@ -87,22 +94,33 @@ function ExamCard({ item }: { item: (typeof EXAMS)[0] }) {
           </Text>
         </View>
 
-        {isDone && item.score !== undefined && (
-          <View style={{ alignItems: "center", backgroundColor: item.score >= 80 ? "#05966922" : item.score >= 60 ? "#f0a50022" : "#e11d4822", borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8 }}>
-            <Text style={{ fontSize: 20, fontFamily: "Inter_700Bold", color: item.score >= 80 ? "#059669" : item.score >= 60 ? "#f0a500" : "#e11d48" }}>
-              {item.score}
-            </Text>
-            <Text style={{ fontSize: 9, fontFamily: "Inter_400Regular", color: colors.mutedForeground }}>SCORE</Text>
-          </View>
-        )}
-        {isLive && (
-          <Pressable
-            style={{ backgroundColor: "#059669", paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 }}
-            onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
-          >
-            <Text style={{ fontSize: 12, fontFamily: "Inter_700Bold", color: "#ffffff" }}>Start</Text>
-          </Pressable>
-        )}
+        <View style={{ alignItems: "flex-end", gap: 8 }}>
+          {isDone && item.score !== undefined && (
+            <View style={{ alignItems: "center", backgroundColor: item.score >= 80 ? "#05966922" : item.score >= 60 ? "#f0a50022" : "#e11d4822", borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8 }}>
+              <Text style={{ fontSize: 20, fontFamily: "Inter_700Bold", color: item.score >= 80 ? "#059669" : item.score >= 60 ? "#f0a500" : "#e11d48" }}>
+                {item.score}
+              </Text>
+              <Text style={{ fontSize: 9, fontFamily: "Inter_400Regular", color: colors.mutedForeground }}>SCORE</Text>
+            </View>
+          )}
+          {isLive && (
+            <Pressable
+              style={{ backgroundColor: "#059669", paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 }}
+              onPress={() => onStart(item)}
+            >
+              <Text style={{ fontSize: 12, fontFamily: "Inter_700Bold", color: "#ffffff" }}>Start</Text>
+            </Pressable>
+          )}
+          {isUpcoming && (
+            <Pressable
+              style={{ backgroundColor: colors.surface2, paddingHorizontal: 10, paddingVertical: 8, borderRadius: 8, flexDirection: "row", alignItems: "center", gap: 5, borderWidth: 1, borderColor: colors.border }}
+              onPress={() => onRemind(item)}
+            >
+              <Ionicons name="notifications-outline" size={13} color={colors.mutedForeground} />
+              <Text style={{ fontSize: 11, fontFamily: "Inter_600SemiBold", color: colors.mutedForeground }}>Remind</Text>
+            </Pressable>
+          )}
+        </View>
       </View>
 
       <View style={{ flexDirection: "row", gap: 16, marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.border }}>
@@ -127,10 +145,36 @@ export default function ExamsScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const [activeFilter, setActiveFilter] = useState("all");
+  const [remindedIds, setRemindedIds] = useState<Set<string>>(new Set());
+  const { scheduleExamReminder, sendImmediateNotification, permissionStatus, requestPermissions } = useNotifications();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
 
   const filtered = activeFilter === "all" ? EXAMS : EXAMS.filter(e => e.status === activeFilter);
   const liveCount = EXAMS.filter(e => e.status === "live").length;
+
+  async function handleStart(exam: (typeof EXAMS)[0]) {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await sendImmediateNotification(
+      "Exam Started 📝",
+      `You've started ${exam.title}. Good luck!`,
+      { type: "exam", id: exam.id }
+    );
+    router.push("/(tabs)/academic-room");
+  }
+
+  async function handleRemind(exam: (typeof EXAMS)[0]) {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    if (permissionStatus !== "granted") {
+      const ok = await requestPermissions();
+      if (!ok) return;
+    }
+
+    const notifId = await scheduleExamReminder(exam.id, exam.title, 15);
+    if (notifId) {
+      setRemindedIds(prev => new Set([...prev, exam.id]));
+    }
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -169,10 +213,31 @@ export default function ExamsScreen() {
         </View>
       </View>
 
+      {/* Notification permission prompt */}
+      {permissionStatus === "undetermined" && (
+        <Pressable
+          onPress={requestPermissions}
+          style={{ margin: 16, marginBottom: 0, backgroundColor: colors.primary + "15", borderRadius: 10, padding: 12, flexDirection: "row", alignItems: "center", gap: 10, borderWidth: 1, borderColor: colors.primary + "33" }}
+        >
+          <Ionicons name="notifications-outline" size={20} color={colors.primary} />
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 13, fontFamily: "Inter_600SemiBold", color: colors.foreground }}>Enable Exam Reminders</Text>
+            <Text style={{ fontSize: 11, fontFamily: "Inter_400Regular", color: colors.mutedForeground, marginTop: 1 }}>Get notified before exams start</Text>
+          </View>
+          <Text style={{ fontSize: 12, fontFamily: "Inter_600SemiBold", color: colors.primary }}>Enable</Text>
+        </Pressable>
+      )}
+
       <FlatList
         data={filtered}
         keyExtractor={item => item.id}
-        renderItem={({ item }) => <ExamCard item={item} />}
+        renderItem={({ item }) => (
+          <ExamCard
+            item={item}
+            onStart={handleStart}
+            onRemind={handleRemind}
+          />
+        )}
         contentContainerStyle={{ padding: 16, paddingBottom: Platform.OS === "web" ? 100 : insets.bottom + 100 }}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"

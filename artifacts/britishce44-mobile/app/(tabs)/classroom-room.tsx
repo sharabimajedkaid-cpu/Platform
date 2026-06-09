@@ -1,12 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import * as Linking from "expo-linking";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import * as WebBrowser from "expo-web-browser";
+import React, { useEffect, useState } from "react";
 import { Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
+import { useNotifications } from "@/hooks/useNotifications";
+
+const REPL_DOMAIN = process.env.EXPO_PUBLIC_DOMAIN ?? "";
 
 const CLASSROOM_DATA: Record<string, { name: string; teacher: string; subject: string; level: string; students: number }> = {
   "1": { name: "English Foundation", teacher: "Mr. Ahmed Al-Shami", subject: "Foundation A1", level: "A1", students: 18 },
@@ -39,6 +44,7 @@ export default function ClassroomRoomScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const params = useLocalSearchParams<{ id?: string; name?: string }>();
+  const { sendImmediateNotification, permissionStatus } = useNotifications();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
 
   const roomId = params.id ?? "1";
@@ -46,9 +52,27 @@ export default function ClassroomRoomScreen() {
   const displayName = params.name ?? room.name;
 
   const [tab, setTab] = useState<Tab>("video");
-  const [micOn, setMicOn] = useState(false);
-  const [camOn, setCamOn] = useState(false);
   const [handRaised, setHandRaised] = useState(false);
+
+  useEffect(() => {
+    if (permissionStatus === "granted") {
+      sendImmediateNotification(
+        "In classroom companion view 🎓",
+        `Chat & participants for ${displayName}. Tap Join to open video.`,
+        { type: "classroom", id: roomId, name: displayName }
+      ).catch(() => {});
+    }
+  }, []);
+
+  async function openInBrowser() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    const webUrl = REPL_DOMAIN
+      ? `https://${REPL_DOMAIN}/`
+      : "https://britishce44.replit.app/";
+    await WebBrowser.openBrowserAsync(webUrl, {
+      presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+    });
+  }
 
   const leave = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
@@ -75,6 +99,7 @@ export default function ClassroomRoomScreen() {
             </Text>
           </View>
         </View>
+
         <Pressable
           onPress={leave}
           style={{ backgroundColor: "#e11d48", paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, flexDirection: "row", alignItems: "center", gap: 6 }}
@@ -97,27 +122,79 @@ export default function ClassroomRoomScreen() {
       {/* Content */}
       <View style={{ flex: 1 }}>
         {tab === "video" && (
-          <View style={{ flex: 1, padding: 12 }}>
-            {/* Main video area */}
-            <View style={{ flex: 1, borderRadius: 14, backgroundColor: "#0d1f3c", alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: colors.primary + "44", marginBottom: 10 }}>
-              <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: "#6366f122", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
-                <Text style={{ fontSize: 28, fontFamily: "Inter_700Bold", color: "#6366f1" }}>FH</Text>
+          <View style={{ flex: 1, padding: 16, gap: 14 }}>
+            {/* Join in browser — primary action */}
+            <Pressable
+              onPress={openInBrowser}
+              style={{ backgroundColor: colors.primary, borderRadius: 14, padding: 20, alignItems: "center", gap: 10 }}
+            >
+              <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: "rgba(255,255,255,0.2)", alignItems: "center", justifyContent: "center" }}>
+                <Ionicons name="videocam" size={28} color="#ffffff" />
               </View>
-              <Text style={{ fontSize: 16, fontFamily: "Inter_600SemiBold", color: "#ffffff" }}>Ms. Fatima Hassan</Text>
-              <Text style={{ fontSize: 12, fontFamily: "Inter_400Regular", color: "#6b7fa3", marginTop: 4 }}>Teacher · Camera On</Text>
-              <View style={{ position: "absolute", top: 10, right: 10, backgroundColor: "#05966922", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: "#059669" }} />
-                <Text style={{ fontSize: 10, fontFamily: "Inter_600SemiBold", color: "#059669" }}>LIVE</Text>
+              <Text style={{ fontSize: 17, fontFamily: "Inter_700Bold", color: "#ffffff" }}>Join Video Session</Text>
+              <Text style={{ fontSize: 13, fontFamily: "Inter_400Regular", color: "rgba(255,255,255,0.75)", textAlign: "center" }}>
+                Opens the full WebRTC classroom in your browser — video, audio, whiteboard, and all controls.
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "rgba(255,255,255,0.15)", paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20 }}>
+                <Ionicons name="open-outline" size={14} color="#ffffff" />
+                <Text style={{ fontSize: 12, fontFamily: "Inter_600SemiBold", color: "#ffffff" }}>Open in Browser</Text>
+              </View>
+            </Pressable>
+
+            {/* Session info */}
+            <View style={{ backgroundColor: "#0d1f3c", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "#1a2740", gap: 12 }}>
+              <Text style={{ fontSize: 13, fontFamily: "Inter_600SemiBold", color: "#e2e8f0" }}>Session Info</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: "#6366f122", alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ fontSize: 13, fontFamily: "Inter_700Bold", color: "#6366f1" }}>
+                    {room.teacher.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                  </Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 14, fontFamily: "Inter_500Medium", color: "#e2e8f0" }}>{room.teacher}</Text>
+                  <Text style={{ fontSize: 11, fontFamily: "Inter_400Regular", color: "#6b7fa3" }}>{room.subject} · {room.level}</Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: "row", gap: 16 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                  <Ionicons name="people-outline" size={13} color="#6b7fa3" />
+                  <Text style={{ fontSize: 12, fontFamily: "Inter_400Regular", color: "#6b7fa3" }}>{room.students} students</Text>
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                  <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: "#059669" }} />
+                  <Text style={{ fontSize: 12, fontFamily: "Inter_400Regular", color: "#059669" }}>Live now</Text>
+                </View>
               </View>
             </View>
-            {/* Participant thumbnails */}
-            <View style={{ flexDirection: "row", gap: 8 }}>
-              {PARTICIPANTS.slice(1, 5).map(p => (
-                <View key={p.id} style={{ flex: 1, aspectRatio: 1, borderRadius: 10, backgroundColor: "#0d1f3c", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#1a2740" }}>
-                  <Text style={{ fontSize: 14, fontFamily: "Inter_700Bold", color: "#6366f1" }}>{p.name.split(" ").map(n => n[0]).join("").slice(0, 2)}</Text>
-                  {!p.audio && <Ionicons name="mic-off" size={10} color="#e11d48" style={{ marginTop: 3 }} />}
-                </View>
-              ))}
+
+            {/* Quick actions */}
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <Pressable
+                onPress={() => setTab("chat")}
+                style={{ flex: 1, backgroundColor: "#0d1f3c", borderRadius: 12, padding: 14, alignItems: "center", gap: 6, borderWidth: 1, borderColor: "#1a2740" }}
+              >
+                <Ionicons name="chatbubbles-outline" size={22} color="#6366f1" />
+                <Text style={{ fontSize: 12, fontFamily: "Inter_600SemiBold", color: "#e2e8f0" }}>Chat</Text>
+                <Text style={{ fontSize: 10, fontFamily: "Inter_400Regular", color: "#6b7fa3" }}>{CHAT_MSGS.length} messages</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setTab("participants")}
+                style={{ flex: 1, backgroundColor: "#0d1f3c", borderRadius: 12, padding: 14, alignItems: "center", gap: 6, borderWidth: 1, borderColor: "#1a2740" }}
+              >
+                <Ionicons name="people-outline" size={22} color="#059669" />
+                <Text style={{ fontSize: 12, fontFamily: "Inter_600SemiBold", color: "#e2e8f0" }}>Participants</Text>
+                <Text style={{ fontSize: 10, fontFamily: "Inter_400Regular", color: "#6b7fa3" }}>{PARTICIPANTS.length} online</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => { setHandRaised(p => !p); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); }}
+                style={{ flex: 1, backgroundColor: handRaised ? "#f0a50022" : "#0d1f3c", borderRadius: 12, padding: 14, alignItems: "center", gap: 6, borderWidth: 1, borderColor: handRaised ? "#f0a50044" : "#1a2740" }}
+              >
+                <Ionicons name={handRaised ? "hand-left" : "hand-left-outline"} size={22} color={handRaised ? "#f0a500" : "#6b7fa3"} />
+                <Text style={{ fontSize: 12, fontFamily: "Inter_600SemiBold", color: handRaised ? "#f0a500" : "#e2e8f0" }}>
+                  {handRaised ? "Raised!" : "Raise Hand"}
+                </Text>
+                <Text style={{ fontSize: 10, fontFamily: "Inter_400Regular", color: "#6b7fa3" }}>Notify teacher</Text>
+              </Pressable>
             </View>
           </View>
         )}
@@ -166,30 +243,47 @@ export default function ClassroomRoomScreen() {
             </View>
             <Text style={{ fontSize: 18, fontFamily: "Inter_700Bold", color: "#e2e8f0", textAlign: "center" }}>Interactive Whiteboard</Text>
             <Text style={{ fontSize: 14, fontFamily: "Inter_400Regular", color: "#6b7fa3", textAlign: "center", lineHeight: 22 }}>
-              The live collaborative whiteboard is available in the full desktop experience via fabric.js. View-only mode in the mobile app.
+              The live collaborative whiteboard is available in the full desktop experience via fabric.js. Open the classroom in your browser to access it.
             </Text>
-            <Pressable style={{ backgroundColor: "#6366f1", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12 }} onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}>
-              <Text style={{ fontSize: 14, fontFamily: "Inter_700Bold", color: "#ffffff" }}>View Board</Text>
+            <Pressable
+              style={{ backgroundColor: "#6366f1", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12 }}
+              onPress={openInBrowser}
+            >
+              <Text style={{ fontSize: 14, fontFamily: "Inter_700Bold", color: "#ffffff" }}>Open in Browser</Text>
             </Pressable>
           </View>
         )}
       </View>
 
-      {/* Controls */}
+      {/* Bottom action bar */}
       <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center", paddingVertical: 12, paddingBottom: Platform.OS === "web" ? 20 : insets.bottom + 12, backgroundColor: "#0a1628", borderTopWidth: 1, borderTopColor: "#1a2740" }}>
-        {[
-          { icon: micOn ? "mic" : "mic-off", label: micOn ? "Mute" : "Unmute", active: micOn, action: () => { setMicOn(!micOn); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } },
-          { icon: camOn ? "videocam" : "videocam-off", label: camOn ? "Stop Video" : "Start Video", active: camOn, action: () => { setCamOn(!camOn); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } },
-          { icon: handRaised ? "hand-left" : "hand-left-outline", label: "Raise Hand", active: handRaised, action: () => { setHandRaised(!handRaised); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); } },
-          { icon: "chatbubbles-outline", label: "Chat", active: false, action: () => setTab("chat") },
-        ].map(ctrl => (
-          <Pressable key={ctrl.label} onPress={ctrl.action} style={{ alignItems: "center", gap: 5 }}>
-            <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: ctrl.active ? colors.primary + "33" : "#1a2740", alignItems: "center", justifyContent: "center" }}>
-              <Ionicons name={ctrl.icon as any} size={20} color={ctrl.active ? colors.primary : "#6b7fa3"} />
-            </View>
-            <Text style={{ fontSize: 10, fontFamily: "Inter_400Regular", color: "#6b7fa3" }}>{ctrl.label}</Text>
-          </Pressable>
-        ))}
+        <Pressable onPress={openInBrowser} style={{ alignItems: "center", gap: 5 }}>
+          <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: colors.primary + "33", alignItems: "center", justifyContent: "center" }}>
+            <Ionicons name="videocam" size={20} color={colors.primary} />
+          </View>
+          <Text style={{ fontSize: 10, fontFamily: "Inter_400Regular", color: colors.primary }}>Join Video</Text>
+        </Pressable>
+
+        <Pressable onPress={() => setTab("chat")} style={{ alignItems: "center", gap: 5 }}>
+          <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: "#1a2740", alignItems: "center", justifyContent: "center" }}>
+            <Ionicons name="chatbubbles-outline" size={20} color="#6b7fa3" />
+          </View>
+          <Text style={{ fontSize: 10, fontFamily: "Inter_400Regular", color: "#6b7fa3" }}>Chat</Text>
+        </Pressable>
+
+        <Pressable onPress={() => setTab("participants")} style={{ alignItems: "center", gap: 5 }}>
+          <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: "#1a2740", alignItems: "center", justifyContent: "center" }}>
+            <Ionicons name="people-outline" size={20} color="#6b7fa3" />
+          </View>
+          <Text style={{ fontSize: 10, fontFamily: "Inter_400Regular", color: "#6b7fa3" }}>People</Text>
+        </Pressable>
+
+        <Pressable onPress={() => { setHandRaised(p => !p); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); }} style={{ alignItems: "center", gap: 5 }}>
+          <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: handRaised ? "#f0a50022" : "#1a2740", alignItems: "center", justifyContent: "center" }}>
+            <Ionicons name={handRaised ? "hand-left" : "hand-left-outline"} size={20} color={handRaised ? "#f0a500" : "#6b7fa3"} />
+          </View>
+          <Text style={{ fontSize: 10, fontFamily: "Inter_400Regular", color: handRaised ? "#f0a500" : "#6b7fa3" }}>Hand</Text>
+        </Pressable>
       </View>
     </View>
   );
