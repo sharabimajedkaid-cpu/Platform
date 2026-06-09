@@ -34,7 +34,7 @@ function PhotoMosaic() {
         <div key={src} className="absolute inset-0 transition-opacity duration-1000"
           style={{ opacity: i === currentSlide ? 1 : 0 }}>
           <img src={src} alt="" className="w-full h-full object-cover object-center"
-            style={{ filter: 'brightness(0.35) saturate(0.7)' }} />
+            style={{ filter: 'brightness(0.50) saturate(0.8)' }} />
         </div>
       ))}
 
@@ -52,19 +52,19 @@ function PhotoMosaic() {
         <img src={BG_PHOTOS[6]} alt="" className="w-full h-full object-cover" />
       </div>
 
-      {/* Dark gradient overlays */}
+      {/* Royal blue gradient overlay */}
       <div className="absolute inset-0"
-        style={{ background: 'linear-gradient(160deg, rgba(6,11,24,0.75) 0%, rgba(8,15,34,0.65) 40%, rgba(13,20,45,0.80) 100%)' }} />
-      {/* Indigo/gold glow accents */}
+        style={{ background: 'linear-gradient(160deg, rgba(8,16,50,0.62) 0%, rgba(11,26,80,0.55) 40%, rgba(16,32,90,0.68) 100%)' }} />
+      {/* Royal blue / gold glow accents */}
       <div className="absolute top-1/4 left-1/4 w-80 h-80 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.15), transparent)', filter: 'blur(60px)' }} />
+        style={{ background: 'radial-gradient(circle, rgba(27,62,166,0.22), transparent)', filter: 'blur(60px)' }} />
       <div className="absolute bottom-1/4 right-1/3 w-60 h-60 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(196,125,0,0.15), transparent)', filter: 'blur(60px)' }} />
+        style={{ background: 'radial-gradient(circle, rgba(200,148,10,0.20), transparent)', filter: 'blur(60px)' }} />
 
       {/* Subtle grid */}
-      <div className="absolute inset-0 opacity-[0.025] pointer-events-none"
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
-          backgroundImage: 'linear-gradient(rgba(99,102,241,1) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,1) 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(rgba(37,99,235,1) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,1) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
         }} />
 
@@ -76,7 +76,7 @@ function PhotoMosaic() {
             style={{
               width: i === currentSlide ? '20px' : '6px',
               height: '6px',
-              background: i === currentSlide ? '#f0a500' : 'rgba(255,255,255,0.3)',
+              background: i === currentSlide ? '#c8940a' : 'rgba(255,255,255,0.3)',
             }} />
         ))}
       </div>
@@ -137,7 +137,7 @@ export function LoginPage() {
             { icon: '🤖', ar: 'تقنية الذكاء الاصطناعي', en: 'AI-powered platform' },
           ].map((f, i) => (
             <div key={i} className="flex items-center gap-3 p-3 rounded-xl"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', backdropFilter: 'blur(8px)' }}>
+              style={{ background: 'rgba(27,62,166,0.18)', border: '1px solid rgba(37,99,235,0.25)', backdropFilter: 'blur(8px)' }}>
               <span className="text-xl">{f.icon}</span>
               <div>
                 <p className="text-sm font-bold text-white leading-tight" style={{ fontFamily: 'Cairo, sans-serif', direction: 'rtl' }}>{f.ar}</p>
@@ -152,12 +152,12 @@ export function LoginPage() {
       <div className="relative z-10 w-full max-w-sm lg:ml-auto lg:mr-16 animate-slide-up">
         <div className="rounded-2xl overflow-hidden"
           style={{
-            background: 'rgba(8, 14, 35, 0.88)',
+            background: 'rgba(14,30,80,0.82)',
             backdropFilter: 'blur(32px)',
-            border: '1px solid rgba(99,102,241,0.22)',
-            boxShadow: '0 32px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07)',
+            border: '1px solid rgba(37,99,235,0.28)',
+            boxShadow: '0 32px 80px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08)',
           }}>
-          <div className="h-0.5 bg-gradient-to-r from-indigo-500 via-violet-500 to-amber-400" />
+          <div className="h-0.5 bg-gradient-to-r from-blue-500 via-violet-500 to-amber-400" />
 
           <div className="p-8">
             {/* Logo + title */}
@@ -165,11 +165,11 @@ export function LoginPage() {
               <div className="relative inline-block mb-4">
                 <img src="/center-logo.png" alt="Logo" className="w-20 h-20 object-contain mx-auto drop-shadow-xl rounded-xl lg:hidden" />
                 <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto shadow-xl lg:flex hidden"
-                  style={{ background: 'linear-gradient(135deg, #c47d00, #f0a500, #ffd166)', boxShadow: '0 8px 24px rgba(240,165,0,0.35)' }}>
-                  <span className="text-[#060b18] font-black text-xl">B44</span>
+                  style={{ background: 'linear-gradient(135deg, #8c6500, #c8940a, #e5b030)', boxShadow: '0 8px 24px rgba(200,148,10,0.40)' }}>
+                  <span className="text-[#07102a] font-black text-xl">B44</span>
                 </div>
                 <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2"
-                  style={{ borderColor: '#0d1430', boxShadow: '0 0 8px rgba(52,211,153,0.6)' }} />
+                  style={{ borderColor: '#0e1e50', boxShadow: '0 0 8px rgba(52,211,153,0.6)' }} />
               </div>
               <h1 className="text-xl font-black text-white tracking-tight" style={{ fontFamily: 'Cairo, sans-serif' }}>
                 المركز البريطاني الأول
@@ -184,27 +184,27 @@ export function LoginPage() {
                 <label className="block text-[10px] font-bold text-indigo-300/70 mb-1.5 uppercase tracking-widest">Email Address</label>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                   className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(99,102,241,0.25)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)' }}
-                  onFocus={e => e.target.style.borderColor = 'rgba(99,102,241,0.60)'}
-                  onBlur={e => e.target.style.borderColor = 'rgba(99,102,241,0.25)'}
+                  style={{ background: 'rgba(37,99,235,0.10)', border: '1px solid rgba(37,99,235,0.30)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)' }}
+                  onFocus={e => e.target.style.borderColor = 'rgba(200,148,10,0.70)'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(37,99,235,0.30)'}
                   placeholder="your@email.com" />
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-indigo-300/70 mb-1.5 uppercase tracking-widest">Password</label>
+                <label className="block text-[10px] font-bold text-blue-300/70 mb-1.5 uppercase tracking-widest">Password</label>
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)}
                   className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(99,102,241,0.25)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)' }}
-                  onFocus={e => e.target.style.borderColor = 'rgba(99,102,241,0.60)'}
-                  onBlur={e => e.target.style.borderColor = 'rgba(99,102,241,0.25)'}
+                  style={{ background: 'rgba(37,99,235,0.10)', border: '1px solid rgba(37,99,235,0.30)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)' }}
+                  onFocus={e => e.target.style.borderColor = 'rgba(200,148,10,0.70)'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(37,99,235,0.30)'}
                   placeholder="••••••••" />
               </div>
 
               <button type="submit" disabled={loading}
                 className="w-full py-3 rounded-xl font-bold text-sm transition-all mt-2"
                 style={{
-                  background: loading ? 'rgba(240,165,0,0.6)' : 'linear-gradient(135deg, #c47d00, #f0a500, #ffd166)',
-                  color: '#060b18',
-                  boxShadow: loading ? 'none' : '0 4px 20px rgba(240,165,0,0.30)',
+                  background: loading ? 'rgba(200,148,10,0.55)' : 'linear-gradient(135deg, #8c6500, #c8940a, #e5b030)',
+                  color: '#07102a',
+                  boxShadow: loading ? 'none' : '0 4px 20px rgba(200,148,10,0.35)',
                   fontFamily: 'Cairo, sans-serif',
                 }}>
                 {loading ? '⚙ جاري تسجيل الدخول…' : '→ تسجيل الدخول / Sign In'}
@@ -218,8 +218,8 @@ export function LoginPage() {
                 </button>
               </div>
 
-              <div className="mt-3 p-3 rounded-xl" style={{ background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.12)' }}>
-                <p className="text-[9px] text-indigo-400/70 text-center font-mono">
+              <div className="mt-3 p-3 rounded-xl" style={{ background: 'rgba(27,62,166,0.12)', border: '1px solid rgba(37,99,235,0.18)' }}>
+                <p className="text-[9px] text-blue-300/70 text-center font-mono">
                   Demo Admin: britishce44@gmail.com / admin123
                 </p>
                 <p className="text-[9px] text-gray-600 text-center font-mono mt-0.5">
@@ -273,8 +273,8 @@ function RegisterForm({ onBack, onRegistered }: { onBack: () => void; onRegister
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       <PhotoMosaic />
       <div className="relative z-10 w-full max-w-lg rounded-2xl overflow-hidden animate-slide-up"
-        style={{ background: 'rgba(8,14,35,0.88)', backdropFilter: 'blur(32px)', border: '1px solid rgba(99,102,241,0.18)', boxShadow: '0 32px 64px rgba(0,0,0,0.5)' }}>
-        <div className="h-0.5 bg-gradient-to-r from-indigo-500 via-violet-500 to-amber-400" />
+        style={{ background: 'rgba(14,30,80,0.82)', backdropFilter: 'blur(32px)', border: '1px solid rgba(37,99,235,0.25)', boxShadow: '0 32px 64px rgba(0,0,0,0.40)' }}>
+        <div className="h-0.5 bg-gradient-to-r from-blue-500 via-violet-500 to-amber-400" />
         <div className="p-6">
           <h2 className="text-lg font-bold text-white mb-5 text-center" style={{ fontFamily: 'Cairo, sans-serif' }}>
             🎓 تسجيل طالب / ولي أمر جديد
@@ -286,7 +286,7 @@ function RegisterForm({ onBack, onRegistered }: { onBack: () => void; onRegister
             <input type="password" placeholder="Password *" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} className={`${inputCls} col-span-1`} />
             <input type="password" placeholder="Confirm Password *" value={form.confirmPassword} onChange={e => setForm({ ...form, confirmPassword: e.target.value })} className={`${inputCls} col-span-1`} />
             <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}
-              className={`${inputCls} col-span-2 bg-[#0d1430]`}>
+              className={`${inputCls} col-span-2 bg-[#0e1e50]`}>
               <option value="student">Student / طالب</option>
               <option value="parent">Parent / ولي أمر</option>
             </select>
@@ -300,7 +300,7 @@ function RegisterForm({ onBack, onRegistered }: { onBack: () => void; onRegister
               </button>
               <button type="submit" disabled={loading}
                 className="flex-1 rounded-xl py-2.5 text-sm font-bold transition"
-                style={{ background: 'linear-gradient(135deg, #c47d00, #f0a500)', color: '#060b18', fontFamily: 'Cairo, sans-serif' }}>
+                style={{ background: 'linear-gradient(135deg, #8c6500, #c8940a)', color: '#07102a', fontFamily: 'Cairo, sans-serif' }}>
                 {loading ? '⚙ جاري التسجيل…' : '✅ تسجيل'}
               </button>
             </div>
