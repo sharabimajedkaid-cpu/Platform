@@ -66,37 +66,38 @@
 }
 
 /* ═══════════════════════════════════════════════════
-   Britishce44 — Futuristic Premium Theme
-   Space Navy · Electric Indigo · Vivid Gold
+   Britishce44 — Logo-matched Theme
+   Royal Blue · Deep Navy · Warm Amber Gold
    ═══════════════════════════════════════════════════ */
 :root {
-  /* ── Brand Core ── */
-  --navy: #080f22;
-  --royal-blue: #1a2e5c;
-  --gold: #f0a500;
-  --gold-light: #ffd166;
-  --gold-dark: #c47d00;
-  --champagne: #fef8ea;
-  --ivory: #fafbff;
+  /* ── Brand Core (logo-matched) ── */
+  --navy: #07102a;            /* deep midnight navy */
+  --royal-blue: #1b3ea6;      /* logo shield / banner blue */
+  --bright-blue: #2563eb;     /* brighter royal blue, hover states */
+  --gold: #c8940a;            /* logo Big Ben / rays gold */
+  --gold-light: #e5b030;      /* lighter gold highlight */
+  --gold-dark: #8c6500;       /* deep gold shadow */
+  --champagne: #fef6e0;       /* warm cream */
+  --ivory: #f8faff;           /* cool white */
 
-  /* ── Electric Accents ── */
-  --accent-indigo: #6366f1;
-  --accent-violet: #7c3aed;
-  --accent-emerald: #059669;
-  --accent-rose: #e11d48;
-  --accent-cyan: #0891b2;
-  --accent-amber: #d97706;
+  /* ── Varied Accents ── */
+  --accent-indigo: #2563eb;   /* royal-blue family (logo) */
+  --accent-violet: #7c3aed;   /* purple — variation */
+  --accent-emerald: #059669;  /* green — variation */
+  --accent-rose: #e11d48;     /* red — variation */
+  --accent-cyan: #0ea5e9;     /* sky blue — variation */
+  --accent-amber: #d97706;    /* warm amber — variation */
 
   /* ── Glass & Surface ── */
   --glass-bg: rgba(255, 255, 255, 0.60);
-  --glass-dark: rgba(8, 15, 34, 0.75);
-  --surface-1: #0d1425;
-  --surface-2: #131f38;
-  --surface-3: #1a2a4a;
+  --glass-dark: rgba(7, 16, 42, 0.78);
+  --surface-1: #0d1a3d;
+  --surface-2: #101e46;
+  --surface-3: #162450;
 
   /* ── Glow Effects ── */
-  --glow-gold: 0 0 24px rgba(240, 165, 0, 0.25), 0 0 60px rgba(240, 165, 0, 0.08);
-  --glow-indigo: 0 0 24px rgba(99, 102, 241, 0.25), 0 0 60px rgba(99, 102, 241, 0.08);
+  --glow-gold: 0 0 24px rgba(200, 148, 10, 0.30), 0 0 60px rgba(200, 148, 10, 0.10);
+  --glow-indigo: 0 0 24px rgba(37, 99, 235, 0.28), 0 0 60px rgba(37, 99, 235, 0.10);
   --glow-violet: 0 0 24px rgba(124, 58, 237, 0.25);
 
   /* UI system */
@@ -107,40 +108,40 @@
   --elevate-2: rgba(0,0,0,.08);
 
   /* Semantic colors (HSL for Tailwind compatibility) */
-  --background: 230 60% 99%;   /* near-white with blue tint */
-  --foreground: 225 60% 10%;   /* deep navy */
-  --border: 230 40% 90%;
+  --background: 224 55% 98%;   /* near-white with royal blue tint */
+  --foreground: 224 65% 10%;   /* deep navy */
+  --border: 224 45% 88%;
   --card: 0 0% 100%;
-  --card-foreground: 225 60% 10%;
-  --card-border: 230 40% 92%;
-  --sidebar: 225 65% 8%;       /* deep space */
+  --card-foreground: 224 65% 10%;
+  --card-border: 224 40% 90%;
+  --sidebar: 224 70% 7%;       /* deep royal navy */
   --sidebar-foreground: 0 0% 95%;
-  --sidebar-border: 230 40% 14%;
-  --sidebar-primary: 38 95% 47%;  /* vivid gold */
-  --sidebar-primary-foreground: 225 65% 8%;
-  --sidebar-accent: 244 82% 62%;  /* electric indigo */
+  --sidebar-border: 224 50% 14%;
+  --sidebar-primary: 38 92% 41%;  /* logo gold */
+  --sidebar-primary-foreground: 224 70% 7%;
+  --sidebar-accent: 225 72% 52%;  /* logo royal blue */
   --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-ring: 38 95% 47%;
+  --sidebar-ring: 38 92% 41%;
   --popover: 0 0% 100%;
-  --popover-foreground: 225 60% 10%;
-  --popover-border: 230 40% 88%;
-  --primary: 38 95% 47%;       /* vivid amber-gold */
-  --primary-foreground: 225 65% 8%;
-  --secondary: 244 82% 62%;    /* electric indigo */
+  --popover-foreground: 224 65% 10%;
+  --popover-border: 224 40% 86%;
+  --primary: 38 92% 41%;       /* logo warm amber-gold */
+  --primary-foreground: 224 70% 7%;
+  --secondary: 225 72% 45%;    /* logo royal blue */
   --secondary-foreground: 0 0% 100%;
-  --muted: 230 40% 95%;
-  --muted-foreground: 230 25% 45%;
-  --accent: 262 80% 54%;       /* violet */
+  --muted: 224 40% 94%;
+  --muted-foreground: 224 28% 44%;
+  --accent: 262 80% 54%;       /* violet — variation */
   --accent-foreground: 0 0% 100%;
   --destructive: 350 90% 55%;
   --destructive-foreground: 0 0% 100%;
-  --input: 230 40% 90%;
-  --ring: 38 95% 47%;
-  --chart-1: 38 95% 47%;
-  --chart-2: 244 82% 62%;
-  --chart-3: 262 80% 54%;
-  --chart-4: 160 84% 39%;
-  --chart-5: 350 90% 55%;
+  --input: 224 40% 88%;
+  --ring: 38 92% 41%;
+  --chart-1: 38 92% 41%;       /* logo gold */
+  --chart-2: 225 72% 50%;      /* logo royal blue */
+  --chart-3: 262 80% 54%;      /* violet */
+  --chart-4: 160 84% 39%;      /* emerald */
+  --chart-5: 350 90% 55%;      /* rose */
 
   --app-font-sans: 'Inter', 'DM Sans', system-ui, sans-serif;
   --app-font-serif: Georgia, serif;
@@ -181,40 +182,40 @@
   --elevate-1: rgba(255,255,255,.04);
   --elevate-2: rgba(255,255,255,.09);
 
-  --background: 225 65% 6%;
-  --foreground: 230 60% 96%;
-  --border: 230 40% 14%;
-  --card: 225 60% 9%;
-  --card-foreground: 230 60% 96%;
-  --card-border: 230 40% 14%;
-  --sidebar: 225 65% 5%;
+  --background: 224 70% 6%;    /* deep royal navy */
+  --foreground: 224 55% 96%;
+  --border: 224 50% 15%;
+  --card: 224 65% 9%;          /* card slightly bluer */
+  --card-foreground: 224 55% 96%;
+  --card-border: 224 50% 15%;
+  --sidebar: 224 72% 5%;
   --sidebar-foreground: 0 0% 94%;
-  --sidebar-border: 230 40% 12%;
-  --sidebar-primary: 38 95% 47%;
-  --sidebar-primary-foreground: 225 65% 8%;
-  --sidebar-accent: 244 82% 62%;
+  --sidebar-border: 224 55% 12%;
+  --sidebar-primary: 38 92% 48%;   /* logo gold — slightly brighter on dark */
+  --sidebar-primary-foreground: 224 70% 7%;
+  --sidebar-accent: 225 72% 60%;   /* logo royal blue — brighter on dark */
   --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-ring: 38 95% 47%;
-  --popover: 225 60% 9%;
-  --popover-foreground: 230 60% 96%;
-  --popover-border: 230 40% 14%;
-  --primary: 38 95% 47%;
-  --primary-foreground: 225 65% 8%;
-  --secondary: 244 82% 62%;
+  --sidebar-ring: 38 92% 48%;
+  --popover: 224 65% 9%;
+  --popover-foreground: 224 55% 96%;
+  --popover-border: 224 50% 15%;
+  --primary: 38 92% 48%;       /* logo gold */
+  --primary-foreground: 224 70% 7%;
+  --secondary: 225 72% 58%;    /* logo royal blue */
   --secondary-foreground: 0 0% 100%;
-  --muted: 230 40% 13%;
-  --muted-foreground: 230 20% 60%;
-  --accent: 262 80% 54%;
+  --muted: 224 50% 13%;
+  --muted-foreground: 224 22% 60%;
+  --accent: 262 80% 62%;
   --accent-foreground: 0 0% 100%;
-  --destructive: 350 90% 55%;
+  --destructive: 350 90% 58%;
   --destructive-foreground: 0 0% 100%;
-  --input: 230 40% 14%;
-  --ring: 38 95% 47%;
-  --chart-1: 38 95% 55%;
-  --chart-2: 244 82% 70%;
-  --chart-3: 262 80% 65%;
-  --chart-4: 160 84% 45%;
-  --chart-5: 350 90% 60%;
+  --input: 224 50% 15%;
+  --ring: 38 92% 48%;
+  --chart-1: 38 92% 52%;       /* logo gold */
+  --chart-2: 225 72% 62%;      /* logo royal blue */
+  --chart-3: 262 80% 66%;      /* violet */
+  --chart-4: 160 84% 46%;      /* emerald */
+  --chart-5: 350 90% 62%;      /* rose */
 
   --shadow-2xs: 0 1px 2px rgba(0,0,0,.20);
   --shadow-xs: 0 1px 3px rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.18);
