@@ -8,7 +8,7 @@ interface Contact  { id:string; name:string; role:string; online:boolean; unread
 interface Group    { id:string; name:string; color:string; contacts:string[] }
 interface Folder   { id:string; name:string; emoji:string; color:string; groups:string[] }
 
-const ROLE_COLORS: Record<string,string> = {admin:'#f0a500',teacher:'#818cf8',student:'#38bdf8',supervisor:'#34d399',parent:'#fb923c'}
+const ROLE_COLORS: Record<string,string> = {admin:'#c8940a',teacher:'#3b82f6',student:'#38bdf8',supervisor:'#34d399',parent:'#fb923c'}
 
 const INIT_MSGS: Record<string,Message[]> = {
   '1':[{id:'m1',sender:'Admin',text:'Good morning! Platform running smoothly.',time:'09:15',mine:false,read:true},{id:'m2',sender:'You',text:'Great! 5 live classrooms active now.',time:'09:17',mine:true,read:true}],

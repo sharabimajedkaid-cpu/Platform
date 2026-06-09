@@ -38,7 +38,7 @@ function MiniChart({ values }: { values: number[] }) {
       {values.map((v, i) => (
         <div key={i} className="flex-1 flex flex-col items-center gap-0.5">
           <div className="w-full rounded-t transition-all"
-            style={{ height: `${(v / max) * 100}%`, background: 'linear-gradient(to top,#6366f1,#7c3aed)' }} />
+            style={{ height: `${(v / max) * 100}%`, background: 'linear-gradient(to top,#1b3ea6,#2563eb)' }} />
           <span className="text-[7px] text-gray-600">{MONTHS[i]}</span>
         </div>
       ))}
@@ -57,8 +57,8 @@ function StatBadge({ value, label, color }: { value: string; label: string; colo
 
 const VIEW_CONFIG: Record<ReportView, { label: string; emoji: string; accent: string }> = {
   parent:     { label: 'Parent Report',     emoji: '👨‍👩‍👧', accent: '#34d399' },
-  teacher:    { label: 'Teacher Report',    emoji: '🧑‍🏫',   accent: '#818cf8' },
-  management: { label: 'Management Report', emoji: '🏢',     accent: '#f0a500' },
+  teacher:    { label: 'Teacher Report',    emoji: '🧑‍🏫',   accent: '#3b82f6' },
+  management: { label: 'Management Report', emoji: '🏢',     accent: '#c8940a' },
 }
 
 export function ReportsPage() {
@@ -76,7 +76,7 @@ export function ReportsPage() {
         </div>
         <button
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition"
-          style={{ background: 'rgba(240,165,0,0.1)', color: '#f0a500', border: '1px solid rgba(240,165,0,0.2)' }}>
+          style={{ background: 'rgba(200,148,10,0.1)', color: '#c8940a', border: '1px solid rgba(200,148,10,0.2)' }}>
           📥 Export All PDFs
         </button>
       </div>
@@ -91,7 +91,7 @@ export function ReportsPage() {
               border: `1px solid ${cfg.accent}35`, boxShadow: `0 2px 12px ${cfg.accent}15`,
             } : {
               background: 'rgba(13,20,37,0.6)', color: 'rgba(156,163,175,0.7)',
-              border: '1px solid rgba(99,102,241,0.1)',
+              border: '1px solid rgba(37,99,235,0.12)',
             }}>
             <span>{cfg.emoji}</span>{cfg.label}
           </button>
@@ -139,14 +139,14 @@ export function ReportsPage() {
               </div>
               <div className="grid grid-cols-3 gap-4 mb-4 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <StatBadge value={`${selectedStudent.attendance}%`} label="Attendance" color="#34d399" />
-                <StatBadge value={`${selectedStudent.avgGrade}%`} label="Avg Grade" color="#818cf8" />
-                <StatBadge value={`${selectedStudent.assignments.done}/${selectedStudent.assignments.total}`} label="Assignments" color="#f0a500" />
+                <StatBadge value={`${selectedStudent.avgGrade}%`} label="Avg Grade" color="#3b82f6" />
+                <StatBadge value={`${selectedStudent.assignments.done}/${selectedStudent.assignments.total}`} label="Assignments" color="#c8940a" />
               </div>
               <div className="space-y-2.5">
                 {[
-                  { label: 'Mathematics', score: 92, color: '#6366f1' },
+                  { label: 'Mathematics', score: 92, color: '#2563eb' },
                   { label: 'English', score: selectedStudent.avgGrade + 3, color: '#34d399' },
-                  { label: 'Science', score: selectedStudent.avgGrade - 5, color: '#f0a500' },
+                  { label: 'Science', score: selectedStudent.avgGrade - 5, color: '#c8940a' },
                   { label: 'Arabic', score: selectedStudent.avgGrade + 1, color: '#a78bfa' },
                   { label: 'History', score: selectedStudent.avgGrade - 2, color: '#67e8f9' },
                 ].map(s => (
@@ -164,16 +164,16 @@ export function ReportsPage() {
       {/* ── TEACHER REPORT ── */}
       {view === 'teacher' && (
         <div className="grid md:grid-cols-3 gap-4">
-          <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(129,140,248,0.15)' }}>
-            <div className="px-4 py-3 text-xs font-bold text-indigo-400 border-b" style={{ borderColor: 'rgba(129,140,248,0.1)' }}>
+          <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
+            <div className="px-4 py-3 text-xs font-bold border-b" style={{ color: '#3b82f6', borderColor: 'rgba(59,130,246,0.12)' }}>
               Select Teacher
             </div>
             {TEACHERS.map(t => (
               <button key={t.name} onClick={() => setSelectedTeacher(t)}
                 className="w-full flex items-center gap-3 px-4 py-3 text-left transition border-b"
-                style={{ borderColor: 'rgba(129,140,248,0.06)', background: selectedTeacher.name === t.name ? 'rgba(99,102,241,0.06)' : 'transparent' }}>
+                style={{ borderColor: 'rgba(37,99,235,0.08)', background: selectedTeacher.name === t.name ? 'rgba(37,99,235,0.08)' : 'transparent' }}>
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
-                  style={{ background: 'linear-gradient(135deg,#6366f1,#7c3aed)', color: '#fff' }}>
+                  style={{ background: 'linear-gradient(135deg,#1b3ea6,#2563eb)', color: '#fff' }}>
                   {t.name.charAt(0)}
                 </div>
                 <div>
@@ -184,20 +184,20 @@ export function ReportsPage() {
             ))}
           </div>
           <div className="md:col-span-2 rounded-2xl p-5 space-y-4"
-            style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(129,140,248,0.15)' }}>
+            style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-white">{selectedTeacher.name}</h3>
                 <p className="text-[10px] text-gray-500">{selectedTeacher.subject} Teacher · H2 2025</p>
               </div>
-              <button className="text-[10px] text-indigo-400 px-3 py-1.5 rounded-lg border border-indigo-500/20 hover:text-indigo-300 transition">
+              <button className="text-[10px] px-3 py-1.5 rounded-lg border transition" style={{ color: '#3b82f6', borderColor: 'rgba(59,130,246,0.25)' }}>
                 📥 PDF Report
               </button>
             </div>
             <div className="grid grid-cols-3 gap-4 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              <StatBadge value={`${selectedTeacher.classAvg}%`} label="Class Average" color="#818cf8" />
+              <StatBadge value={`${selectedTeacher.classAvg}%`} label="Class Average" color="#3b82f6" />
               <StatBadge value={`${selectedTeacher.evalScore}%`} label="AI Eval Score" color="#34d399" />
-              <StatBadge value={`${selectedTeacher.lessons.done}/${selectedTeacher.lessons.total}`} label="Lessons Done" color="#f0a500" />
+              <StatBadge value={`${selectedTeacher.lessons.done}/${selectedTeacher.lessons.total}`} label="Lessons Done" color="#c8940a" />
             </div>
             <div>
               <p className="text-[10px] text-gray-500 mb-2">Monthly Activity</p>
@@ -205,9 +205,9 @@ export function ReportsPage() {
             </div>
             <div className="space-y-2">
               {[
-                { label: 'Student Engagement', value: 88, color: '#6366f1' },
+                { label: 'Student Engagement', value: 88, color: '#2563eb' },
                 { label: 'Lesson Quality', value: selectedTeacher.evalScore, color: '#34d399' },
-                { label: 'Assignment Grading Speed', value: 76, color: '#f0a500' },
+                { label: 'Assignment Grading Speed', value: 76, color: '#c8940a' },
                 { label: 'Communication', value: 91, color: '#a78bfa' },
               ].map(m => (
                 <div key={m.label} className="flex items-center gap-3">
@@ -226,9 +226,9 @@ export function ReportsPage() {
           {/* KPI cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: 'Total Students',  value: '240', change: '+18', color: '#818cf8', emoji: '🎓' },
+              { label: 'Total Students',  value: '240', change: '+18', color: '#3b82f6', emoji: '🎓' },
               { label: 'Active Teachers', value: '9',   change: '+2',  color: '#34d399', emoji: '👨‍🏫' },
-              { label: 'Revenue (YTD)',   value: '$24.5K', change: '+15%', color: '#f0a500', emoji: '💰' },
+              { label: 'Revenue (YTD)',   value: '$24.5K', change: '+15%', color: '#c8940a', emoji: '💰' },
               { label: 'Avg Platform Score', value: '87%', change: '+3%', color: '#67e8f9', emoji: '📈' },
             ].map(k => (
               <div key={k.label} className="rounded-2xl p-4 relative overflow-hidden"
@@ -245,13 +245,13 @@ export function ReportsPage() {
 
           <div className="grid md:grid-cols-2 gap-4">
             {/* Monthly activity chart */}
-            <div className="rounded-2xl p-4" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(99,102,241,0.12)' }}>
+            <div className="rounded-2xl p-4" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
               <p className="text-xs font-bold text-white mb-3">📊 6-Month Activity</p>
               <div className="flex items-end gap-2 h-20">
                 {ACTIVITY.map((v, i) => (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
                     <div className="w-full rounded-t"
-                      style={{ height: `${v}%`, background: `linear-gradient(to top,#6366f1,#7c3aed)`, boxShadow: i === ACTIVITY.length - 1 ? '0 0 8px rgba(99,102,241,0.5)' : undefined }} />
+                      style={{ height: `${v}%`, background: `linear-gradient(to top,#1b3ea6,#2563eb)`, boxShadow: i === ACTIVITY.length - 1 ? '0 0 8px rgba(37,99,235,0.5)' : undefined }} />
                     <span className="text-[8px] text-gray-600">{MONTHS[i]}</span>
                   </div>
                 ))}
@@ -259,12 +259,12 @@ export function ReportsPage() {
             </div>
 
             {/* Geography */}
-            <div className="rounded-2xl p-4" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(99,102,241,0.12)' }}>
+            <div className="rounded-2xl p-4" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
               <p className="text-xs font-bold text-white mb-3">🌍 Geographic Reach</p>
               <div className="space-y-2.5">
                 {[
-                  { country: 'Yemen', pct: 78, color: '#6366f1' },
-                  { country: 'Saudi Arabia', pct: 12, color: '#f0a500' },
+                  { country: 'Yemen', pct: 78, color: '#2563eb' },
+                  { country: 'Saudi Arabia', pct: 12, color: '#c8940a' },
                   { country: 'UAE', pct: 6, color: '#34d399' },
                   { country: 'Other', pct: 4, color: '#6b7280' },
                 ].map(g => (
@@ -283,14 +283,14 @@ export function ReportsPage() {
           </div>
 
           {/* Revenue table */}
-          <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(240,165,0,0.12)' }}>
-            <div className="px-5 py-3 text-xs font-bold text-amber-400 border-b" style={{ borderColor: 'rgba(240,165,0,0.08)' }}>
+          <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(200,148,10,0.18)' }}>
+            <div className="px-5 py-3 text-xs font-bold border-b" style={{ color: '#c8940a', borderColor: 'rgba(200,148,10,0.10)' }}>
               💰 Revenue Breakdown
             </div>
             <div className="p-4 grid grid-cols-3 gap-4">
               {[
-                { label: 'Tuition Fees', amount: '$18,400', pct: 75, color: '#f0a500' },
-                { label: 'Exam Fees', amount: '$3,200', pct: 13, color: '#818cf8' },
+                { label: 'Tuition Fees', amount: '$18,400', pct: 75, color: '#c8940a' },
+                { label: 'Exam Fees', amount: '$3,200', pct: 13, color: '#3b82f6' },
                 { label: 'Materials', amount: '$2,900', pct: 12, color: '#34d399' },
               ].map(r => (
                 <div key={r.label} className="text-center space-y-2">

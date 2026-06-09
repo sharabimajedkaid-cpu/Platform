@@ -59,9 +59,9 @@ const CLASSROOM_DATA = [
 ]
 const EVENTS = [
   { time: '18:21', event: 'Student joined Classroom #3', type: 'join', color: '#34d399' },
-  { time: '18:20', event: 'Exam #12 started — G7 English', type: 'exam', color: '#818cf8' },
+  { time: '18:20', event: 'Exam #12 started — G7 English', type: 'exam', color: '#3b82f6' },
   { time: '18:18', event: 'Arabic alert: Ahmed in Classroom #1', type: 'alert', color: '#f87171' },
-  { time: '18:15', event: 'Recording started — Classroom #5', type: 'record', color: '#f0a500' },
+  { time: '18:15', event: 'Recording started — Classroom #5', type: 'record', color: '#c8940a' },
   { time: '18:12', event: 'New homework submitted — Sara G9', type: 'hw', color: '#67e8f9' },
   { time: '18:09', event: 'Teacher Suhair entered Classroom #1', type: 'join', color: '#34d399' },
   { time: '18:05', event: 'AI Evaluation completed — Score 91%', type: 'ai', color: '#a78bfa' },
@@ -102,16 +102,16 @@ export function LiveAnalyticsPage() {
 
       {/* KPI row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <LiveKPI label="Active Users" value={activeUsers} change="+8% today" color="#818cf8" sparkData={sparkA} />
+        <LiveKPI label="Active Users" value={activeUsers} change="+8% today" color="#3b82f6" sparkData={sparkA} />
         <LiveKPI label="Live Classrooms" value={liveClassrooms} change="↑ 2 joined" color="#34d399" sparkData={sparkB} />
         <LiveKPI label="Exams Running" value={examsRunning} change="steady" color="#a78bfa" sparkData={sparkC} />
-        <LiveKPI label="Submissions Today" value={submissions} change="+23%" color="#f0a500" sparkData={sparkD} />
+        <LiveKPI label="Submissions Today" value={submissions} change="+23%" color="#c8940a" sparkData={sparkD} />
       </div>
 
       <div className="grid md:grid-cols-3 gap-4">
         {/* Hourly activity bar chart */}
         <div className="md:col-span-2 rounded-2xl p-4"
-          style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(99,102,241,0.12)' }}>
+          style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-bold text-white">⏰ Hourly Platform Activity</p>
             <span className="text-[9px] text-gray-600">Today</span>
@@ -120,9 +120,9 @@ export function LiveAnalyticsPage() {
             {HOURLY_BASE.map((v, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-1">
                 <div className="w-full rounded-t relative overflow-hidden"
-                  style={{ height: `${v}%`, background: 'linear-gradient(to top,rgba(99,102,241,0.5),rgba(124,58,237,0.7))' }}>
+                  style={{ height: `${v}%`, background: 'linear-gradient(to top,rgba(37,99,235,0.45),rgba(27,62,166,0.75))' }}>
                   {i === 5 || i === 6 ? (
-                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to top,#6366f1,#7c3aed)', boxShadow: '0 0 8px rgba(99,102,241,0.6)' }} />
+                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to top,#1b3ea6,#2563eb)', boxShadow: '0 0 8px rgba(37,99,235,0.5)' }} />
                   ) : null}
                 </div>
                 <span className="text-[7px] text-gray-600">{HOURS[i]}</span>
@@ -133,12 +133,12 @@ export function LiveAnalyticsPage() {
 
         {/* Geo distribution */}
         <div className="rounded-2xl p-4"
-          style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(99,102,241,0.12)' }}>
+          style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
           <p className="text-xs font-bold text-white mb-3">🌍 User Geography</p>
           <div className="space-y-2.5">
             {[
-              { flag: '🇾🇪', country: 'Yemen',        pct: 78, color: '#6366f1' },
-              { flag: '🇸🇦', country: 'Saudi Arabia', pct: 12, color: '#f0a500' },
+              { flag: '🇾🇪', country: 'Yemen',        pct: 78, color: '#2563eb' },
+              { flag: '🇸🇦', country: 'Saudi Arabia', pct: 12, color: '#c8940a' },
               { flag: '🇦🇪', country: 'UAE',           pct: 6,  color: '#34d399' },
               { flag: '🌐', country: 'Other',          pct: 4,  color: '#6b7280' },
             ].map(g => (
