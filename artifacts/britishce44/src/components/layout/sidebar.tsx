@@ -25,9 +25,17 @@ const adminItems: NavItem[] = [
   { page: 'homework', icon: '📄', label: 'nav.homework', color: 'from-lime-500 to-lime-600' },
   { page: 'videoarchive', icon: '🎞️', label: 'nav.videoarchive', color: 'from-fuchsia-500 to-fuchsia-600' },
   { page: 'liveanalytics', icon: '📈', label: 'nav.liveanalytics', color: 'from-green-500 to-green-600' },
+  { page: 'commandcenter', icon: '📊', label: 'nav.commandcenter', color: 'from-amber-500 to-orange-600' },
+  { page: 'globalsearch', icon: '🔎', label: 'nav.globalsearch', color: 'from-blue-500 to-blue-600' },
+  { page: 'notifications', icon: '🔔', label: 'nav.notifications', color: 'from-sky-500 to-blue-600' },
+  { page: 'ailearning', icon: '🧠', label: 'nav.ailearning', color: 'from-violet-500 to-purple-600' },
+  { page: 'parentportal', icon: '👨‍👩‍👧', label: 'nav.parentportal', color: 'from-pink-500 to-rose-600' },
   { page: 'academicroom', icon: '🏛️', label: 'nav.academicroom', color: 'from-amber-600 to-yellow-600' },
   { page: 'aidev', icon: '🧠', label: 'nav.aidev', color: 'from-blue-500 to-indigo-600' },
   { page: 'settings', icon: '⚙️', label: 'nav.settings', color: 'from-gray-500 to-gray-600' },
+  { page: 'compliance', icon: '🛡️', label: 'nav.compliance', color: 'from-emerald-500 to-teal-600' },
+  { page: 'statuspage', icon: '🟢', label: 'nav.statuspage', color: 'from-green-500 to-emerald-600' },
+  { page: 'downloadcenter', icon: '⬇️', label: 'nav.downloadcenter', color: 'from-blue-500 to-cyan-600' },
 ]
 
 const teacherItems: NavItem[] = [
@@ -38,28 +46,49 @@ const teacherItems: NavItem[] = [
   { page: 'homework', icon: '📄', label: 'nav.homework', color: 'from-lime-500 to-lime-600' },
   { page: 'ce4messenger', icon: '💬', label: 'nav.messenger', color: 'from-emerald-500 to-emerald-600' },
   { page: 'videoarchive', icon: '🎞️', label: 'nav.videoarchive', color: 'from-fuchsia-500 to-fuchsia-600' },
+  { page: 'globalsearch', icon: '🔎', label: 'nav.globalsearch', color: 'from-blue-500 to-blue-600' },
+  { page: 'notifications', icon: '🔔', label: 'nav.notifications', color: 'from-sky-500 to-blue-600' },
+  { page: 'statuspage', icon: '🟢', label: 'nav.statuspage', color: 'from-green-500 to-emerald-600' },
+  { page: 'downloadcenter', icon: '⬇️', label: 'nav.downloadcenter', color: 'from-blue-500 to-cyan-600' },
 ]
 
 const studentItems: NavItem[] = [
   { page: 'dashboard', icon: '🏠', label: 'nav.myDashboard', color: 'from-blue-500 to-blue-600' },
   { page: 'classrooms', icon: '🚪', label: 'nav.classroomsPlain', color: 'from-blue-600 to-blue-700' },
+  { page: 'ailearning', icon: '🧠', label: 'nav.ailearning', color: 'from-violet-500 to-purple-600' },
   { page: 'examsystem', icon: '📝', label: 'nav.myExams', color: 'from-amber-500 to-amber-600' },
   { page: 'placementtest', icon: '🎯', label: 'nav.placement', color: 'from-orange-500 to-orange-600' },
   { page: 'homework', icon: '📄', label: 'nav.homework', color: 'from-lime-500 to-lime-600' },
   { page: 'ce4messenger', icon: '💬', label: 'nav.messenger', color: 'from-emerald-500 to-emerald-600' },
+  { page: 'globalsearch', icon: '🔎', label: 'nav.globalsearch', color: 'from-blue-500 to-blue-600' },
+  { page: 'notifications', icon: '🔔', label: 'nav.notifications', color: 'from-sky-500 to-blue-600' },
+  { page: 'downloadcenter', icon: '⬇️', label: 'nav.downloadcenter', color: 'from-blue-500 to-cyan-600' },
+]
+
+const parentItems: NavItem[] = [
+  { page: 'dashboard', icon: '🏠', label: 'nav.myDashboard', color: 'from-blue-500 to-blue-600' },
+  { page: 'parentportal', icon: '👨‍👩‍👧', label: 'nav.parentportal', color: 'from-pink-500 to-rose-600' },
+  { page: 'ce4messenger', icon: '💬', label: 'nav.messenger', color: 'from-emerald-500 to-emerald-600' },
+  { page: 'notifications', icon: '🔔', label: 'nav.notifications', color: 'from-sky-500 to-blue-600' },
+  { page: 'reports', icon: '📊', label: 'nav.reports', color: 'from-teal-500 to-teal-600' },
+  { page: 'statuspage', icon: '🟢', label: 'nav.statuspage', color: 'from-green-500 to-emerald-600' },
+  { page: 'downloadcenter', icon: '⬇️', label: 'nav.downloadcenter', color: 'from-blue-500 to-cyan-600' },
 ]
 
 const SECTION_DIVIDERS: Partial<Record<PageKey, string>> = {
   examsystem: 'section.academicTools',
   automessaging: 'section.aiMarketing',
   reports: 'section.analytics',
+  commandcenter: 'section.experience',
   academicroom: 'section.management',
   aidev: 'section.platformAdmin',
+  compliance: 'section.trust',
 }
 
 export function Sidebar({ userRole, currentPage, onNavigate, isOpen, onClose }: SidebarProps) {
   const items = userRole === 'admin' || userRole === 'supervisor' ? adminItems
     : userRole === 'teacher' ? teacherItems
+    : userRole === 'parent' ? parentItems
     : studentItems
 
   const { isMaintenanceMode, setShowDesignKit, showDesignKit } = useMaintenanceMode()

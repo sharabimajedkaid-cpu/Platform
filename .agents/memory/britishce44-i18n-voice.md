@@ -1,24 +1,21 @@
 ---
-name: Bilingual i18n + voice welcome
-description: How the EN/AR translation engine, the Basic-4+ English lock, and the login voice welcome are wired in the britishce44 web app.
+name: Bilingual i18n + voice welcome (britishce44)
+description: Durable decisions behind the EN/AR translation engine, the Basic-4+ English lock, and the login voice welcome.
 ---
 
-# Bilingual i18n engine
+# Decisions & constraints (not a wiring inventory — grep the code for current details)
 
-- Lives in `artifacts/britishce44/src/lib/i18n.tsx`. Custom, dependency-free (no react-i18next).
-- `LanguageProvider` is nested **inside** `AuthProvider` in `App.tsx` (it reads `useAuth()` to enforce the English lock). Order: QueryClient → AuthProvider → LanguageProvider → AppContent.
-- `useI18n()` returns `{ lang, dir, isRTL, locked, setLang, toggleLang, t }`. `t(key)` falls back to the raw key when a translation is missing, so partial page coverage is safe — translate page bodies incrementally.
-- Provider sets `document.documentElement.dir`/`lang` and toggles a `lang-ar` class for Arabic fonts (Cairo/Tajawal already loaded).
-- Persists choice in `localStorage` key `b44_lang` ('en' | 'ar').
+## i18n engine
+- Custom, dependency-free EN/AR provider (no react-i18next) lives in `src/lib/i18n.tsx`. `t(key)` falls back to the raw key when missing.
+- **Why:** lets pages be translated incrementally without breaking — untranslated bodies just show English/keys, so partial coverage is safe.
+- **Constraint:** `LanguageProvider` must nest *inside* `AuthProvider` — it reads the user to enforce the English lock. Breaking that order breaks the lock.
 
 ## Basic-4-and-above English lock
-- `isEnglishLocked(user)` + `BASIC_ENGLISH_LOCK_LEVEL = 4` in i18n.tsx. Applies only to `role === 'student'` with `grade >= 4`.
-- **Why:** the centre requires students at Basic 4 and above to study English-only — the platform disables the Arabic translator for them on login.
-- **Assumption to confirm with user:** "Basic 4" is mapped to `User.grade >= 4`. The User model only has numeric `grade`; tune the threshold/mapping if the centre's level numbering differs.
-- When locked, the topbar shows a `🔒 EN` badge instead of the language toggle, and `setLang`/`toggleLang` are no-ops.
+- Students at "Basic 4 and above" are forced English-only; the language switcher is hidden/disabled for them. Single tunable threshold in i18n.tsx.
+- **Why:** the centre teaches Basic 4+ entirely in English.
+- **Open assumption to confirm with the user:** "Basic 4" is mapped to `User.grade >= 4` (the model only has numeric `grade`). Re-check the threshold/mapping if their level numbering differs.
 
-# Voice welcome on login
-- `artifacts/britishce44/src/lib/welcome-voice.ts` → `playWelcomeVoice(lang)`. Triggered in `login-page.tsx` `handleLogin` right after `await login(...)` (inside the click gesture, so autoplay is allowed).
-- Plays a random clip from a pre-generated pool, avoiding immediate repeats, so users hear varied inspiring words each login.
-- Clips live in `artifacts/britishce44/public/welcome/` as `en-1.mp3 … en-10.mp3` and `ar-1.mp3 … ar-6.mp3` (counts hard-coded in `CLIP_COUNT`). Referenced root-relative (`/welcome/...`), matching the existing image convention.
-- Generated via the media-generation `textToSpeech` callback, model `eleven_multilingual_v2`, voice **Eleanor** (`2qQJWjw5XdG80GreshqG`, British, warm). No native Arabic voice exists in the catalog — Arabic uses the multilingual model with the same voice. To regenerate, re-run textToSpeech to the same output paths.
+## Voice welcome on login
+- A warm British voice plays a different inspiring welcome on every login, in the user's effective language; clips are pre-generated MP3s in `public/welcome/`, chosen at random avoiding immediate repeats.
+- **Why:** the user explicitly wanted a near-human, varied welcome each login.
+- **Constraints:** must fire inside the login click gesture (browser autoplay). No native Arabic TTS voice exists in the catalog — Arabic clips use the multilingual model with the same English voice. To add/replace clips, regenerate via media-generation textToSpeech to the same paths and keep the per-language clip counts in sync with the player.
