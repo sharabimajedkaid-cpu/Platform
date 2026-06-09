@@ -1,0 +1,98 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "ZjHuPsskRq5KJg0js2l2K"
+uri = "file://artifacts/britishce44/public/welcome/en-1.mp3"
+type = "audio"
+title = "welcome en 1"
+
+[[outputs]]
+id = "BVsEYpd9rdIFTRiUrLU93"
+uri = "file://artifacts/britishce44/public/welcome/en-2.mp3"
+type = "audio"
+title = "welcome en 2"
+
+[[outputs]]
+id = "tpbgRhQd7YOctnVpzyLgC"
+uri = "file://artifacts/britishce44/public/welcome/en-3.mp3"
+type = "audio"
+title = "welcome en 3"
+
+[[outputs]]
+id = "9tH_Whly7OXnEPAGcqyF7"
+uri = "file://artifacts/britishce44/public/welcome/en-4.mp3"
+type = "audio"
+title = "welcome en 4"
+
+[[outputs]]
+id = "uehT3rlxcqD0lldkEpIFT"
+uri = "file://artifacts/britishce44/public/welcome/en-5.mp3"
+type = "audio"
+title = "welcome en 5"
+
+[[outputs]]
+id = "7bxwdjapioRNkXaGU07eJ"
+uri = "file://artifacts/britishce44/public/welcome/en-6.mp3"
+type = "audio"
+title = "welcome en 6"
+
+[[outputs]]
+id = "8BoUz9ZMdEQO6DyRWbu4Y"
+uri = "file://artifacts/britishce44/public/welcome/en-7.mp3"
+type = "audio"
+title = "welcome en 7"
+
+[[outputs]]
+id = "0Lx3GTpfq0boq2ppuWeaK"
+uri = "file://artifacts/britishce44/public/welcome/en-8.mp3"
+type = "audio"
+title = "welcome en 8"
+
+[[outputs]]
+id = "MnQ2cov3EbQHwrOrC7Soe"
+uri = "file://artifacts/britishce44/public/welcome/en-9.mp3"
+type = "audio"
+title = "welcome en 9"
+
+[[outputs]]
+id = "UWTusk64NWiMHvVgXgLh-"
+uri = "file://artifacts/britishce44/public/welcome/en-10.mp3"
+type = "audio"
+title = "welcome en 10"
+
+[[outputs]]
+id = "CBJ_xVmQoQ4UFqCHuJZzL"
+uri = "file://artifacts/britishce44/public/welcome/ar-1.mp3"
+type = "audio"
+title = "welcome ar 1"
+
+[[outputs]]
+id = "yCF_nkMmSLgLTMXlcK64W"
+uri = "file://artifacts/britishce44/public/welcome/ar-2.mp3"
+type = "audio"
+title = "welcome ar 2"
+
+[[outputs]]
+id = "Tv6bUk1nTMP0aoJH8qUUM"
+uri = "file://artifacts/britishce44/public/welcome/ar-3.mp3"
+type = "audio"
+title = "welcome ar 3"
+
+[[outputs]]
+id = "K9vkqp5ppjH7Ny7wGa7gp"
+uri = "file://artifacts/britishce44/public/welcome/ar-4.mp3"
+type = "audio"
+title = "welcome ar 4"
+
+[[outputs]]
+id = "HtZZsQSNTaXhZ7YoVv6eW"
+uri = "file://artifacts/britishce44/public/welcome/ar-5.mp3"
+type = "audio"
+title = "welcome ar 5"
+
+[[outputs]]
+id = "XRiWlS711jjcjsZV2rN_i"
+uri = "file://artifacts/britishce44/public/welcome/ar-6.mp3"
+type = "audio"
+title = "welcome ar 6"

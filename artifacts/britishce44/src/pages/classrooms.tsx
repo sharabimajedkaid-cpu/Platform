@@ -113,7 +113,7 @@ function ClassroomCard({ room, onEnter }: { room: Room; onEnter: (id: number) =>
           {room.status === 'locked' && (
             <span className="text-[8px]" style={{ color: 'rgba(248,113,113,0.6)' }}>Restricted</span>
           )}
-          {(room.status === 'live' || room.status === 'scheduled' || room.status === 'empty') && room.status !== 'locked' && (
+          {(room.status === 'live' || room.status === 'scheduled' || room.status === 'empty') && (
             <button onClick={e => { e.stopPropagation(); onEnter(room.id) }}
               className="text-[9px] px-2.5 py-1 rounded-full font-bold transition-all ml-auto"
               style={{
@@ -199,7 +199,7 @@ export function ClassroomsPage({ onEnterClassroom }: { onEnterClassroom: (id: nu
         <input value={search} onChange={e => { setSearch(e.target.value); setPage(0) }}
           placeholder="🔍 Search by subject, teacher or room number…"
           className="flex-1 min-w-48 px-4 py-2.5 rounded-xl text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1"
-          style={{ background: cardBg, border: `1px solid ${cardBorder}`, focusRingColor: '#2563eb' }} />
+          style={{ background: cardBg, border: `1px solid ${cardBorder}` }} />
         <select value={gradeFilter} onChange={e => { setGradeFilter(e.target.value); setPage(0) }}
           className="px-3 py-2.5 rounded-xl text-sm text-white focus:outline-none"
           style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>

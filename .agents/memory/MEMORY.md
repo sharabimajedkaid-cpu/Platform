@@ -1,2 +1,3 @@
 - [New student onboarding](onboarding-flow.md) — 4-step post-registration flow wired through RegisterForm → OnboardingFlow → login
 - [Page routing pattern](page-routing.md) — state-based nav; add to PageKey union + dashboard-layout switch + sidebar adminItems
+- [Bilingual + voice welcome](britishce44-i18n-voice.md) — i18n engine (LanguageProvider/useI18n/t), Basic-4+ English lock, login voice-clip pool conventions
