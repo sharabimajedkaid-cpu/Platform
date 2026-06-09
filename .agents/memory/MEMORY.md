@@ -1,2 +1,2 @@
-- [Maintenance Mode System](maintenance-mode.md) — Admin-only context provider + 8-tab Design Studio Kit; must wrap DashboardLayout with MaintenanceProvider
-- [Futuristic Theme](futuristic-theme.md) — Space navy + electric indigo + vivid gold color system; all CSS vars live in index.css :root
+- [New student onboarding](onboarding-flow.md) — 4-step post-registration flow wired through RegisterForm → OnboardingFlow → login
+- [Page routing pattern](page-routing.md) — state-based nav; add to PageKey union + dashboard-layout switch + sidebar adminItems
