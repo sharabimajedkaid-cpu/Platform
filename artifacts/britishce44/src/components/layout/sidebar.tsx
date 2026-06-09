@@ -24,6 +24,7 @@ const adminItems: NavItem[] = [
   { page: 'homework', icon: '📄', label: 'Homework Dropbox', color: 'from-lime-500 to-lime-600' },
   { page: 'videoarchive', icon: '🎞️', label: 'Video Archive', color: 'from-fuchsia-500 to-fuchsia-600' },
   { page: 'liveanalytics', icon: '📈', label: 'Live Analytics', color: 'from-green-500 to-green-600' },
+  { page: 'academicroom', icon: '🏛️', label: 'Academic Mgmt Room', color: 'from-amber-600 to-yellow-600' },
   { page: 'aidev', icon: '🧠', label: 'AI Dev Assistant', color: 'from-purple-500 to-purple-600' },
   { page: 'settings', icon: '⚙️', label: 'Platform Settings', color: 'from-gray-500 to-gray-600' },
 ]
@@ -51,6 +52,7 @@ const SECTION_DIVIDERS: Partial<Record<PageKey, string>> = {
   examsystem: 'Academic Tools',
   automessaging: 'AI & Marketing',
   reports: 'Analytics & Reports',
+  academicroom: 'Management',
   aidev: 'Platform Admin',
 }
 

@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/providers/auth-provider'
+import { OnboardingFlow } from '@/pages/onboarding'
 import toast from 'react-hot-toast'
 
 /* Background photo slideshow images from britishce4.com */
@@ -89,6 +90,7 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [showRegister, setShowRegister] = useState(false)
+  const [onboardingName, setOnboardingName] = useState<string | null>(null)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -102,7 +104,11 @@ export function LoginPage() {
     } finally { setLoading(false) }
   }
 
-  if (showRegister) return <RegisterForm onBack={() => setShowRegister(false)} />
+  if (onboardingName !== null) {
+    return <OnboardingFlow studentName={onboardingName} onComplete={() => setOnboardingName(null)} />
+  }
+
+  if (showRegister) return <RegisterForm onBack={() => setShowRegister(false)} onRegistered={(name) => { setShowRegister(false); setOnboardingName(name) }} />
 
   return (
     <div className="h-screen flex items-center justify-center p-4 relative overflow-hidden">
@@ -232,7 +238,7 @@ export function LoginPage() {
   )
 }
 
-function RegisterForm({ onBack }: { onBack: () => void }) {
+function RegisterForm({ onBack, onRegistered }: { onBack: () => void; onRegistered?: (name: string) => void }) {
   const { register } = useAuth()
   const [form, setForm] = useState({
     firstName: '', lastName: '', email: '', password: '', confirmPassword: '',
@@ -250,8 +256,12 @@ function RegisterForm({ onBack }: { onBack: () => void }) {
     setLoading(true)
     try {
       await register({ ...form, role: form.role as 'admin' | 'supervisor' | 'teacher' | 'student' | 'parent' })
-      toast.success('Registration successful! Please login.')
-      onBack()
+      toast.success('Account created! Starting your registration journey…')
+      if (onRegistered) {
+        onRegistered(`${form.firstName} ${form.lastName}`)
+      } else {
+        onBack()
+      }
     } catch (err: any) {
       toast.error(err.message || 'Registration failed')
     } finally { setLoading(false) }

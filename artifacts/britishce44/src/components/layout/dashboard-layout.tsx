@@ -23,6 +23,7 @@ import { AiDevPage } from '@/pages/ai-dev'
 import { MarketingPage } from '@/pages/marketing'
 import { AutoMessagingPage } from '@/pages/auto-messaging'
 import { VideoEditorPage } from '@/pages/video-editor'
+import { AcademicRoomPage } from '@/pages/academic-room'
 import { ClassroomRoom } from '@/components/classroom/classroom-room'
 
 export type PageKey =
@@ -30,7 +31,7 @@ export type PageKey =
   | 'ce4messenger' | 'examsystem' | 'placementtest' | 'teachereval' | 'dailyperf'
   | 'automessaging' | 'marketing' | 'videoeditor' | 'reports' | 'anticheat'
   | 'subscriptions' | 'liveanalytics' | 'homework' | 'chat' | 'meetlive'
-  | 'videoarchive' | 'examroom' | 'aidev' | 'settings'
+  | 'videoarchive' | 'examroom' | 'aidev' | 'settings' | 'academicroom'
 
 function DashboardInner() {
   const { user, logout } = useAuth()
@@ -61,6 +62,7 @@ function DashboardInner() {
       case 'marketing': return <MarketingPage />
       case 'automessaging': return <AutoMessagingPage />
       case 'videoeditor': return <VideoEditorPage />
+      case 'academicroom': return <AcademicRoomPage />
       default: return <DashboardPage />
     }
   }
