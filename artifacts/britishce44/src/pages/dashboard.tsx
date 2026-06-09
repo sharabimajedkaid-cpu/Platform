@@ -472,6 +472,212 @@ function SectionHeader({ title, sub }: { title: string; sub?: string }) {
 }
 
 /* ─────────────────────────────────────────────────── */
+/*  Center Info Section — Logo + Arabic floating cards  */
+/* ─────────────────────────────────────────────────── */
+
+const ARABIC_CARDS = [
+  {
+    id: 'why', emoji: '🏆', color: { from: '#c47d00', to: '#f0a500', glow: 'rgba(240,165,0,0.18)', border: 'rgba(240,165,0,0.25)' },
+    titleAr: 'لماذا نحن الأفضل؟',
+    subtitleAr: 'الأفضل في تعليم اللغة الإنجليزية عن بُعد',
+    titleEn: 'Why We\'re the Best',
+    items: [
+      { ar: 'جودة التعليم', en: 'منهج متطور ومدربين مؤهلين مع التركيز على التفاعل' },
+      { ar: 'التكنولوجيا الحديثة', en: 'أحدث التقنيات لجعل التعليم ممتعاً وفعالاً' },
+      { ar: 'التواصل الدائم', en: 'تواصل مستمر مع أولياء الأمور وتقارير مفصلة' },
+      { ar: 'المنهج المعتمد دولياً', en: 'منهج معترف به من مؤسسات دولية معروفة' },
+      { ar: 'الأسعار المناسبة', en: 'أسعار مناسبة ومتاحة لجميع الطلاب' },
+      { ar: 'الدعم الفني 24/7', en: 'فريق دعم فني متخصص على مدار الساعة' },
+      { ar: 'البرامج الخاصة', en: 'برامج مصممة لتلبية احتياجات الطلاب الخاصة' },
+      { ar: 'شهادات الامتياز', en: 'شهادة إضافية للطلاب ذوي النتائج الممتازة' },
+    ],
+  },
+  {
+    id: 'services', emoji: '🎓', color: { from: '#1d4ed8', to: '#3b82f6', glow: 'rgba(59,130,246,0.18)', border: 'rgba(59,130,246,0.25)' },
+    titleAr: 'خدماتنا',
+    subtitleAr: 'المركز البريطاني الأول أونلاين',
+    titleEn: 'Our Services',
+    items: [
+      { ar: 'دورات اللغة الإنجليزية', en: 'لجميع المستويات من المبتدئ إلى المتقدم بمنهج متكامل' },
+      { ar: 'تحضير IELTS & TOEFL', en: 'دورات متخصصة لتحضير الطلاب للامتحانات الدولية' },
+      { ar: 'دورات الموظفين والأعمال', en: 'برامج للغة الإنجليزية التجارية والمهنية' },
+      { ar: 'دورات مكثفة', en: 'برامج مكثفة لتحسين اللغة بسرعة مع التركيز على المحادثة' },
+      { ar: 'دبلوم ICDL', en: 'شهادة معتمدة دولياً في مهارات الحاسب مع تدريب عملي' },
+    ],
+  },
+  {
+    id: 'features', emoji: '✨', color: { from: '#059669', to: '#10b981', glow: 'rgba(16,185,129,0.18)', border: 'rgba(16,185,129,0.25)' },
+    titleAr: 'مميزاتنا',
+    subtitleAr: 'ما يجعلنا الأفضل والمختلف',
+    titleEn: 'Our Unique Features',
+    items: [
+      { ar: 'تعليم لجميع الأعمار', en: 'من 6 سنوات فما فوق، بمنهج يناسب احتياجات كل طالب' },
+      { ar: 'كادر مبدع ذو خبرة', en: 'مدربون مؤهلون بشهادات دولية معترف بها' },
+      { ar: 'أحدث المناهج التعليمية', en: 'منهج متطور ومتجدد يركز على التفاعل والتعلم النشط' },
+      { ar: 'تطبيقات Multimedia', en: 'فيديوهات وصور وألعاب تعليمية تجعل التعلم ممتعاً' },
+      { ar: 'تقنية Shadowing', en: 'تقنية فعالة لتحسين النطق والاستماع والمحادثة' },
+    ],
+  },
+  {
+    id: 'diploma', emoji: '📜', color: { from: '#7c3aed', to: '#8b5cf6', glow: 'rgba(139,92,246,0.18)', border: 'rgba(139,92,246,0.25)' },
+    titleAr: 'دبلوم اللغة الإنجليزية',
+    subtitleAr: 'دورات لجميع المستويات',
+    titleEn: 'English Diploma Courses',
+    items: [
+      { ar: 'دورات المبتدئ', en: 'Fly High 1a/1b · Fly High 2a/2b · Fly High 3a/3b' },
+      { ar: 'دورات الأطفال', en: 'Oxford Phonics 1 · Oxford Phonics 2 · Oxford Phonics 3' },
+      { ar: 'المتوسط والمتقدم', en: 'Level 1–5 (A, B, C) · 15 مستوى شامل' },
+      { ar: 'دبلوم الأطفال', en: 'Basic 1–6 Kids · Kids Levels 1–4 (a, b, c)' },
+      { ar: 'الأطفال الكبار', en: 'Gogo Loves English 1–6 · American Speakout كل المستويات' },
+    ],
+  },
+]
+
+function CenterInfoSection() {
+  return (
+    <div className="space-y-6">
+      {/* Logo banner */}
+      <div className="rounded-2xl overflow-hidden relative"
+        style={{
+          background: 'linear-gradient(135deg, #060e24 0%, #0d1a3e 40%, #162050 70%, #0a1228 100%)',
+          border: '1px solid rgba(196,125,0,0.25)',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.05)',
+        }}>
+        {/* Decorative pattern */}
+        <div className="absolute inset-0 opacity-[0.025]"
+          style={{ backgroundImage: 'radial-gradient(circle, rgba(196,125,0,0.9) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse, rgba(196,125,0,0.12), transparent)', filter: 'blur(20px)' }} />
+
+        <div className="relative flex flex-col md:flex-row items-center gap-6 p-6 md:p-8">
+          {/* Logo */}
+          <div className="shrink-0 relative">
+            <div className="w-28 h-28 rounded-2xl overflow-hidden shadow-2xl"
+              style={{ border: '2px solid rgba(196,125,0,0.40)', boxShadow: '0 8px 32px rgba(196,125,0,0.20)' }}>
+              <img src="/center-logo.png" alt="المركز البريطاني الأول"
+                className="w-full h-full object-contain bg-white p-2" />
+            </div>
+          </div>
+
+          {/* Center text */}
+          <div className="flex-1 text-center md:text-right" dir="rtl">
+            <p className="text-xs text-amber-400/60 uppercase tracking-[0.2em] mb-1">BRITISHCE44</p>
+            <h2 className="text-2xl md:text-3xl font-black text-white leading-tight mb-1"
+              style={{ fontFamily: 'Cairo, sans-serif' }}>
+              المركز البريطاني الأول
+            </h2>
+            <p className="text-base text-amber-400/90 font-semibold mb-2"
+              style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              التعليم أونلاين
+            </p>
+            <p className="text-sm text-white/50" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              الأفضل في تعليم اللغة الإنجليزية عن بعد
+            </p>
+            <div className="flex items-center gap-4 mt-3 justify-center md:justify-start flex-wrap">
+              <span className="flex items-center gap-1.5 text-[10px] text-emerald-400" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />تعز · اليمن
+              </span>
+              <span className="text-[10px] text-white/30">·</span>
+              <span className="text-[10px] text-indigo-300/60">The First British Center for Online Education</span>
+            </div>
+          </div>
+
+          {/* Stats side */}
+          <div className="shrink-0 grid grid-cols-2 gap-3 text-center">
+            {[
+              { n: '50+', ar: 'طالب مسجل' },
+              { n: '9', ar: 'مدرس متخصص' },
+              { n: '14', ar: 'كتاباً دراسياً' },
+              { n: '240', ar: 'فصل دراسي' },
+            ].map(s => (
+              <div key={s.n} className="px-4 py-3 rounded-xl"
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <p className="text-xl font-black text-amber-400">{s.n}</p>
+                <p className="text-[10px] text-white/50 mt-0.5" style={{ fontFamily: 'Cairo, sans-serif' }}>{s.ar}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Arabic info cards grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {ARABIC_CARDS.map((card, cardIdx) => (
+          <motion.div key={card.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: cardIdx * 0.08, duration: 0.4 }}
+            whileHover={{ y: -3 }}
+            className="rounded-2xl overflow-hidden cursor-default"
+            style={{
+              background: 'white',
+              border: `1px solid ${card.color.border}`,
+              boxShadow: `0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px ${card.color.border}`,
+              transition: 'box-shadow 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.boxShadow = `0 12px 36px ${card.color.glow}, 0 0 0 1px ${card.color.border}`}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px ${card.color.border}`}>
+
+            {/* Card header */}
+            <div className="relative overflow-hidden px-5 py-4"
+              style={{ background: `linear-gradient(135deg, ${card.color.from} 0%, ${card.color.to} 100%)` }}>
+              {/* Halftone overlay */}
+              <div className="absolute inset-0 opacity-[0.06]"
+                style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px)', backgroundSize: '10px 10px' }} />
+              <div className="absolute top-0 right-0 w-24 h-24 opacity-20 rounded-bl-full"
+                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.4), transparent)' }} />
+
+              <div className="relative flex items-center justify-between" dir="rtl">
+                <div>
+                  <p className="text-[10px] text-white/60 uppercase tracking-widest mb-0.5">{card.titleEn}</p>
+                  <h3 className="text-xl font-black text-white leading-tight"
+                    style={{ fontFamily: 'Cairo, sans-serif' }}>{card.titleAr}</h3>
+                  <p className="text-[11px] text-white/70 mt-0.5"
+                    style={{ fontFamily: 'Tajawal, sans-serif' }}>{card.subtitleAr}</p>
+                </div>
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
+                  style={{ background: 'rgba(255,255,255,0.18)', border: '1.5px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(4px)' }}>
+                  {card.emoji}
+                </div>
+              </div>
+            </div>
+
+            {/* Card body — list items */}
+            <div className="px-5 py-4 space-y-2.5" dir="rtl">
+              {card.items.map((item, i) => (
+                <div key={i} className="flex items-start gap-3 group">
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5"
+                    style={{ background: `${card.color.from}14`, color: card.color.from, border: `1px solid ${card.color.from}20` }}>
+                    {i + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-gray-800 leading-tight"
+                      style={{ fontFamily: 'Cairo, sans-serif' }}>{item.ar}</p>
+                    <p className="text-[10px] text-gray-400 mt-0.5 leading-relaxed"
+                      style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.en}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Card footer */}
+            <div className="px-5 pb-4 flex items-center justify-between" dir="rtl">
+              <span className="text-[9px] text-gray-400" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                المركز البريطاني الأول · BRITISHCE44
+              </span>
+              <span className="text-[9px] font-semibold px-2.5 py-1 rounded-full"
+                style={{ color: card.color.from, background: `${card.color.from}10`, border: `1px solid ${card.color.from}20` }}>
+                اليمن · تعز
+              </span>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────────────── */
 /*  Dashboard page                                      */
 /* ─────────────────────────────────────────────────── */
 
@@ -548,6 +754,11 @@ export function DashboardPage() {
           </div>
         </div>
 
+        {/* ── CENTER INFO ── */}
+        <div className="rounded-2xl p-5 bg-white border border-gray-100/80" style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
+          <CenterInfoSection />
+        </div>
+
         {/* ── COURSES SECTION ── */}
         <div className="rounded-2xl p-5 bg-white border border-gray-100/80" style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
           <CoursesSection />
@@ -601,6 +812,10 @@ export function DashboardPage() {
             ))}
           </div>
         </div>
+        {/* Center info for teacher */}
+        <div className="rounded-2xl p-5 bg-white border border-gray-100/80" style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
+          <CenterInfoSection />
+        </div>
         {/* Courses for teacher */}
         <div className="rounded-2xl p-5 bg-white border border-gray-100/80" style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
           <CoursesSection />
@@ -624,6 +839,10 @@ export function DashboardPage() {
         <StatCard label="Completed" value="12" icon="✅" idx={1} />
         <StatCard label="Upcoming" value="3" icon="📅" idx={2} sub="This week" />
         <StatCard label="Grade" value="A+" icon="⭐" idx={3} />
+      </div>
+      {/* Center info for student/parent */}
+      <div className="rounded-2xl p-5 bg-white border border-gray-100/80" style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
+        <CenterInfoSection />
       </div>
       {/* Courses for student/parent */}
       <div className="rounded-2xl p-5 bg-white border border-gray-100/80" style={{ boxShadow: '0 2px 12px rgba(8,15,34,0.05)' }}>
