@@ -58,6 +58,14 @@ const T: Record<string, Entry> = {
   'nav.academicroom': { en: 'Academic Mgmt Room', ar: 'غرفة الإدارة الأكاديمية' },
   'nav.aidev': { en: 'AI Dev Assistant', ar: 'مساعد المطوّر الذكي' },
   'nav.settings': { en: 'Platform Settings', ar: 'إعدادات المنصة' },
+  'nav.notifications': { en: 'Notification Center', ar: 'مركز الإشعارات' },
+  'nav.globalsearch': { en: 'Global Search', ar: 'البحث الشامل' },
+  'nav.ailearning': { en: 'AI Learning Hub', ar: 'مركز التعلّم الذكي' },
+  'nav.commandcenter': { en: 'Command Center', ar: 'مركز القيادة' },
+  'nav.downloadcenter': { en: 'Download Center', ar: 'مركز التحميل' },
+  'nav.parentportal': { en: 'Parent Portal', ar: 'بوابة ولي الأمر' },
+  'nav.compliance': { en: 'Compliance Center', ar: 'مركز الامتثال' },
+  'nav.statuspage': { en: 'System Status', ar: 'حالة النظام' },
 
   /* ── sidebar section dividers ── */
   'section.academicTools': { en: 'Academic Tools', ar: 'الأدوات الأكاديمية' },
@@ -65,6 +73,8 @@ const T: Record<string, Entry> = {
   'section.analytics': { en: 'Analytics & Reports', ar: 'التحليلات والتقارير' },
   'section.management': { en: 'Management', ar: 'الإدارة' },
   'section.platformAdmin': { en: 'Platform Admin', ar: 'إدارة المنصة' },
+  'section.experience': { en: 'Experience & Insights', ar: 'التجربة والرؤى' },
+  'section.trust': { en: 'Trust & Apps', ar: 'الثقة والتطبيقات' },
 
   /* ── chrome ── */
   'chrome.portal': { en: 'Portal', ar: 'البوابة' },

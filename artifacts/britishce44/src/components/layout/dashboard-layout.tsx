@@ -24,6 +24,14 @@ import { MarketingPage } from '@/pages/marketing'
 import { AutoMessagingPage } from '@/pages/auto-messaging'
 import { VideoEditorPage } from '@/pages/video-editor'
 import { AcademicRoomPage } from '@/pages/academic-room'
+import { NotificationsPage } from '@/pages/notifications'
+import { GlobalSearchPage } from '@/pages/global-search'
+import { AiLearningPage } from '@/pages/ai-learning'
+import { CommandCenterPage } from '@/pages/command-center'
+import { DownloadCenterPage } from '@/pages/download-center'
+import { ParentPortalPage } from '@/pages/parent-portal'
+import { CompliancePage } from '@/pages/compliance'
+import { StatusPage } from '@/pages/status-page'
 import { ClassroomRoom } from '@/components/classroom/classroom-room'
 
 export type PageKey =
@@ -32,6 +40,8 @@ export type PageKey =
   | 'automessaging' | 'marketing' | 'videoeditor' | 'reports' | 'anticheat'
   | 'subscriptions' | 'liveanalytics' | 'homework' | 'chat' | 'meetlive'
   | 'videoarchive' | 'examroom' | 'aidev' | 'settings' | 'academicroom'
+  | 'notifications' | 'globalsearch' | 'ailearning' | 'commandcenter'
+  | 'downloadcenter' | 'parentportal' | 'compliance' | 'statuspage'
 
 function DashboardInner() {
   const { user, logout } = useAuth()
@@ -63,6 +73,14 @@ function DashboardInner() {
       case 'automessaging': return <AutoMessagingPage />
       case 'videoeditor': return <VideoEditorPage />
       case 'academicroom': return <AcademicRoomPage />
+      case 'notifications': return <NotificationsPage />
+      case 'globalsearch': return <GlobalSearchPage />
+      case 'ailearning': return <AiLearningPage />
+      case 'commandcenter': return <CommandCenterPage />
+      case 'downloadcenter': return <DownloadCenterPage />
+      case 'parentportal': return <ParentPortalPage />
+      case 'compliance': return <CompliancePage />
+      case 'statuspage': return <StatusPage />
       default: return <DashboardPage />
     }
   }
