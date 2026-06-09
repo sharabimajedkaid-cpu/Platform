@@ -244,25 +244,27 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
         </div>
       )}
 
-      {/* ── MONITOR STRIP (always at top) ── */}
-      {!stripCollapsed ? (
-        <MonitorStrip
-          participants={allParticipants}
-          isTeacher={isTeacher}
-          stripHeight={stripHeight}
-          onStripHeightChange={setStripHeight}
-        />
-      ) : (
-        <div className="flex items-center justify-between px-3 py-1.5 shrink-0"
-          style={{ background: '#080f22', borderBottom: '1px solid rgba(99,102,241,0.10)', height: 36 }}>
-          <span className="text-[9px] text-gray-600">Monitor strip hidden · {allParticipants.length} online</span>
-          {isTeacher && (
-            <button onClick={() => setStripCollapsed(false)}
-              className="text-[9px] text-indigo-400 hover:text-indigo-300 transition">
-              ▲ Show monitors
-            </button>
-          )}
-        </div>
+      {/* ── MONITOR STRIP (always at top, hidden in Resources mode for full space) ── */}
+      {wbLayout !== 'resources' && (
+        !stripCollapsed ? (
+          <MonitorStrip
+            participants={allParticipants}
+            isTeacher={isTeacher}
+            stripHeight={stripHeight}
+            onStripHeightChange={setStripHeight}
+          />
+        ) : (
+          <div className="flex items-center justify-between px-3 py-1.5 shrink-0"
+            style={{ background: '#080f22', borderBottom: '1px solid rgba(99,102,241,0.10)', height: 36 }}>
+            <span className="text-[9px] text-gray-600">Monitor strip hidden · {allParticipants.length} online</span>
+            {isTeacher && (
+              <button onClick={() => setStripCollapsed(false)}
+                className="text-[9px] text-indigo-400 hover:text-indigo-300 transition">
+                ▲ Show monitors
+              </button>
+            )}
+          </div>
+        )
       )}
 
       {/* ── Main content ── */}
