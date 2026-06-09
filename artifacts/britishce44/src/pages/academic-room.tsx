@@ -1,10 +1,59 @@
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 /* Academic Management Room — Comprehensive center for all academic operations */
 
-type Tab = 'overview'|'intake'|'students'|'schedule'|'templates'|'archive'|'reports'
+type Tab = 'overview'|'monitor'|'writer'|'intake'|'students'|'schedule'|'templates'|'archive'|'reports'
+
+/* ── Live room monitor data ─────────────────────────────── */
+interface MonRoom {
+  id:string; num:number; teacher:string; level:string; students:number
+  status:'live'|'exam'|'idle'; hand:boolean; arabicAlert:boolean
+}
+const MON_TEACHERS=['T. Suhair','T. Waad','T. Hassan','T. Jamal','T. Mona','T. Omar','T. Lina','T. Yousef']
+const MON_LEVELS=['Phonics 1','Gogo 1','Gogo 3','Speakout Pre','Speakout Int','IELTS Prep','Beginner','Elementary']
+const MONITOR_ROOMS:MonRoom[]=Array.from({length:24}).map((_,i)=>({
+  id:`room-${i+1}`,
+  num:101+i,
+  teacher:MON_TEACHERS[i%MON_TEACHERS.length],
+  level:MON_LEVELS[i%MON_LEVELS.length],
+  students:8+((i*7)%32),
+  status:i%8===0?'idle':i%5===0?'exam':'live',
+  hand:i%6===0,
+  arabicAlert:i%9===0,
+}))
+const TOTAL_ROOMS=240
+
+const ROOM_STATUS={
+  live:{color:'#34d399',label:'LIVE',labelAr:'مباشر'},
+  exam:{color:'#f0a500',label:'EXAM',labelAr:'اختبار'},
+  idle:{color:'#64748b',label:'IDLE',labelAr:'خامل'},
+} as const
+
+function AudioBars({color,active}:{color:string;active:boolean}){
+  return (
+    <div className="flex items-end gap-[2px] h-3.5">
+      {[0,1,2,3].map(i=>(
+        <span key={i} className={`w-[2px] rounded-full ${active?'animate-pulse':''}`}
+          style={{background:active?color:'rgba(255,255,255,0.15)',height:active?`${5+((i*3+4)%9)}px`:'3px',animationDelay:`${i*120}ms`,animationDuration:'700ms'}} />
+      ))}
+    </div>
+  )
+}
+const fmtTime=(s:number)=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`
+
+interface Recording{id:string;name:string;dur:string;date:string;room:string}
+const SEED_RECORDINGS:Recording[]=[
+  {id:'rec1',name:'Monitor Session — Morning Sweep',dur:'18:42',date:'Today 09:10',room:'All rooms'},
+  {id:'rec2',name:'Room 104 · Speakout Int observation',dur:'42:15',date:'Yesterday 11:00',room:'Room 104'},
+  {id:'rec3',name:'Room 112 · IELTS Prep review',dur:'31:08',date:'Oct 6 14:30',room:'Room 112'},
+]
+interface DocNote{id:string;title:string;body:string;preview:string;date:string;words:number}
+const SEED_DOCS:DocNote[]=[
+  {id:'d1',title:'Weekly supervision notes',body:'Rooms 101–108 observed. Teaching pace strong in Gogo levels. Phonics 1 room needs more interactive drills. Recommend follow-up with T. Suhair on student participation.',preview:'Rooms 101–108 observed. Teaching pace strong in Gogo levels…',date:'Today 08:40',words:182},
+  {id:'d2',title:'Teacher feedback — T. Waad',body:'Excellent classroom management. Suggest more speaking drills and peer activities. Students engaged throughout the Speakout Int session.',preview:'Excellent classroom management. Suggest more speaking drills…',date:'Yesterday',words:96},
+]
 
 interface Student {
   id:string; name:string; nameAr?:string; email:string; phone:string; level:string
@@ -54,6 +103,70 @@ export function AcademicRoomPage() {
   const [meetingActive,setMeetingActive]=useState(false)
   const [meetingMinimized,setMeetingMinimized]=useState(false)
 
+  // ── Ghost monitor + recorder ──
+  const [ghostMic,setGhostMic]=useState(false)
+  const [ghostCam,setGhostCam]=useState(false)
+  const [focusedRoom,setFocusedRoom]=useState<MonRoom|null>(null)
+  const [roomSearch,setRoomSearch]=useState('')
+  const [recording,setRecording]=useState(false)
+  const [recSecs,setRecSecs]=useState(0)
+  const [recordings,setRecordings]=useState<Recording[]>(SEED_RECORDINGS)
+
+  useEffect(()=>{
+    if(!recording) return
+    const t=setInterval(()=>setRecSecs(s=>s+1),1000)
+    return ()=>clearInterval(t)
+  },[recording])
+
+  const toggleRecord=()=>{
+    if(recording){
+      if(recSecs>2){
+        setRecordings(p=>[{
+          id:`rec-${Date.now()}`,
+          name:focusedRoom?`Room ${focusedRoom.num} · ${focusedRoom.level}`:'Monitor Session — Live Sweep',
+          dur:fmtTime(recSecs),date:'Just now',room:focusedRoom?`Room ${focusedRoom.num}`:'All rooms',
+        },...p])
+      }
+      setRecording(false);setRecSecs(0)
+    } else { setRecording(true);setRecSecs(0) }
+  }
+
+  const visibleRooms=MONITOR_ROOMS.filter(r=>{
+    const q=roomSearch.toLowerCase()
+    return !q||String(r.num).includes(q)||r.teacher.toLowerCase().includes(q)||r.level.toLowerCase().includes(q)
+  })
+  const liveCount=MONITOR_ROOMS.filter(r=>r.status==='live').length
+
+  // ── Text writer ──
+  const [docTitle,setDocTitle]=useState('Untitled note')
+  const [docBody,setDocBody]=useState('')
+  const [docs,setDocs]=useState<DocNote[]>(SEED_DOCS)
+  const [docSaved,setDocSaved]=useState(false)
+  const taRef=useRef<HTMLTextAreaElement>(null)
+  const wordCount=docBody.trim()?docBody.trim().split(/\s+/).length:0
+
+  const wrapSel=(before:string,after=before)=>{
+    const ta=taRef.current; if(!ta) return
+    const s=ta.selectionStart, e=ta.selectionEnd
+    const sel=docBody.slice(s,e)||'text'
+    const next=docBody.slice(0,s)+before+sel+after+docBody.slice(e)
+    setDocBody(next)
+    requestAnimationFrame(()=>{ta.focus();ta.setSelectionRange(s+before.length,s+before.length+sel.length)})
+  }
+  const prefixLine=(p:string)=>{
+    const ta=taRef.current; if(!ta) return
+    const s=ta.selectionStart
+    const lineStart=docBody.lastIndexOf('\n',s-1)+1
+    const next=docBody.slice(0,lineStart)+p+docBody.slice(lineStart)
+    setDocBody(next)
+    requestAnimationFrame(()=>{ta.focus();ta.setSelectionRange(s+p.length,s+p.length)})
+  }
+  const saveDoc=()=>{
+    if(!docBody.trim()) return
+    setDocs(p=>[{id:`d-${Date.now()}`,title:docTitle||'Untitled note',body:docBody,preview:docBody.slice(0,90),date:'Just now',words:wordCount},...p])
+    setDocSaved(true);setTimeout(()=>setDocSaved(false),2000)
+  }
+
   const filtered=students.filter(s=>{
     const q=search.toLowerCase()
     return (s.name.toLowerCase().includes(q)||s.course.toLowerCase().includes(q))
@@ -62,6 +175,8 @@ export function AcademicRoomPage() {
 
   const tabs: {id:Tab;label:string;labelAr:string;emoji:string}[] = [
     {id:'overview',label:'Overview',labelAr:'نظرة عامة',emoji:'📊'},
+    {id:'monitor',label:'Live Monitor',labelAr:'المراقبة المباشرة',emoji:'👁'},
+    {id:'writer',label:'Text Writer',labelAr:'محرر النصوص',emoji:'✍️'},
     {id:'intake',label:'New Intake',labelAr:'القبول الجديد',emoji:'🎓'},
     {id:'students',label:'All Students',labelAr:'جميع الطلاب',emoji:'👥'},
     {id:'schedule',label:'Schedule',labelAr:'الجدول',emoji:'📅'},
@@ -183,6 +298,180 @@ export function AcademicRoomPage() {
                   </div>
                   <span className="text-[9px] text-white/25 flex-shrink-0">{a.time}</span>
                 </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* LIVE MONITOR — all rooms on one screen + ghost mode */}
+      {tab==='monitor'&&(
+        <div className="space-y-4">
+          {/* Ghost mode + recorder control bar */}
+          <div className="rounded-2xl p-4 relative overflow-hidden"
+            style={{background:'linear-gradient(135deg,#0a1024,#0d1730)',border:`1px solid ${(ghostMic||ghostCam)?'rgba(239,68,68,0.4)':'rgba(37,99,235,0.3)'}`}}>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+                  style={{background:(ghostMic||ghostCam)?'rgba(239,68,68,0.15)':'rgba(37,99,235,0.15)',border:`1px solid ${(ghostMic||ghostCam)?'rgba(239,68,68,0.35)':'rgba(37,99,235,0.35)'}`}}>
+                  {(ghostMic||ghostCam)?'🔴':'👻'}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-black text-white">Ghost Monitor Mode</p>
+                  {!ghostMic&&!ghostCam&&(
+                    <p className="text-[11px] text-emerald-400">You are invisible &amp; muted — watching silently. No room can see or hear you.</p>
+                  )}
+                  {(ghostMic||ghostCam)&&(
+                    <p className="text-[11px] text-red-400 font-bold">
+                      ⚠ You are now visible to rooms — {ghostMic&&'mic LIVE'}{ghostMic&&ghostCam&&' · '}{ghostCam&&'camera LIVE'}
+                    </p>
+                  )}
+                  <p className="text-[9px] text-white/30" style={{fontFamily:'Tajawal,sans-serif'}}>وضع المراقبة الصامتة · غير مرئي حتى تشغّل المايك أو الكاميرا</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button onClick={()=>setGhostMic(v=>!v)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition"
+                  style={{background:ghostMic?'rgba(239,68,68,0.2)':'rgba(255,255,255,0.05)',color:ghostMic?'#f87171':'rgba(255,255,255,0.6)',border:`1px solid ${ghostMic?'rgba(239,68,68,0.4)':'rgba(255,255,255,0.1)'}`}}>
+                  {ghostMic?'🎙 Mic ON':'🔇 Reveal Mic'}
+                </button>
+                <button onClick={()=>setGhostCam(v=>!v)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition"
+                  style={{background:ghostCam?'rgba(239,68,68,0.2)':'rgba(255,255,255,0.05)',color:ghostCam?'#f87171':'rgba(255,255,255,0.6)',border:`1px solid ${ghostCam?'rgba(239,68,68,0.4)':'rgba(255,255,255,0.1)'}`}}>
+                  {ghostCam?'📷 Cam ON':'🚫 Reveal Camera'}
+                </button>
+                <div className="w-px h-7 bg-white/10" />
+                <button onClick={toggleRecord}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition"
+                  style={{background:recording?'rgba(239,68,68,0.2)':'rgba(200,148,10,0.15)',color:recording?'#f87171':'#f0a500',border:`1px solid ${recording?'rgba(239,68,68,0.45)':'rgba(200,148,10,0.35)'}`}}>
+                  {recording?<><span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> Stop · {fmtTime(recSecs)}</>:'⏺ Record'}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Search + counters */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="relative flex-1 min-w-48">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25">🔍</span>
+              <input value={roomSearch} onChange={e=>setRoomSearch(e.target.value)} placeholder="Filter rooms by number, teacher or level…"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm outline-none"
+                style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',color:'white'}} />
+            </div>
+            <div className="flex items-center gap-3 text-xs">
+              <span className="flex items-center gap-1.5 text-emerald-400"><span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />{liveCount} live</span>
+              <span className="text-white/30">Monitoring {TOTAL_ROOMS} rooms · showing {visibleRooms.length}</span>
+            </div>
+          </div>
+
+          {/* Room wall */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {visibleRooms.map(r=>{
+              const sc=ROOM_STATUS[r.status]
+              return (
+                <motion.button key={r.id} onClick={()=>setFocusedRoom(r)}
+                  whileHover={{y:-3}} className="rounded-2xl overflow-hidden text-left"
+                  style={{background:'rgba(8,14,32,0.9)',border:`1px solid ${sc.color}22`}}>
+                  {/* feed */}
+                  <div className="relative h-24" style={{background:'linear-gradient(135deg,#060e1c,#0d1a30)'}}>
+                    <div className="absolute inset-0 flex items-center justify-center text-2xl opacity-50">{r.status==='idle'?'💤':'🎥'}</div>
+                    <div className="absolute top-1.5 left-1.5 flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[8px] font-black"
+                      style={{background:'rgba(0,0,0,0.5)',color:sc.color}}>
+                      {r.status!=='idle'&&<span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{background:sc.color}} />}{sc.label}
+                    </div>
+                    <div className="absolute top-1.5 right-1.5 flex gap-1">
+                      {r.hand&&<span className="text-[10px]" title="Raised hand">✋</span>}
+                      {r.arabicAlert&&<span className="text-[9px] px-1 rounded bg-red-500/30 text-red-300 font-bold" title="Arabic detected">ع</span>}
+                    </div>
+                    <div className="absolute bottom-1.5 right-1.5"><AudioBars color={sc.color} active={r.status==='live'} /></div>
+                  </div>
+                  {/* meta */}
+                  <div className="p-2.5">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-black text-white">Room {r.num}</p>
+                      <span className="text-[9px] text-white/35">👤 {r.students}</span>
+                    </div>
+                    <p className="text-[10px] text-white/45 truncate">{r.teacher}</p>
+                    <p className="text-[9px] truncate" style={{color:sc.color}}>{r.level}</p>
+                  </div>
+                </motion.button>
+              )
+            })}
+          </div>
+
+          {/* Recordings */}
+          <div className="rounded-2xl p-4" style={{background:'rgba(8,14,32,0.9)',border:'1px solid rgba(255,255,255,0.06)'}}>
+            <p className="text-sm font-black text-white mb-3">🎞 Recorded Sessions <span className="text-white/30 font-normal text-xs">· {recordings.length}</span></p>
+            <div className="space-y-2">
+              {recordings.map(rec=>(
+                <div key={rec.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/[0.03] transition"
+                  style={{border:'1px solid rgba(255,255,255,0.05)'}}>
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center text-base flex-shrink-0" style={{background:'rgba(200,148,10,0.12)',border:'1px solid rgba(200,148,10,0.22)'}}>▶</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-white truncate">{rec.name}</p>
+                    <p className="text-[9px] text-white/35">{rec.room} · {rec.date}</p>
+                  </div>
+                  <span className="text-[10px] text-white/45 flex-shrink-0">{rec.dur}</span>
+                  <button className="text-white/25 hover:text-blue-400 transition text-sm flex-shrink-0" title="Download">⬇</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TEXT WRITER */}
+      {tab==='writer'&&(
+        <div className="grid lg:grid-cols-3 gap-4">
+          {/* Editor */}
+          <div className="lg:col-span-2 rounded-2xl overflow-hidden" style={{background:'rgba(8,14,32,0.9)',border:'1px solid rgba(37,99,235,0.18)'}}>
+            <div className="px-4 py-3 border-b flex items-center gap-2" style={{borderColor:'rgba(255,255,255,0.06)',background:'rgba(6,11,24,0.5)'}}>
+              <input value={docTitle} onChange={e=>setDocTitle(e.target.value)}
+                className="flex-1 bg-transparent text-sm font-bold text-white outline-none" placeholder="Document title…" />
+              <span className="text-[10px] text-white/30">{wordCount} words</span>
+            </div>
+            {/* toolbar */}
+            <div className="flex items-center gap-1 px-3 py-2 border-b flex-wrap" style={{borderColor:'rgba(255,255,255,0.05)'}}>
+              {[
+                {l:'B',fn:()=>wrapSel('**'),cls:'font-black'},
+                {l:'I',fn:()=>wrapSel('*'),cls:'italic'},
+                {l:'U',fn:()=>wrapSel('__'),cls:'underline'},
+                {l:'H',fn:()=>prefixLine('# '),cls:'font-black'},
+                {l:'•',fn:()=>prefixLine('- '),cls:''},
+                {l:'1.',fn:()=>prefixLine('1. '),cls:''},
+                {l:'❝',fn:()=>prefixLine('> '),cls:''},
+              ].map(b=>(
+                <button key={b.l} onClick={b.fn}
+                  className={`w-8 h-8 rounded-lg text-xs text-white/60 hover:text-white hover:bg-white/10 transition ${b.cls}`}>{b.l}</button>
+              ))}
+              <div className="flex-1" />
+              <button onClick={saveDoc}
+                className="px-4 py-1.5 rounded-lg text-xs font-bold transition"
+                style={{background:docSaved?'linear-gradient(135deg,#059669,#065f46)':'linear-gradient(135deg,#2563eb,#1b3ea6)',color:'#fff'}}>
+                {docSaved?'✓ Saved':'💾 Save'}
+              </button>
+            </div>
+            <textarea ref={taRef} value={docBody} onChange={e=>setDocBody(e.target.value)}
+              placeholder="Write supervision notes, teacher feedback, memos or any document here…"
+              className="w-full px-4 py-3 text-sm text-white/85 outline-none resize-none leading-relaxed"
+              style={{background:'transparent',minHeight:380,fontFamily:'inherit'}} />
+          </div>
+
+          {/* Saved docs */}
+          <div className="rounded-2xl p-4" style={{background:'rgba(8,14,32,0.9)',border:'1px solid rgba(255,255,255,0.06)'}}>
+            <p className="text-sm font-black text-white mb-3">📄 Saved Documents <span className="text-white/30 font-normal text-xs">· {docs.length}</span></p>
+            <div className="space-y-2">
+              {docs.map(d=>(
+                <button key={d.id} onClick={()=>{setDocTitle(d.title);setDocBody(d.body)}}
+                  className="w-full text-left p-3 rounded-xl hover:bg-white/[0.03] transition"
+                  style={{border:'1px solid rgba(255,255,255,0.05)'}}>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs font-bold text-white truncate">{d.title}</p>
+                    <span className="text-[9px] text-white/30 flex-shrink-0">{d.words}w</span>
+                  </div>
+                  <p className="text-[10px] text-white/40 mt-1 line-clamp-2">{d.preview}</p>
+                  <p className="text-[9px] text-white/25 mt-1">{d.date}</p>
+                </button>
               ))}
             </div>
           </div>
@@ -390,6 +679,71 @@ export function AcademicRoomPage() {
           ))}
         </div>
       )}
+
+      {/* Ghost-view focus modal — silently watch & listen to one room */}
+      <AnimatePresence>
+        {focusedRoom&&(
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{background:'rgba(2,6,15,0.82)',backdropFilter:'blur(4px)'}}
+            onClick={()=>setFocusedRoom(null)}>
+            <motion.div initial={{scale:0.9,y:20}} animate={{scale:1,y:0}} exit={{scale:0.9,y:20}}
+              onClick={e=>e.stopPropagation()}
+              className="w-full max-w-2xl rounded-2xl overflow-hidden"
+              style={{background:'#0a1228',border:`1px solid ${(ghostMic||ghostCam)?'rgba(239,68,68,0.4)':'rgba(37,99,235,0.35)'}`,boxShadow:'0 24px 64px rgba(0,0,0,0.6)'}}>
+              {/* header */}
+              <div className="flex items-center gap-2 px-4 py-3" style={{borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                <span className="w-2 h-2 rounded-full animate-pulse" style={{background:ROOM_STATUS[focusedRoom.status].color}} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-black text-white">Room {focusedRoom.num} · {focusedRoom.level}</p>
+                  <p className="text-[10px] text-white/40">{focusedRoom.teacher} · 👤 {focusedRoom.students} students</p>
+                </div>
+                <span className="text-[9px] font-bold px-2 py-1 rounded-full"
+                  style={{background:(ghostMic||ghostCam)?'rgba(239,68,68,0.15)':'rgba(52,211,153,0.12)',color:(ghostMic||ghostCam)?'#f87171':'#34d399'}}>
+                  {(ghostMic||ghostCam)?'🔴 VISIBLE':'👻 GHOST'}
+                </span>
+                <button onClick={()=>setFocusedRoom(null)} className="text-white/40 hover:text-red-400 transition text-sm ml-1">✕</button>
+              </div>
+              {/* feed */}
+              <div className="relative h-72" style={{background:'linear-gradient(135deg,#060e1c,#0d1a30)'}}>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <p className="text-5xl mb-2">{focusedRoom.status==='idle'?'💤':'🎥'}</p>
+                  <p className="text-xs text-white/40">Watching &amp; listening · {focusedRoom.teacher}</p>
+                  <div className="mt-3 flex items-center gap-2 text-[11px] text-emerald-400">
+                    🎧 Audio in <AudioBars color="#34d399" active={focusedRoom.status==='live'} />
+                  </div>
+                </div>
+                {focusedRoom.hand&&<div className="absolute top-3 right-3 text-lg" title="Raised hand">✋</div>}
+                {ghostCam&&(
+                  <div className="absolute bottom-3 right-3 w-20 h-14 rounded-lg flex items-center justify-center text-xl"
+                    style={{background:'rgba(0,0,0,0.55)',border:'1px solid rgba(239,68,68,0.4)'}}>📷</div>
+                )}
+              </div>
+              {/* controls */}
+              <div className="flex items-center justify-between gap-3 px-4 py-3" style={{borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+                <p className="text-[10px] flex-1 min-w-0" style={{color:(ghostMic||ghostCam)?'#f87171':'#34d399'}}>
+                  {(ghostMic||ghostCam)?'⚠ The room can now sense you':'You are invisible & muted — turn on mic or camera to join in'}
+                </p>
+                <button onClick={()=>setGhostMic(v=>!v)}
+                  className="px-3 py-2 rounded-xl text-xs font-bold transition"
+                  style={{background:ghostMic?'rgba(239,68,68,0.2)':'rgba(255,255,255,0.05)',color:ghostMic?'#f87171':'rgba(255,255,255,0.6)',border:`1px solid ${ghostMic?'rgba(239,68,68,0.4)':'rgba(255,255,255,0.1)'}`}}>
+                  {ghostMic?'🎙 Mic ON':'🔇 Unmute'}
+                </button>
+                <button onClick={()=>setGhostCam(v=>!v)}
+                  className="px-3 py-2 rounded-xl text-xs font-bold transition"
+                  style={{background:ghostCam?'rgba(239,68,68,0.2)':'rgba(255,255,255,0.05)',color:ghostCam?'#f87171':'rgba(255,255,255,0.6)',border:`1px solid ${ghostCam?'rgba(239,68,68,0.4)':'rgba(255,255,255,0.1)'}`}}>
+                  {ghostCam?'📷 Cam ON':'🚫 Camera'}
+                </button>
+                <button onClick={toggleRecord}
+                  className="px-3 py-2 rounded-xl text-xs font-bold transition"
+                  style={{background:recording?'rgba(239,68,68,0.2)':'rgba(200,148,10,0.15)',color:recording?'#f87171':'#f0a500',border:`1px solid ${recording?'rgba(239,68,68,0.45)':'rgba(200,148,10,0.35)'}`}}>
+                  {recording?`⏹ ${fmtTime(recSecs)}`:'⏺ Rec'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Floating meeting room */}
       <AnimatePresence>
