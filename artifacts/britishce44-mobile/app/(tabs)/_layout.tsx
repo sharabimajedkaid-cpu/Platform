@@ -27,9 +27,9 @@ function NativeTabLayout() {
         <Icon sf={{ default: "message", selected: "message.fill" }} />
         <Label>Messages</Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="profile">
-        <Icon sf={{ default: "person", selected: "person.fill" }} />
-        <Label>Profile</Label>
+      <NativeTabs.Trigger name="more">
+        <Icon sf={{ default: "ellipsis", selected: "ellipsis.circle.fill" }} />
+        <Label>More</Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -111,14 +111,14 @@ function ClassicTabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="more"
         options={{
-          title: "Profile",
+          title: "More",
           tabBarIcon: ({ color }) =>
             isIOS ? (
-              <Ionicons name="person" size={22} color={color} />
+              <Ionicons name="ellipsis-horizontal-circle" size={22} color={color} />
             ) : (
-              <Feather name="user" size={22} color={color} />
+              <Feather name="menu" size={22} color={color} />
             ),
         }}
       />

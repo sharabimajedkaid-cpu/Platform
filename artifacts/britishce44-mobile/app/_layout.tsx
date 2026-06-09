@@ -5,8 +5,6 @@ import {
   Inter_700Bold,
   useFonts,
 } from "@expo-google-fonts/inter";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { setAuthTokenGetter, setBaseUrl } from "@workspace/api-client-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -18,21 +16,13 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider } from "@/context/AuthContext";
 
-if (process.env.EXPO_PUBLIC_DOMAIN) {
-  setBaseUrl(`https://${process.env.EXPO_PUBLIC_DOMAIN}`);
-}
-
-setAuthTokenGetter(async () => {
-  try {
-    return await AsyncStorage.getItem("b44_token");
-  } catch {
-    return null;
-  }
-});
-
 SplashScreen.preventAutoHideAsync();
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { staleTime: 60 * 1000, retry: 2, refetchOnWindowFocus: false },
+  },
+});
 
 function RootLayoutNav() {
   return (
