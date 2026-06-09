@@ -1,11 +1,12 @@
 import { BlurView } from "expo-blur";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
 
+import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
 
 function NativeTabLayout() {
@@ -40,6 +41,8 @@ function ClassicTabLayout() {
   const isIOS = Platform.OS === "ios";
   const isWeb = Platform.OS === "web";
 
+  const hiddenTab = { tabBarButton: () => null };
+
   return (
     <Tabs
       screenOptions={{
@@ -67,11 +70,7 @@ function ClassicTabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <Ionicons name="home" size={22} color={color} />
-            ) : (
-              <Feather name="home" size={22} color={color} />
-            ),
+            isIOS ? <Ionicons name="home" size={22} color={color} /> : <Feather name="home" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -79,11 +78,7 @@ function ClassicTabLayout() {
         options={{
           title: "Classes",
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <Ionicons name="videocam" size={22} color={color} />
-            ) : (
-              <Feather name="video" size={22} color={color} />
-            ),
+            isIOS ? <Ionicons name="videocam" size={22} color={color} /> : <Feather name="video" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -91,11 +86,7 @@ function ClassicTabLayout() {
         options={{
           title: "Exams",
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <Ionicons name="document-text" size={22} color={color} />
-            ) : (
-              <Feather name="file-text" size={22} color={color} />
-            ),
+            isIOS ? <Ionicons name="document-text" size={22} color={color} /> : <Feather name="file-text" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -103,11 +94,7 @@ function ClassicTabLayout() {
         options={{
           title: "Messages",
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <Ionicons name="chatbubbles" size={22} color={color} />
-            ) : (
-              <Feather name="message-circle" size={22} color={color} />
-            ),
+            isIOS ? <Ionicons name="chatbubbles" size={22} color={color} /> : <Feather name="message-circle" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -115,18 +102,37 @@ function ClassicTabLayout() {
         options={{
           title: "More",
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <Ionicons name="ellipsis-horizontal-circle" size={22} color={color} />
-            ) : (
-              <Feather name="menu" size={22} color={color} />
-            ),
+            isIOS ? <Ionicons name="ellipsis-horizontal-circle" size={22} color={color} /> : <Feather name="menu" size={22} color={color} />,
         }}
       />
+      {/* Hidden navigable screens reachable from the More hub */}
+      <Tabs.Screen name="homework" options={hiddenTab} />
+      <Tabs.Screen name="reports" options={hiddenTab} />
+      <Tabs.Screen name="analytics" options={hiddenTab} />
+      <Tabs.Screen name="teacher-eval" options={hiddenTab} />
+      <Tabs.Screen name="users" options={hiddenTab} />
+      <Tabs.Screen name="video-archive" options={hiddenTab} />
+      <Tabs.Screen name="placements" options={hiddenTab} />
     </Tabs>
   );
 }
 
 export default function TabLayout() {
+  const colors = useColors();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  if (!user) {
+    return <Redirect href="/login" />;
+  }
+
   if (isLiquidGlassAvailable()) {
     return <NativeTabLayout />;
   }
