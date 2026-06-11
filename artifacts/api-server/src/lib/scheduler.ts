@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import cron from "node-cron";
 import {
   db,
@@ -15,7 +15,7 @@ import {
 } from "@workspace/db";
 import { addDaysISO, todayISO } from "./teaching-days";
 import { generateReportsForSheet } from "./reports";
-import { deliverReport } from "./google";
+import { deliverReport, createGoogleCalendarEvent } from "./google";
 import { logger } from "./logger";
 
 async function notifyIfNew(values: {
@@ -219,15 +219,48 @@ export async function runMilestones(): Promise<number> {
   return processed;
 }
 
+// Push local calendar events to Google Calendar and persist the returned event
+// id. Selecting only rows whose googleEventId is still null makes this both the
+// create path (new events) and the backfill path (events made while Calendar was
+// disconnected) — it is naturally idempotent because synced rows are excluded.
+// When Calendar isn't connected, createGoogleCalendarEvent returns null and the
+// row stays unsynced for a later tick once authorization is granted.
+export async function syncCalendarToGoogle(): Promise<number> {
+  const events = await db
+    .select()
+    .from(calendarEvents)
+    .where(isNull(calendarEvents.googleEventId));
+  let synced = 0;
+  for (const ev of events) {
+    const googleEventId = await createGoogleCalendarEvent({
+      summary: ev.title,
+      description: ev.description ?? undefined,
+      date: ev.date,
+    });
+    if (!googleEventId) continue;
+    await db
+      .update(calendarEvents)
+      .set({ googleEventId })
+      .where(eq(calendarEvents.id, ev.id));
+    synced++;
+  }
+  return synced;
+}
+
 export async function tick(): Promise<{
   reminders: number;
   milestones: number;
+  calendarSynced: number;
 }> {
   await reconcileSheets();
   const reminders = await runDueReminders();
   const milestones = await runMilestones();
-  logger.info({ reminders, milestones }, "scheduler tick complete");
-  return { reminders, milestones };
+  const calendarSynced = await syncCalendarToGoogle();
+  logger.info(
+    { reminders, milestones, calendarSynced },
+    "scheduler tick complete",
+  );
+  return { reminders, milestones, calendarSynced };
 }
 
 // Label of the current teaching week, anchored to its Saturday (week start).
@@ -244,6 +277,7 @@ function currentWeekLabel(): string {
 export async function weeklyEvalTick(): Promise<{
   ensured: number;
   notified: number;
+  calendarSynced: number;
 }> {
   const templates = await db
     .select()
@@ -297,10 +331,21 @@ export async function weeklyEvalTick(): Promise<{
       body: `Weekly teacher evaluation reminder — ${tpl.name}${week ? ` · ${week}` : ""}. Please complete and submit.`,
       dedupeKey: `msg:teval:${sheet.id}`,
     });
+    await db
+      .insert(calendarEvents)
+      .values({
+        title: `Weekly teacher evaluation — ${tpl.name}`,
+        description: `Complete and submit the teacher performance evaluation (${tpl.name}${week ? ` · ${week}` : ""}) so reports are sent to each teacher.`,
+        date: todayISO(),
+        type: "reminder",
+        dedupeKey: `cal:teval:${sheet.id}`,
+      })
+      .onConflictDoNothing();
     notified++;
   }
-  logger.info({ ensured, notified }, "weekly eval tick complete");
-  return { ensured, notified };
+  const calendarSynced = await syncCalendarToGoogle();
+  logger.info({ ensured, notified, calendarSynced }, "weekly eval tick complete");
+  return { ensured, notified, calendarSynced };
 }
 
 export function startScheduler(): void {
