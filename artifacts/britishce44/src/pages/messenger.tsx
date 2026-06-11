@@ -1,6 +1,7 @@
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { apiGet, type Message as ApiMessage } from '@/lib/api'
 
 /* ── types ─────────────────────────────────────────── */
 interface Message { id:string; sender:string; text:string; time:string; mine:boolean; read?:boolean; channel?:string }
@@ -83,6 +84,17 @@ export function MessengerPage() {
   const [newContact,setNewContact]=useState({name:'',role:'student',phone:'',email:'',group:'',folder:'students'})
 
   useEffect(()=>{msgEndRef.current?.scrollIntoView({behavior:'smooth'})},[activeId,messages])
+
+  // Load real system messages (assessment reminders / fan-out) — read-only thread.
+  useEffect(()=>{
+    apiGet<{messages:ApiMessage[]}>('/messages').then(d=>{
+      if(!d.messages.length)return
+      const mapped:Message[]=d.messages.map(m=>({id:`s${m.id}`,sender:m.fromName,text:m.body,time:new Date(m.createdAt).toLocaleString('en',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}),mine:false,read:true,channel:'platform'}))
+      setMessages(prev=>({...prev,sys:mapped}))
+      setContacts(prev=>prev.some(c=>c.id==='sys')?prev:[{id:'sys',name:'CE4 System',role:'admin',online:true,unread:0,lastMsg:mapped[mapped.length-1]?.text.slice(0,32),lastTime:'now',group:'Management',pinned:true,folder:'staff'},...prev])
+      setPinnedIds(prev=>prev.includes('sys')?prev:['sys',...prev])
+    }).catch(()=>{})
+  },[])
 
   const activeContact=contacts.find(c=>c.id===activeId)
   const currentMsgs=activeId?messages[activeId]||[]:[]

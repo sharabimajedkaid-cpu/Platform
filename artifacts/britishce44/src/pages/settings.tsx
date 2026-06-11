@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../components/providers/auth-provider'
+import { apiGet, type GoogleStatus } from '@/lib/api'
 
 const BLUE = '#2563eb'
 const GOLD = '#00ae74'
@@ -84,6 +85,12 @@ export function SettingsPage() {
   const [saved, setSaved] = useState(false)
   const handleSave = () => { setSaved(true); setTimeout(() => setSaved(false), 2500) }
 
+  // Live Google (Gmail / Drive / Calendar) connection status
+  const [google, setGoogle] = useState<GoogleStatus | null>(null)
+  useEffect(() => {
+    apiGet<GoogleStatus>('/google/status').then(setGoogle).catch(() => setGoogle(null))
+  }, [])
+
   const aiItems = [
     { key: 'teacherEval', label: 'AI Teacher Evaluation', hint: 'Automatically grade teacher performance' },
     { key: 'autoMessaging', label: 'Auto-Messaging AI', hint: 'AI sends progress alerts to parents' },
@@ -93,12 +100,12 @@ export function SettingsPage() {
   ]
 
   const integrations = [
-    { name: 'Payment Gateway', ar: 'بوابة الدفع', desc: 'Collect fees online', icon: '💳', connected: true, color: '#34d399' },
-    { name: 'WhatsApp Business', ar: 'واتساب للأعمال', desc: 'Parent & student messaging', icon: '💬', connected: true, color: '#25D366' },
-    { name: 'SMTP / Email', ar: 'البريد الإلكتروني', desc: 'Outbound reports & alerts', icon: '✉️', connected: true, color: BLUE },
+    { name: 'Gmail (Reports)', ar: 'جيميل', desc: google ? `Sender: ${google.sender}` : 'Outbound parent & teacher reports', icon: '✉️', connected: !!google?.gmail, color: '#ea4335' },
+    { name: 'Google Drive', ar: 'جوجل درايف', desc: 'Archive of every report by term', icon: '📁', connected: !!google?.drive, color: '#0F9D58' },
+    { name: 'Google Calendar', ar: 'تقويم جوجل', desc: 'Assessment milestone events', icon: '📅', connected: !!google?.calendar, color: '#4285F4' },
+    { name: 'Payment Gateway', ar: 'بوابة الدفع', desc: 'Collect fees online', icon: '💳', connected: false, color: '#34d399' },
+    { name: 'WhatsApp Business', ar: 'واتساب للأعمال', desc: 'Parent & student messaging', icon: '💬', connected: false, color: '#25D366' },
     { name: 'SMS Gateway', ar: 'بوابة الرسائل', desc: 'Critical alerts via SMS', icon: '📱', connected: false, color: '#f87171' },
-    { name: 'AI Provider', ar: 'مزود الذكاء', desc: 'Powers AI tutor & evaluation', icon: '🤖', connected: true, color: '#7dd3fc' },
-    { name: 'Media / WebRTC Server', ar: 'خادم البث', desc: 'Live classroom video', icon: '🎥', connected: true, color: GOLD },
   ]
 
   const roles = [
