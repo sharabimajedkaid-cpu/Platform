@@ -56,6 +56,7 @@ const T: Record<string, Entry> = {
   'nav.videoarchive': { en: 'Video Archive', ar: 'أرشيف الفيديو' },
   'nav.liveanalytics': { en: 'Live Analytics', ar: 'التحليلات المباشرة' },
   'nav.academicroom': { en: 'Academic Mgmt Room', ar: 'غرفة الإدارة الأكاديمية' },
+  'nav.googleforms': { en: 'From Google Forms', ar: 'من نماذج جوجل' },
   'nav.assessment': { en: 'In-Class Assessment', ar: 'تقييم داخل الصف' },
   'nav.calendar': { en: 'Academic Calendar', ar: 'التقويم الأكاديمي' },
   'nav.tasks': { en: 'Tasks Manager', ar: 'مدير المهام' },

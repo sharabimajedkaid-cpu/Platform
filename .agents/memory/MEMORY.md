@@ -4,3 +4,4 @@
 - [Britishce44 brand theme](britishce44-theme.md) — indigo/sky/green logo palette; green needs dark-indigo text for AA; keep amber/red + whiteboard pens out of recolor sweeps.
 - [apiGet unchecked casts hide shape drift](api-response-shape-casts.md) — api.ts casts responses with no runtime check; API/FE shape drift passes typecheck, breaks at runtime.
 - [Prototype auth is intentionally insecure](prototype-auth-security.md) — plaintext demo users + open role self-register; the security validation flag is a separate task, don't bundle.
+- [Vite Fast-Refresh transients](vite-fast-refresh-transients.md) — adding non-component exports to a component file throws phantom "within Provider"/"Invalid hook" errors mid-HMR; gone on full reload, not real bugs.

@@ -1,18 +1,19 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { ScreenConsentViewer } from '@/components/exams/screen-consent-viewer'
 
 /* ─── Types ─────────────────────────────────────────── */
-type ExamStatus = 'draft' | 'approved' | 'scheduled' | 'live' | 'closed'
-interface Exam {
+export type ExamStatus = 'draft' | 'approved' | 'scheduled' | 'live' | 'closed'
+export interface Exam {
   id:string; title:string; model:string; type:string; points:number; duration:number
   level:string; status:ExamStatus; questions:number; createdBy?:string
   scheduledDate?:string; scheduledTime?:string; classrooms?:string[]; students?:string[]
   aiMonitor?:boolean; reminders?:boolean
 }
-interface Question { id:string; text:string; type:'mcq'|'truefalse'|'short'|'essay'|'matching'; options?:string[]; answer?:string; points:number }
+export interface Question { id:string; text:string; type:'mcq'|'truefalse'|'short'|'essay'|'matching'; options?:string[]; answer?:string; points:number }
 
-const STATUS_CFG: Record<ExamStatus,{label:string;color:string;bg:string}> = {
+export const STATUS_CFG: Record<ExamStatus,{label:string;color:string;bg:string}> = {
   draft:     {label:'Draft',     color:'#64748b',bg:'rgba(100,116,139,0.12)'},
   approved:  {label:'Approved',  color:'#34d399',bg:'rgba(52,211,153,0.12)'},
   scheduled: {label:'Scheduled', color:'#60a5fa',bg:'rgba(129,140,248,0.12)'},
@@ -33,7 +34,7 @@ const SEED_EXAMS: Exam[] = [
 ]
 
 /* ─── Bakery question types ─────────────────────────── */
-const Q_TYPES = [
+export const Q_TYPES = [
   {id:'mcq',        icon:'⭕',label:'Multiple Choice',    labelAr:'اختيار من متعدد'},
   {id:'truefalse',  icon:'✅',label:'True / False',       labelAr:'صح أو خطأ'},
   {id:'short',      icon:'✏️',label:'Short Answer',       labelAr:'إجابة قصيرة'},
@@ -45,7 +46,7 @@ const Q_TYPES = [
 ]
 
 /* ─── Settings Modal ───────────────────────────────── */
-function ExamSettingsModal({exam,onSave,onClose}:{exam:Exam;onSave:(e:Exam)=>void;onClose:()=>void}) {
+export function ExamSettingsModal({exam,onSave,onClose}:{exam:Exam;onSave:(e:Exam)=>void;onClose:()=>void}) {
   const [f,setF]=useState({...exam})
   const inp="w-full rounded-lg px-3 py-2 text-sm text-[#150d79] outline-none bg-[#f1f5f9] border border-slate-200 focus:border-[#3FBAEB] placeholder-slate-400 transition"
 
@@ -149,7 +150,7 @@ function ExamSettingsModal({exam,onSave,onClose}:{exam:Exam;onSave:(e:Exam)=>voi
 }
 
 /* ─── PDF Import Modal ──────────────────────────────── */
-function PdfImportModal({onClose}:{onClose:()=>void}) {
+export function PdfImportModal({onClose}:{onClose:()=>void}) {
   const [step,setStep]=useState<'upload'|'preview'|'done'>('upload')
   const [file,setFile]=useState<string|null>(null)
 
@@ -370,6 +371,7 @@ export function ExamSystemPage() {
   const [search,setSearch]=useState('')
   const [settingsExam,setSettingsExam]=useState<Exam|null>(null)
   const [showPdfImport,setShowPdfImport]=useState(false)
+  const [viewer,setViewer]=useState<{name:string;ctx:string}|null>(null)
 
   const models=['A','B','C','D','E','F','G','H','I','J']
   const filtered=exams.filter(e=>{
@@ -484,6 +486,12 @@ export function ExamSystemPage() {
                         style={{background:'rgba(63, 186, 235,0.12)',color:'#0369a1',border:'1px solid rgba(63, 186, 235,0.20)'}}>
                         ⚙️ Settings
                       </button>
+                      <button onClick={()=>setViewer({name:'Selected student',ctx:e.title})}
+                        className="py-1.5 px-2 rounded-lg text-[10px] font-semibold transition"
+                        style={{background:'rgba(124,58,237,0.10)',color:'#6d28d9',border:'1px solid rgba(124,58,237,0.20)'}}
+                        title="View screen with student consent">
+                        🖥️
+                      </button>
                       {e.status==='draft'&&(
                         <button onClick={()=>approveExam(e.id)}
                           className="flex-1 py-1.5 rounded-lg text-[10px] font-semibold transition"
@@ -554,6 +562,7 @@ export function ExamSystemPage() {
       <AnimatePresence>
         {settingsExam&&<ExamSettingsModal exam={settingsExam} onSave={saveExam} onClose={()=>setSettingsExam(null)} />}
         {showPdfImport&&<PdfImportModal onClose={()=>setShowPdfImport(false)} />}
+        {viewer&&<ScreenConsentViewer studentName={viewer.name} contextLabel={viewer.ctx} onClose={()=>setViewer(null)} />}
       </AnimatePresence>
     </div>
   )
