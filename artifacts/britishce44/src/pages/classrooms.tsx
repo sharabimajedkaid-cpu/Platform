@@ -47,7 +47,7 @@ function ClassroomCard({ room, onEnter }: { room: Room; onEnter: (id: number) =>
       className="relative rounded-xl overflow-hidden cursor-pointer select-none flex flex-col"
       style={{
         minHeight: '172px',
-        background: `linear-gradient(145deg, #0f1e48 0%, #122055 100%)`,
+        background: `linear-gradient(145deg, #2a2196 0%, #122055 100%)`,
         border: `1px solid ${room.status === 'live' ? 'rgba(52,211,153,0.28)' : room.status === 'locked' ? 'rgba(248,113,113,0.22)' : 'rgba(37,99,235,0.18)'}`,
         boxShadow: room.status === 'live' ? s.glow : room.status === 'scheduled' ? s.glow : undefined,
       }}>
@@ -68,10 +68,10 @@ function ClassroomCard({ room, onEnter }: { room: Room; onEnter: (id: number) =>
           <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0"
             style={{
               background: room.status === 'live'
-                ? 'linear-gradient(135deg,#064e3b,#065f46)'
+                ? 'linear-gradient(135deg,#064e3b,#00684a)'
                 : room.status === 'locked'
                   ? 'linear-gradient(135deg,#450a0a,#7f1d1d)'
-                  : 'linear-gradient(135deg,#0e1e50,#1b3ea6)',
+                  : 'linear-gradient(135deg,#241c80,#2620a8)',
               color: s.color,
               boxShadow: s.glow !== 'none' ? s.glow : undefined,
               fontSize: room.status === 'locked' ? '16px' : '11px',
@@ -213,7 +213,7 @@ export function ClassroomsPage({ onEnterClassroom }: { onEnterClassroom: (id: nu
           <button key={f.id} onClick={() => { setStatusFilter(f.id); setPage(0) }}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all"
             style={statusFilter === f.id ? {
-              background: 'linear-gradient(135deg,#1b3ea6,#2563eb)',
+              background: 'linear-gradient(135deg,#2620a8,#2563eb)',
               color: '#fff', boxShadow: '0 2px 12px rgba(37,99,235,0.35)',
             } : {
               background: cardBg, color: 'rgba(147,197,253,0.6)',
@@ -263,7 +263,7 @@ export function ClassroomsPage({ onEnterClassroom }: { onEnterClassroom: (id: nu
               <button key={pageNum} onClick={() => setPage(pageNum)}
                 className="w-8 h-8 rounded-xl text-xs font-medium transition"
                 style={page === pageNum ? {
-                  background: 'linear-gradient(135deg,#1b3ea6,#2563eb)', color: '#fff',
+                  background: 'linear-gradient(135deg,#2620a8,#2563eb)', color: '#fff',
                   boxShadow: '0 2px 8px rgba(37,99,235,0.35)',
                 } : {
                   background: cardBg, color: 'rgba(147,197,253,0.6)',

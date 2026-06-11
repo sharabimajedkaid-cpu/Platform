@@ -62,7 +62,7 @@ const COURSES: Course[] = [
   {
     id: 'gogo-1', series: 'Gogo Loves English', title: 'Gogo Loves English 1',
     level: 'Level 1', category: 'kids',
-    color: { from: '#16a34a', to: '#15803d', badge: '#f0fdf4', text: '#16a34a' },
+    color: { from: '#00ae74', to: '#15803d', badge: '#f0fdf4', text: '#00ae74' },
     cover: { emoji: '🐸', pattern: 'radial-gradient(ellipse at 25% 35%, rgba(255,255,255,0.15) 0%, transparent 55%)' },
     goals: [
       'Introduce basic greetings and everyday expressions',
@@ -88,7 +88,7 @@ const COURSES: Course[] = [
   {
     id: 'gogo-3', series: 'Gogo Loves English', title: 'Gogo Loves English 3',
     level: 'Level 3', category: 'kids',
-    color: { from: '#7c3aed', to: '#6d28d9', badge: '#f5f3ff', text: '#7c3aed' },
+    color: { from: '#2563eb', to: '#6d28d9', badge: '#f5f3ff', text: '#2563eb' },
     cover: { emoji: '🚀', pattern: 'radial-gradient(ellipse at 40% 60%, rgba(255,255,255,0.12) 0%, transparent 55%)' },
     goals: [
       'Master 200+ core vocabulary words in context',
@@ -127,7 +127,7 @@ const COURSES: Course[] = [
   {
     id: 'gogo-6', series: 'Gogo Loves English', title: 'Gogo Loves English 6',
     level: 'Level 6', category: 'kids',
-    color: { from: '#059669', to: '#047857', badge: '#f0fdf4', text: '#059669' },
+    color: { from: '#00ae74', to: '#047857', badge: '#f0fdf4', text: '#00ae74' },
     cover: { emoji: '🏆', pattern: 'radial-gradient(ellipse at 70% 70%, rgba(255,255,255,0.12) 0%, transparent 55%)' },
     goals: [
       'Communicate in a wide range of real-life situations',
@@ -155,7 +155,7 @@ const COURSES: Course[] = [
   {
     id: 'speakout-pre', series: 'American Speakout', title: 'Speakout Pre-Intermediate',
     level: 'Pre-Intermediate', category: 'teens',
-    color: { from: '#4338ca', to: '#3730a3', badge: '#eef2ff', text: '#4338ca' },
+    color: { from: '#2620a8', to: '#3730a3', badge: '#eef2ff', text: '#2620a8' },
     cover: { emoji: '💬', pattern: 'radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)' },
     goals: [
       'Talk about experiences using present perfect tense',
@@ -168,7 +168,7 @@ const COURSES: Course[] = [
   {
     id: 'speakout-int', series: 'American Speakout', title: 'Speakout Intermediate',
     level: 'Intermediate', category: 'teens',
-    color: { from: '#6366f1', to: '#4f46e5', badge: '#eef2ff', text: '#6366f1' },
+    color: { from: '#3b82f6', to: '#3b5bdb', badge: '#eef2ff', text: '#3b82f6' },
     cover: { emoji: '🎯', pattern: 'radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)' },
     goals: [
       'Discuss complex topics with confidence and accuracy',
@@ -181,7 +181,7 @@ const COURSES: Course[] = [
   {
     id: 'speakout-upper', series: 'American Speakout', title: 'Speakout Upper-Intermediate',
     level: 'Upper-Intermediate', category: 'teens',
-    color: { from: '#7c3aed', to: '#6d28d9', badge: '#f5f3ff', text: '#7c3aed' },
+    color: { from: '#2563eb', to: '#6d28d9', badge: '#f5f3ff', text: '#2563eb' },
     cover: { emoji: '📡', pattern: 'radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)' },
     goals: [
       'Express nuanced ideas in professional contexts',
@@ -194,7 +194,7 @@ const COURSES: Course[] = [
   {
     id: 'speakout-adv', series: 'American Speakout', title: 'Speakout Advanced',
     level: 'Advanced', category: 'teens',
-    color: { from: '#312e81', to: '#1e1b4b', badge: '#eef2ff', text: '#4338ca' },
+    color: { from: '#312e81', to: '#1e1b4b', badge: '#eef2ff', text: '#2620a8' },
     cover: { emoji: '🎓', pattern: 'radial-gradient(ellipse at 70% 80%, rgba(255,255,255,0.1) 0%, transparent 50%)' },
     goals: [
       'Achieve near-native fluency and idiomatic expression',
@@ -208,8 +208,8 @@ const COURSES: Course[] = [
 
 const CAT_CONFIG = {
   phonics: { label: 'Pre-Diploma Phonics', emoji: '🔤', color: '#dc2626', bg: 'rgba(220,38,38,0.06)', border: 'rgba(220,38,38,0.15)' },
-  kids:    { label: 'Kids English',        emoji: '🐸', color: '#16a34a', bg: 'rgba(22,163,74,0.06)',  border: 'rgba(22,163,74,0.15)' },
-  teens:   { label: 'Teens & Adults',      emoji: '🎓', color: '#6366f1', bg: 'rgba(99,102,241,0.06)', border: 'rgba(99,102,241,0.15)' },
+  kids:    { label: 'Kids English',        emoji: '🐸', color: '#00ae74', bg: 'rgba(22,163,74,0.06)',  border: 'rgba(22,163,74,0.15)' },
+  teens:   { label: 'Teens & Adults',      emoji: '🎓', color: '#3b82f6', bg: 'rgba(63, 186, 235,0.06)', border: 'rgba(63, 186, 235,0.15)' },
 }
 
 /* ─────────────────────────────────────────────────── */
@@ -353,8 +353,8 @@ function CoursesSection() {
             <button key={f.id} onClick={() => setActiveCategory(f.id)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition"
               style={activeCategory === f.id ? {
-                background: 'linear-gradient(135deg,#6366f1,#7c3aed)',
-                color: '#fff', boxShadow: '0 2px 10px rgba(99,102,241,0.3)',
+                background: 'linear-gradient(135deg,#3b82f6,#2563eb)',
+                color: '#fff', boxShadow: '0 2px 10px rgba(63, 186, 235,0.3)',
               } : {
                 background: '#f3f4f6', color: '#6b7280',
               }}>
@@ -408,10 +408,10 @@ function CoursesSection() {
 /* ─────────────────────────────────────────────────── */
 
 const STAT_COLORS = [
-  { from: '#6366f1', to: '#7c3aed', glow: 'rgba(99,102,241,0.20)' },
+  { from: '#3b82f6', to: '#2563eb', glow: 'rgba(63, 186, 235,0.20)' },
   { from: '#0891b2', to: '#0e7490', glow: 'rgba(8,145,178,0.20)' },
-  { from: '#f0a500', to: '#c47d00', glow: 'rgba(240,165,0,0.20)' },
-  { from: '#059669', to: '#047857', glow: 'rgba(5,150,105,0.20)' },
+  { from: '#00ae74', to: '#00875a', glow: 'rgba(0, 174, 116,0.20)' },
+  { from: '#00ae74', to: '#047857', glow: 'rgba(5,150,105,0.20)' },
 ]
 
 function StatCard({ label, value, icon, idx, sub }: { label: string; value: string; icon: string; idx: number; sub?: string }) {
@@ -477,7 +477,7 @@ function SectionHeader({ title, sub }: { title: string; sub?: string }) {
 
 const ARABIC_CARDS = [
   {
-    id: 'why', emoji: '🏆', color: { from: '#c47d00', to: '#f0a500', glow: 'rgba(240,165,0,0.18)', border: 'rgba(240,165,0,0.25)' },
+    id: 'why', emoji: '🏆', color: { from: '#00875a', to: '#00ae74', glow: 'rgba(0, 174, 116,0.18)', border: 'rgba(0, 174, 116,0.25)' },
     titleAr: 'لماذا نحن الأفضل؟',
     subtitleAr: 'الأفضل في تعليم اللغة الإنجليزية عن بُعد',
     titleEn: 'Why We\'re the Best',
@@ -506,7 +506,7 @@ const ARABIC_CARDS = [
     ],
   },
   {
-    id: 'features', emoji: '✨', color: { from: '#059669', to: '#10b981', glow: 'rgba(16,185,129,0.18)', border: 'rgba(16,185,129,0.25)' },
+    id: 'features', emoji: '✨', color: { from: '#00ae74', to: '#00ae74', glow: 'rgba(16,185,129,0.18)', border: 'rgba(16,185,129,0.25)' },
     titleAr: 'مميزاتنا',
     subtitleAr: 'ما يجعلنا الأفضل والمختلف',
     titleEn: 'Our Unique Features',
@@ -519,7 +519,7 @@ const ARABIC_CARDS = [
     ],
   },
   {
-    id: 'diploma', emoji: '📜', color: { from: '#7c3aed', to: '#8b5cf6', glow: 'rgba(139,92,246,0.18)', border: 'rgba(139,92,246,0.25)' },
+    id: 'diploma', emoji: '📜', color: { from: '#2563eb', to: '#3b82f6', glow: 'rgba(139,92,246,0.18)', border: 'rgba(139,92,246,0.25)' },
     titleAr: 'دبلوم اللغة الإنجليزية',
     subtitleAr: 'دورات لجميع المستويات',
     titleEn: 'English Diploma Courses',
@@ -539,21 +539,21 @@ function CenterInfoSection() {
       {/* Logo banner */}
       <div className="rounded-2xl overflow-hidden relative"
         style={{
-          background: 'linear-gradient(135deg, #060e24 0%, #0d1a3e 40%, #162050 70%, #0a1228 100%)',
-          border: '1px solid rgba(196,125,0,0.25)',
+          background: 'linear-gradient(135deg, #17125c 0%, #241c80 40%, #162050 70%, #1d1668 100%)',
+          border: '1px solid rgba(0, 174, 116,0.25)',
           boxShadow: '0 12px 40px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.05)',
         }}>
         {/* Decorative pattern */}
         <div className="absolute inset-0 opacity-[0.025]"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(196,125,0,0.9) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+          style={{ backgroundImage: 'radial-gradient(circle, rgba(0, 174, 116,0.9) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse, rgba(196,125,0,0.12), transparent)', filter: 'blur(20px)' }} />
+          style={{ background: 'radial-gradient(ellipse, rgba(0, 174, 116,0.12), transparent)', filter: 'blur(20px)' }} />
 
         <div className="relative flex flex-col md:flex-row items-center gap-6 p-6 md:p-8">
           {/* Logo */}
           <div className="shrink-0 relative">
             <div className="w-28 h-28 rounded-2xl overflow-hidden shadow-2xl"
-              style={{ border: '2px solid rgba(196,125,0,0.40)', boxShadow: '0 8px 32px rgba(196,125,0,0.20)' }}>
+              style={{ border: '2px solid rgba(0, 174, 116,0.40)', boxShadow: '0 8px 32px rgba(0, 174, 116,0.20)' }}>
               <img src="/center-logo.png" alt="المركز البريطاني الأول"
                 className="w-full h-full object-contain bg-white p-2" />
             </div>
@@ -689,15 +689,15 @@ export function DashboardPage() {
       <div className="space-y-6 animate-fade-in">
         {/* Hero */}
         <div className="rounded-2xl p-6 relative overflow-hidden"
-          style={{ background: 'linear-gradient(135deg, #080f22 0%, #131f40 50%, #1a2550 100%)', border: '1px solid rgba(99,102,241,0.20)', boxShadow: '0 8px 32px rgba(8,15,34,0.25)' }}>
+          style={{ background: 'linear-gradient(135deg, #1d1668 0%, #131f40 50%, #1a2550 100%)', border: '1px solid rgba(63, 186, 235,0.20)', boxShadow: '0 8px 32px rgba(8,15,34,0.25)' }}>
           <div className="absolute inset-0 opacity-[0.03]"
-            style={{ backgroundImage: 'linear-gradient(rgba(99,102,241,1) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,1) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+            style={{ backgroundImage: 'linear-gradient(rgba(63, 186, 235,1) 1px, transparent 1px), linear-gradient(90deg, rgba(63, 186, 235,1) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
           <div className="absolute top-0 right-0 w-64 h-full opacity-10 pointer-events-none"
-            style={{ background: 'radial-gradient(ellipse at right, #6366f1, transparent)' }} />
+            style={{ background: 'radial-gradient(ellipse at right, #3b82f6, transparent)' }} />
           <div className="relative">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg"
-                style={{ background: 'linear-gradient(135deg, #c47d00, #f0a500)', color: '#060b18', boxShadow: '0 4px 16px rgba(240,165,0,0.30)' }}>B</div>
+                style={{ background: 'linear-gradient(135deg, #00875a, #00ae74)', color: '#17125c', boxShadow: '0 4px 16px rgba(0, 174, 116,0.30)' }}>B</div>
               <div>
                 <p className="text-xs text-indigo-300/50 uppercase tracking-widest">Admin Control Panel</p>
                 <h2 className="text-xl font-bold text-white leading-tight">Welcome back, {user.firstName}</h2>
@@ -726,8 +726,8 @@ export function DashboardPage() {
             <SectionHeader title="⚡ Quick Actions" sub="Most-used admin tools" />
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label: '👥 Manage Users', color: '#6366f1' }, { label: '🚪 Classrooms', color: '#7c3aed' },
-                { label: '💬 CE4 Messenger', color: '#059669' }, { label: '📝 Exam System', color: '#f0a500' },
+                { label: '👥 Manage Users', color: '#3b82f6' }, { label: '🚪 Classrooms', color: '#2563eb' },
+                { label: '💬 CE4 Messenger', color: '#00ae74' }, { label: '📝 Exam System', color: '#00ae74' },
                 { label: '⭐ Teacher Eval', color: '#0891b2' }, { label: '⚙️ Settings', color: '#6b7280' },
               ].map(b => <QuickActionBtn key={b.label} label={b.label} color={b.color} />)}
             </div>
@@ -737,11 +737,11 @@ export function DashboardPage() {
             <div className="space-y-2.5">
               {[
                 { icon: '🎓', label: 'Students', value: '50 enrolled', color: '#0891b2' },
-                { icon: '👩‍🏫', label: 'Teachers', value: '9 active', color: '#6366f1' },
-                { icon: '🚪', label: 'Classrooms', value: '240 rooms · WebRTC', color: '#7c3aed' },
-                { icon: '📝', label: 'Exams', value: '100 tests · AI proctored', color: '#f0a500' },
+                { icon: '👩‍🏫', label: 'Teachers', value: '9 active', color: '#3b82f6' },
+                { icon: '🚪', label: 'Classrooms', value: '240 rooms · WebRTC', color: '#2563eb' },
+                { icon: '📝', label: 'Exams', value: '100 tests · AI proctored', color: '#00ae74' },
                 { icon: '🛡️', label: 'Anti-Cheat', value: 'Active · Real-time', color: '#e11d48' },
-                { icon: '📊', label: 'Reports', value: 'Triple reports enabled', color: '#059669' },
+                { icon: '📊', label: 'Reports', value: 'Triple reports enabled', color: '#00ae74' },
               ].map(item => (
                 <div key={item.label} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 transition">
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center text-sm shrink-0"
@@ -769,11 +769,11 @@ export function DashboardPage() {
           <SectionHeader title="🔔 Recent Activity" sub="Latest platform events" />
           <div className="space-y-2">
             {[
-              { icon: '✅', text: 'Class A1 — English session completed', time: '2 min ago', color: '#059669' },
-              { icon: '📝', text: 'Exam #47 submitted by 12 students', time: '8 min ago', color: '#6366f1' },
+              { icon: '✅', text: 'Class A1 — English session completed', time: '2 min ago', color: '#00ae74' },
+              { icon: '📝', text: 'Exam #47 submitted by 12 students', time: '8 min ago', color: '#3b82f6' },
               { icon: '👤', text: 'New student registered: Sara Ahmed', time: '15 min ago', color: '#0891b2' },
-              { icon: '⭐', text: 'Teacher evaluation report generated', time: '1 hr ago', color: '#f0a500' },
-              { icon: '📢', text: 'Marketing newsletter sent · 340 recipients', time: '2 hr ago', color: '#7c3aed' },
+              { icon: '⭐', text: 'Teacher evaluation report generated', time: '1 hr ago', color: '#00ae74' },
+              { icon: '📢', text: 'Marketing newsletter sent · 340 recipients', time: '2 hr ago', color: '#2563eb' },
             ].map((a, i) => (
               <div key={i} className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-gray-50 transition">
                 <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0 mt-0.5" style={{ background: `${a.color}12` }}>{a.icon}</div>
@@ -791,7 +791,7 @@ export function DashboardPage() {
     return (
       <div className="space-y-6 animate-fade-in">
         <div className="rounded-2xl p-6 relative overflow-hidden"
-          style={{ background: 'linear-gradient(135deg, #080f22, #1a2550)', border: '1px solid rgba(99,102,241,0.20)', boxShadow: '0 8px 32px rgba(8,15,34,0.25)' }}>
+          style={{ background: 'linear-gradient(135deg, #1d1668, #1a2550)', border: '1px solid rgba(63, 186, 235,0.20)', boxShadow: '0 8px 32px rgba(8,15,34,0.25)' }}>
           <h2 className="text-xl font-bold text-white">👩‍🏫 Teacher Dashboard</h2>
           <p className="text-sm text-indigo-300/60 mt-1">Welcome back, {user.firstName} · Ready to teach</p>
         </div>
@@ -828,7 +828,7 @@ export function DashboardPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="rounded-2xl p-6 relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #080f22, #0d1a3a)', border: '1px solid rgba(99,102,241,0.20)', boxShadow: '0 8px 32px rgba(8,15,34,0.25)' }}>
+        style={{ background: 'linear-gradient(135deg, #1d1668, #241c80)', border: '1px solid rgba(63, 186, 235,0.20)', boxShadow: '0 8px 32px rgba(8,15,34,0.25)' }}>
         <h2 className="text-xl font-bold text-white">
           {user?.role === 'parent' ? '👨‍👩‍👧 Parent Dashboard' : '🎓 Student Dashboard'}
         </h2>

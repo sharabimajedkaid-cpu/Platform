@@ -104,7 +104,7 @@ function DashboardInner() {
           {/* Subtle grid overlay for futuristic feel */}
           <div className="absolute inset-0 pointer-events-none opacity-[0.015]"
             style={{
-              backgroundImage: 'linear-gradient(rgba(99,102,241,1) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,1) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(63, 186, 235,1) 1px, transparent 1px), linear-gradient(90deg, rgba(63, 186, 235,1) 1px, transparent 1px)',
               backgroundSize: '48px 48px',
             }} />
           <div className="relative z-10 p-4 md:p-6">

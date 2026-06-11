@@ -22,11 +22,11 @@ const RADIUS_OPTIONS = [
 const PRESET_THEMES = [
   {
     name: 'Space Navy', icon: '🌌',
-    theme: { '--navy': '#080f22', '--gold': '#f0a500', '--royal-blue': '#1a2e5c', '--accent-indigo': '#6366f1', '--accent-violet': '#7c3aed' }
+    theme: { '--navy': '#1d1668', '--gold': '#00ae74', '--royal-blue': '#2a2196', '--accent-indigo': '#3b82f6', '--accent-violet': '#2563eb' }
   },
   {
     name: 'Emerald Elite', icon: '💎',
-    theme: { '--navy': '#042f2e', '--gold': '#34d399', '--royal-blue': '#065f46', '--accent-indigo': '#059669', '--accent-violet': '#10b981' }
+    theme: { '--navy': '#042f2e', '--gold': '#34d399', '--royal-blue': '#00684a', '--accent-indigo': '#00ae74', '--accent-violet': '#00ae74' }
   },
   {
     name: 'Royal Crimson', icon: '👑',
@@ -34,11 +34,11 @@ const PRESET_THEMES = [
   },
   {
     name: 'Ocean Blue', icon: '🌊',
-    theme: { '--navy': '#0c1445', '--gold': '#38bdf8', '--royal-blue': '#1e3a8a', '--accent-indigo': '#3b82f6', '--accent-violet': '#0ea5e9' }
+    theme: { '--navy': '#241c80', '--gold': '#38bdf8', '--royal-blue': '#1e3a8a', '--accent-indigo': '#3b82f6', '--accent-violet': '#0ea5e9' }
   },
   {
     name: 'Midnight Violet', icon: '🔮',
-    theme: { '--navy': '#150529', '--gold': '#c084fc', '--royal-blue': '#2e1065', '--accent-indigo': '#7c3aed', '--accent-violet': '#9333ea' }
+    theme: { '--navy': '#150529', '--gold': '#c084fc', '--royal-blue': '#2e1065', '--accent-indigo': '#2563eb', '--accent-violet': '#9333ea' }
   },
   {
     name: 'Golden Hour', icon: '🌅',
@@ -133,7 +133,7 @@ export function DesignStudioKit() {
       initial={{ opacity: 0, x: 40, scale: 0.96 }}
       animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, x: 40, scale: 0.96 }}
-      className="fixed top-16 right-4 z-[100] w-80 bg-[#0d1425] border border-indigo-500/20 rounded-2xl shadow-2xl shadow-black/60 flex flex-col overflow-hidden"
+      className="fixed top-16 right-4 z-[100] w-80 bg-[#241c80] border border-indigo-500/20 rounded-2xl shadow-2xl shadow-black/60 flex flex-col overflow-hidden"
       style={{ maxHeight: 'calc(100vh - 5rem)' }}>
 
       {/* Header */}

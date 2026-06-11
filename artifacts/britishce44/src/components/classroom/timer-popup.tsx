@@ -103,7 +103,7 @@ export function TimerPopup({ isOpen, onClose }: TimerPopupProps) {
           <div className="flex justify-center mb-3">
             <svg width="130" height="130" viewBox="0 0 130 130">
               <circle cx="65" cy="65" r="54" fill="none" stroke="#e5e7eb" strokeWidth="8" />
-              <circle cx="65" cy="65" r="54" fill="none" stroke="#c8a84e" strokeWidth="8"
+              <circle cx="65" cy="65" r="54" fill="none" stroke="#00ae74" strokeWidth="8"
                 strokeDasharray={circumference} strokeDashoffset={strokeDashoffset}
                 strokeLinecap="round" transform="rotate(-90 65 65)"
                 style={{ transition: 'stroke-dashoffset 1s linear' }} />

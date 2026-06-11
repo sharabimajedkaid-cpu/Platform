@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../components/providers/auth-provider'
 
 const BLUE = '#2563eb'
-const GOLD = '#c8940a'
+const GOLD = '#00ae74'
 
 interface ToggleProps { checked: boolean; onChange: (v: boolean) => void; disabled?: boolean }
 function Toggle({ checked, onChange, disabled }: ToggleProps) {
@@ -11,7 +11,7 @@ function Toggle({ checked, onChange, disabled }: ToggleProps) {
     <button onClick={() => !disabled && onChange(!checked)}
       className="relative w-9 h-5 rounded-full transition-colors flex-shrink-0 disabled:opacity-50"
       disabled={disabled}
-      style={{ background: checked ? 'linear-gradient(135deg,#2563eb,#1b3ea6)' : 'rgba(255,255,255,0.08)', border: '1px solid rgba(37,99,235,0.25)' }}>
+      style={{ background: checked ? 'linear-gradient(135deg,#2563eb,#2620a8)' : 'rgba(255,255,255,0.08)', border: '1px solid rgba(37,99,235,0.25)' }}>
       <span className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all"
         style={{ left: checked ? '18px' : '2px' }} />
     </button>
@@ -22,7 +22,7 @@ interface SectionCardProps { icon: string; title: string; titleAr?: string; chil
 function SectionCard({ icon, title, titleAr, children, span }: SectionCardProps) {
   return (
     <div className={`rounded-2xl overflow-hidden ${span ? 'md:col-span-2' : ''}`}
-      style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.14)' }}>
+      style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(37,99,235,0.14)' }}>
       <div className="px-5 py-3.5 border-b flex items-center justify-between" style={{ borderColor: 'rgba(37,99,235,0.1)', background: 'rgba(6,11,24,0.5)' }}>
         <h3 className="font-bold text-white text-sm flex items-center gap-2"><span>{icon}</span>{title}</h3>
         {titleAr && <span className="text-[10px] text-white/30" style={{ fontFamily: 'Tajawal,sans-serif' }}>{titleAr}</span>}
@@ -97,7 +97,7 @@ export function SettingsPage() {
     { name: 'WhatsApp Business', ar: 'واتساب للأعمال', desc: 'Parent & student messaging', icon: '💬', connected: true, color: '#25D366' },
     { name: 'SMTP / Email', ar: 'البريد الإلكتروني', desc: 'Outbound reports & alerts', icon: '✉️', connected: true, color: BLUE },
     { name: 'SMS Gateway', ar: 'بوابة الرسائل', desc: 'Critical alerts via SMS', icon: '📱', connected: false, color: '#f87171' },
-    { name: 'AI Provider', ar: 'مزود الذكاء', desc: 'Powers AI tutor & evaluation', icon: '🤖', connected: true, color: '#a78bfa' },
+    { name: 'AI Provider', ar: 'مزود الذكاء', desc: 'Powers AI tutor & evaluation', icon: '🤖', connected: true, color: '#7dd3fc' },
     { name: 'Media / WebRTC Server', ar: 'خادم البث', desc: 'Live classroom video', icon: '🎥', connected: true, color: GOLD },
   ]
 
@@ -106,7 +106,7 @@ export function SettingsPage() {
     { name: 'Supervisor', ar: 'مشرف', count: 9, perms: 'Oversight + reports', color: GOLD },
     { name: 'Teacher', ar: 'مدرس', count: 62, perms: 'Classrooms + grading', color: BLUE },
     { name: 'Student', ar: 'طالب', count: 1840, perms: 'Learn + submit', color: '#34d399' },
-    { name: 'Parent', ar: 'ولي أمر', count: 1210, perms: 'View child progress', color: '#a78bfa' },
+    { name: 'Parent', ar: 'ولي أمر', count: 1210, perms: 'View child progress', color: '#7dd3fc' },
   ]
 
   return (
@@ -123,7 +123,7 @@ export function SettingsPage() {
           whileTap={{ scale: 0.95 }}
           disabled={!isAdmin}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition disabled:opacity-40"
-          style={{ background: saved ? 'linear-gradient(135deg,#059669,#065f46)' : 'linear-gradient(135deg,#2563eb,#1b3ea6)', color: '#fff', boxShadow: '0 2px 12px rgba(37,99,235,0.35)' }}>
+          style={{ background: saved ? 'linear-gradient(135deg,#00ae74,#00684a)' : 'linear-gradient(135deg,#2563eb,#2620a8)', color: '#fff', boxShadow: '0 2px 12px rgba(37,99,235,0.35)' }}>
           {saved ? '✓ Saved!' : '💾 Save Changes'}
         </motion.button>
       </div>
@@ -160,7 +160,7 @@ export function SettingsPage() {
           </SettingRow>
           <SettingRow label="Accent Color" hint="Primary brand color">
             <div className="flex items-center gap-2">
-              {[BLUE, GOLD, '#7c3aed', '#059669'].map(c => (
+              {[BLUE, GOLD, '#2563eb', '#00ae74'].map(c => (
                 <button key={c} onClick={() => isAdmin && setAccent(c)}
                   className="w-6 h-6 rounded-full transition" aria-label={`accent ${c}`}
                   style={{ background: c, border: accent === c ? '2px solid #fff' : '2px solid transparent', boxShadow: accent === c ? `0 0 0 2px ${c}` : 'none' }} />
@@ -273,7 +273,7 @@ export function SettingsPage() {
               <span>Storage used</span><span className="text-white font-bold">142 GB / 500 GB</span>
             </div>
             <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
-              <div className="h-full rounded-full" style={{ width: '28%', background: 'linear-gradient(90deg,#2563eb,#1b3ea6)' }} />
+              <div className="h-full rounded-full" style={{ width: '28%', background: 'linear-gradient(90deg,#2563eb,#2620a8)' }} />
             </div>
             <p className="text-[10px] text-gray-600">28% used · 358 GB remaining</p>
           </div>

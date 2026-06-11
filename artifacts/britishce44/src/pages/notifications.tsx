@@ -7,16 +7,16 @@ type Cat = 'all' | 'academic' | 'exams' | 'finance' | 'system'
 
 const CHANNELS: { key: Channel; icon: string; label: string; color: string; on: boolean }[] = [
   { key: 'inapp', icon: '🔔', label: 'In-App', color: '#2563eb', on: true },
-  { key: 'email', icon: '📧', label: 'Email', color: '#c8940a', on: true },
+  { key: 'email', icon: '📧', label: 'Email', color: '#00ae74', on: true },
   { key: 'sms', icon: '📱', label: 'SMS', color: '#34d399', on: false },
   { key: 'whatsapp', icon: '🟢', label: 'WhatsApp', color: '#25d366', on: true },
   { key: 'telegram', icon: '✈️', label: 'Telegram', color: '#229ed9', on: false },
 ]
 
 const FEED = [
-  { id: 1, cat: 'exams', icon: '📝', color: '#a78bfa', title: 'Mid-term English exam scheduled', body: 'Grade 7 · Sunday 9:00 AM · Room #12', time: '2m ago', unread: true },
+  { id: 1, cat: 'exams', icon: '📝', color: '#7dd3fc', title: 'Mid-term English exam scheduled', body: 'Grade 7 · Sunday 9:00 AM · Room #12', time: '2m ago', unread: true },
   { id: 2, cat: 'academic', icon: '🎓', color: '#2563eb', title: 'New recording available', body: 'Mathematics G5 — “Fractions Mastery” by Suhair', time: '18m ago', unread: true },
-  { id: 3, cat: 'finance', icon: '💳', color: '#c8940a', title: 'Tuition reminder sent to 24 guardians', body: 'WhatsApp + Email · June cycle', time: '1h ago', unread: true },
+  { id: 3, cat: 'finance', icon: '💳', color: '#00ae74', title: 'Tuition reminder sent to 24 guardians', body: 'WhatsApp + Email · June cycle', time: '1h ago', unread: true },
   { id: 4, cat: 'system', icon: '🛡️', color: '#34d399', title: 'Anti-cheat flag resolved', body: 'Classroom #3 · reviewed by supervisor', time: '3h ago', unread: false },
   { id: 5, cat: 'academic', icon: '📋', color: '#67e8f9', title: 'Daily performance reports generated', body: '186 students · auto-delivered to parents', time: '5h ago', unread: false },
   { id: 6, cat: 'exams', icon: '✅', color: '#34d399', title: 'Placement test results ready', body: '12 new students placed across levels', time: 'Yesterday', unread: false },
@@ -53,9 +53,9 @@ export function NotificationsPage() {
       <div className="grid md:grid-cols-3 gap-4">
         {/* Channels */}
         <div className="rounded-2xl p-4 relative overflow-hidden"
-          style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(200,148,10,0.2)' }}>
+          style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(0, 174, 116,0.2)' }}>
           <div className="absolute top-0 left-0 right-0 h-[1.5px]"
-            style={{ background: 'linear-gradient(90deg,transparent,#c8940a,transparent)' }} />
+            style={{ background: 'linear-gradient(90deg,transparent,#00ae74,transparent)' }} />
           <p className="text-xs font-bold text-white mb-3">📡 Delivery Channels</p>
           <div className="space-y-2">
             {channels.map(c => (
@@ -80,7 +80,7 @@ export function NotificationsPage() {
 
         {/* Feed */}
         <div className="md:col-span-2 rounded-2xl overflow-hidden"
-          style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
+          style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
           <div className="px-4 py-3 border-b flex items-center gap-2 flex-wrap" style={{ borderColor: 'rgba(37,99,235,0.1)' }}>
             {CATS.map(c => (
               <button key={c.key} onClick={() => setCat(c.key)}

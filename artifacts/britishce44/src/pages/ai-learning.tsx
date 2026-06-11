@@ -6,22 +6,22 @@ const SKILLS = [
   { skill: 'Vocabulary', score: 74, color: '#2563eb' },
   { skill: 'Listening', score: 91, color: '#67e8f9' },
   { skill: 'Speaking', score: 62, color: '#f472b6' },
-  { skill: 'Reading', score: 80, color: '#c8940a' },
-  { skill: 'Writing', score: 57, color: '#a78bfa' },
+  { skill: 'Reading', score: 80, color: '#00ae74' },
+  { skill: 'Writing', score: 57, color: '#7dd3fc' },
 ]
 
 const PLAN = [
   { day: 'Today', task: 'Speaking drill — present continuous', mins: 15, done: true, color: '#f472b6' },
   { day: 'Today', task: 'Vocabulary: 12 academic words', mins: 10, done: true, color: '#2563eb' },
-  { day: 'Today', task: 'Writing: a 6-sentence paragraph', mins: 20, done: false, color: '#a78bfa' },
+  { day: 'Today', task: 'Writing: a 6-sentence paragraph', mins: 20, done: false, color: '#7dd3fc' },
   { day: 'Tomorrow', task: 'Listening: BBC short story', mins: 12, done: false, color: '#67e8f9' },
   { day: 'Tomorrow', task: 'Speaking: record & self-review', mins: 15, done: false, color: '#f472b6' },
 ]
 
 const RECS = [
   { icon: '🎙️', title: 'Speaking is your biggest opportunity', body: 'You improve fastest with daily 1-minute recordings. AI noticed strong grammar but hesitation in fluency.', color: '#f472b6' },
-  { icon: '✍️', title: 'Writing needs structure practice', body: 'Try the “topic → 3 reasons → conclusion” template. We added 3 guided prompts to your plan.', color: '#a78bfa' },
-  { icon: '🔥', title: '9-day streak — keep it alive!', body: 'Students with 14+ day streaks score 23% higher on placement tests on average.', color: '#c8940a' },
+  { icon: '✍️', title: 'Writing needs structure practice', body: 'Try the “topic → 3 reasons → conclusion” template. We added 3 guided prompts to your plan.', color: '#7dd3fc' },
+  { icon: '🔥', title: '9-day streak — keep it alive!', body: 'Students with 14+ day streaks score 23% higher on placement tests on average.', color: '#00ae74' },
 ]
 
 function Radar() {
@@ -67,7 +67,7 @@ export function AiLearningPage() {
       <div className="grid md:grid-cols-3 gap-4">
         {/* Mastery radar */}
         <div className="rounded-2xl p-4 relative overflow-hidden"
-          style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.2)' }}>
+          style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(37,99,235,0.2)' }}>
           <div className="absolute top-0 left-0 right-0 h-[1.5px]" style={{ background: 'linear-gradient(90deg,transparent,#2563eb,transparent)' }} />
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs font-bold text-white">🎯 Skill Mastery</p>
@@ -80,7 +80,7 @@ export function AiLearningPage() {
         <div className="md:col-span-2 space-y-3">
           {RECS.map((r, i) => (
             <motion.div key={i} initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
-              className="rounded-2xl p-4 flex gap-3" style={{ background: 'rgba(13,20,37,0.7)', border: `1px solid ${r.color}22` }}>
+              className="rounded-2xl p-4 flex gap-3" style={{ background: 'rgba(26, 19, 92,0.7)', border: `1px solid ${r.color}22` }}>
               <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
                 style={{ background: `${r.color}1a`, border: `1px solid ${r.color}33` }}>{r.icon}</div>
               <div>
@@ -94,7 +94,7 @@ export function AiLearningPage() {
 
       <div className="grid md:grid-cols-2 gap-4">
         {/* Weakness breakdown */}
-        <div className="rounded-2xl p-4" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(200,148,10,0.18)' }}>
+        <div className="rounded-2xl p-4" style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(0, 174, 116,0.18)' }}>
           <p className="text-xs font-bold text-white mb-3">📈 Where you stand</p>
           <div className="space-y-2.5">
             {SKILLS.map(s => (
@@ -111,7 +111,7 @@ export function AiLearningPage() {
         </div>
 
         {/* Study plan */}
-        <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(167,139,250,0.18)' }}>
+        <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(167,139,250,0.18)' }}>
           <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: 'rgba(167,139,250,0.1)' }}>
             <p className="text-xs font-bold text-white">🗓️ Adaptive Study Plan</p>
             <span className="text-[9px] text-gray-500">AI-generated</span>

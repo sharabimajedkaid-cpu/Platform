@@ -27,7 +27,7 @@ An all-in-one educational platform for Britishce44 Online Digital School (Taiz, 
 - `artifacts/britishce44/src/pages/` — page components (dashboard, classrooms, etc.)
 - `artifacts/britishce44/src/lib/` — WebRTC, signaling, offline-queue utilities
 - `artifacts/api-server/src/routes/auth.ts` — auth endpoints (login/register)
-- `artifacts/britishce44/src/index.css` — global theme (navy/gold color system)
+- `artifacts/britishce44/src/index.css` — global theme (indigo/sky/green brand system matching the britishce4.com logo)
 
 ## Architecture decisions
 
@@ -35,7 +35,7 @@ An all-in-one educational platform for Britishce44 Online Digital School (Taiz, 
 - Auth state persisted in `localStorage` (`b44_user`, `b44_token`)
 - Login calls `/api/v1/auth/login` on the Express API server; api-server has in-memory demo users
 - WebRTC via mediasoup-client + socket.io-client; whiteboard uses fabric.js v5 (wildcard import `* as fabric`)
-- Tailwind CSS v4 with custom CSS variables for navy/gold/champagne theme colors
+- Tailwind CSS v4 with custom CSS variables for the indigo/sky/green brand theme (deep indigo #150D79, sky #3FBAEB, green #00AE74)
 
 ## Product
 

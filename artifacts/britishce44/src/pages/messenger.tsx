@@ -8,7 +8,7 @@ interface Contact  { id:string; name:string; role:string; online:boolean; unread
 interface Group    { id:string; name:string; color:string; contacts:string[] }
 interface Folder   { id:string; name:string; emoji:string; color:string; groups:string[] }
 
-const ROLE_COLORS: Record<string,string> = {admin:'#c8940a',teacher:'#3b82f6',student:'#38bdf8',supervisor:'#34d399',parent:'#fb923c'}
+const ROLE_COLORS: Record<string,string> = {admin:'#00ae74',teacher:'#3b82f6',student:'#38bdf8',supervisor:'#34d399',parent:'#fb923c'}
 
 const INIT_MSGS: Record<string,Message[]> = {
   '1':[{id:'m1',sender:'Admin',text:'Good morning! Platform running smoothly.',time:'09:15',mine:false,read:true},{id:'m2',sender:'You',text:'Great! 5 live classrooms active now.',time:'09:17',mine:true,read:true}],
@@ -30,23 +30,23 @@ const INIT_CONTACTS: Contact[] = [
 ]
 
 const INIT_GROUPS: Group[] = [
-  {id:'g1',name:'Management',color:'#f0a500',contacts:['1','5']},
-  {id:'g2',name:'Teachers',color:'#818cf8',contacts:['2','3','8']},
+  {id:'g1',name:'Management',color:'#00ae74',contacts:['1','5']},
+  {id:'g2',name:'Teachers',color:'#60a5fa',contacts:['2','3','8']},
   {id:'g3',name:'Class A1',color:'#38bdf8',contacts:['4','6']},
   {id:'g4',name:'Class B2',color:'#34d399',contacts:['7']},
 ]
 
 const INIT_FOLDERS: Folder[] = [
-  {id:'f1',name:'Staff',emoji:'👥',color:'#818cf8',groups:['g1','g2']},
+  {id:'f1',name:'Staff',emoji:'👥',color:'#60a5fa',groups:['g1','g2']},
   {id:'f2',name:'Students',emoji:'🎓',color:'#38bdf8',groups:['g3','g4']},
 ]
 
 const CHANNELS = [
-  {id:'platform',icon:'💬',label:'CE4 Platform',color:'#6366f1'},
+  {id:'platform',icon:'💬',label:'CE4 Platform',color:'#3b82f6'},
   {id:'whatsapp',icon:'📱',label:'WhatsApp',color:'#25d366'},
   {id:'gmail',icon:'✉️',label:'Gmail',color:'#ea4335'},
   {id:'sms',icon:'📨',label:'SMS',color:'#0891b2'},
-  {id:'call',icon:'📞',label:'Voice Call',color:'#059669'},
+  {id:'call',icon:'📞',label:'Voice Call',color:'#00ae74'},
 ]
 
 function AvatarCircle({name,role,size='md',online}:{name:string;role:string;size?:'sm'|'md'|'lg';online?:boolean}) {
@@ -58,7 +58,7 @@ function AvatarCircle({name,role,size='md',online}:{name:string;role:string;size
         style={{background:`${col}18`,color:col,border:`1.5px solid ${col}30`}}>
         {name.charAt(0)}
       </div>
-      {online!==undefined&&<div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 ${online?'bg-emerald-400':'bg-slate-600'}`} style={{borderColor:'#080f22'}} />}
+      {online!==undefined&&<div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 ${online?'bg-emerald-400':'bg-slate-600'}`} style={{borderColor:'#1d1668'}} />}
     </div>
   )
 }
@@ -134,7 +134,7 @@ export function MessengerPage() {
             {([['chats','💬'],['contacts','👤'],['groups','👥'],['online','🟢'],['broadcast','📢']] as const).map(([t,icon])=>(
               <button key={t} onClick={()=>setTab(t)}
                 className="flex-1 py-1 rounded-lg text-[9px] font-bold uppercase transition"
-                style={{background:tab===t?'rgba(99,102,241,0.25)':'transparent',color:tab===t?'#a5b4fc':'rgba(255,255,255,0.3)'}}>
+                style={{background:tab===t?'rgba(63, 186, 235,0.25)':'transparent',color:tab===t?'#93c5fd':'rgba(255,255,255,0.3)'}}>
                 {icon}
               </button>
             ))}
@@ -165,7 +165,7 @@ export function MessengerPage() {
             return (
               <div key={c.id} onClick={()=>setActiveId(c.id)}
                 className="flex items-center gap-2.5 px-3 py-2.5 cursor-pointer transition hover:bg-white/[0.04] group"
-                style={{background:activeId===c.id?'rgba(99,102,241,0.12)':undefined}}>
+                style={{background:activeId===c.id?'rgba(63, 186, 235,0.12)':undefined}}>
                 <AvatarCircle name={c.name} role={c.role} online={c.online} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
@@ -175,9 +175,9 @@ export function MessengerPage() {
                   <p className="text-[10px] text-white/40 truncate">{c.lastMsg}</p>
                 </div>
                 <div className="flex flex-col items-end gap-1">
-                  {(c.unread??0)>0&&<span className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white" style={{background:'#6366f1'}}>{c.unread}</span>}
+                  {(c.unread??0)>0&&<span className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white" style={{background:'#3b82f6'}}>{c.unread}</span>}
                   <button onClick={e=>{e.stopPropagation();togglePin(c.id)}} className="opacity-0 group-hover:opacity-100 text-[9px] transition"
-                    style={{color:pinnedIds.includes(c.id)?'#f0a500':'rgba(255,255,255,0.3)'}}>📌</button>
+                    style={{color:pinnedIds.includes(c.id)?'#00ae74':'rgba(255,255,255,0.3)'}}>📌</button>
                 </div>
               </div>
             )
@@ -237,7 +237,7 @@ export function MessengerPage() {
                 </div>
                 <button onClick={()=>{setBroadcastTargets(g.contacts);setTab('broadcast')}}
                   className="ml-auto text-[9px] px-2 py-1 rounded-full font-semibold"
-                  style={{background:'rgba(99,102,241,0.15)',color:'#a5b4fc'}}>Message all</button>
+                  style={{background:'rgba(63, 186, 235,0.15)',color:'#93c5fd'}}>Message all</button>
               </div>
             </div>
           ))}
@@ -257,7 +257,7 @@ export function MessengerPage() {
                     <p className="text-[9px] text-emerald-400">Active now</p>
                   </div>
                   <button onClick={e=>{e.stopPropagation();togglePin(c.id)}}
-                    className="text-[9px] transition" style={{color:pinnedIds.includes(c.id)?'#f0a500':'rgba(255,255,255,0.2)'}}>📌</button>
+                    className="text-[9px] transition" style={{color:pinnedIds.includes(c.id)?'#00ae74':'rgba(255,255,255,0.2)'}}>📌</button>
                 </div>
               ))}
               {contacts.filter(c=>!c.online).length>0&&(
@@ -285,7 +285,7 @@ export function MessengerPage() {
                 {contacts.map(c=>(
                   <div key={c.id} className="flex items-center gap-2 py-1.5 cursor-pointer" onClick={()=>setBroadcastTargets(t=>t.includes(c.id)?t.filter(x=>x!==c.id):[...t,c.id])}>
                     <div className={`w-3.5 h-3.5 rounded flex items-center justify-center flex-shrink-0`}
-                      style={{background:broadcastTargets.includes(c.id)?'#6366f1':'rgba(255,255,255,0.05)',border:`1px solid ${broadcastTargets.includes(c.id)?'#6366f1':'rgba(255,255,255,0.15)'}`}}>
+                      style={{background:broadcastTargets.includes(c.id)?'#3b82f6':'rgba(255,255,255,0.05)',border:`1px solid ${broadcastTargets.includes(c.id)?'#3b82f6':'rgba(255,255,255,0.15)'}`}}>
                       {broadcastTargets.includes(c.id)&&<span className="text-[7px] text-white font-black">✓</span>}
                     </div>
                     <AvatarCircle name={c.name} role={c.role} size="sm" />
@@ -299,7 +299,7 @@ export function MessengerPage() {
                 style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.10)'}} />
               <button onClick={sendBroadcast} disabled={broadcastSent}
                 className="w-full py-2.5 rounded-xl text-sm font-bold transition"
-                style={{background:broadcastSent?'rgba(52,211,153,0.3)':'linear-gradient(135deg,#6366f1,#7c3aed)',color:'#fff'}}>
+                style={{background:broadcastSent?'rgba(52,211,153,0.3)':'linear-gradient(135deg,#3b82f6,#2563eb)',color:'#fff'}}>
                 {broadcastSent?'✅ Sent!':'📢 Send Broadcast'}
               </button>
             </div>
@@ -346,7 +346,7 @@ export function MessengerPage() {
                 <div key={m.id} className={`flex ${m.mine?'justify-end':'justify-start'}`}>
                   {!m.mine&&<AvatarCircle name={activeContact.name} role={activeContact.role} size="sm" />}
                   <div className={`max-w-[70%] rounded-2xl px-3.5 py-2.5 mx-2`}
-                    style={{background:m.mine?'linear-gradient(135deg,#6366f1,#7c3aed)':'rgba(255,255,255,0.07)'}}>
+                    style={{background:m.mine?'linear-gradient(135deg,#3b82f6,#2563eb)':'rgba(255,255,255,0.07)'}}>
                     <p className="text-sm text-white leading-snug">{m.text}</p>
                     <div className="flex items-center justify-end gap-1 mt-1">
                       <p className="text-[8px] text-white/40">{m.time}</p>
@@ -364,10 +364,10 @@ export function MessengerPage() {
               <textarea value={input} onChange={e=>setInput(e.target.value)} onKeyDown={handleKey}
                 rows={1} placeholder={`Message via ${activeChan?.label||'CE4'}…`}
                 className="flex-1 rounded-xl px-4 py-2.5 text-sm text-white outline-none resize-none leading-snug"
-                style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(99,102,241,0.25)',maxHeight:'100px'}} />
+                style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(63, 186, 235,0.25)',maxHeight:'100px'}} />
               <button onClick={sendMsg}
                 className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition"
-                style={{background:input.trim()?'linear-gradient(135deg,#6366f1,#7c3aed)':'rgba(255,255,255,0.05)',color:input.trim()?'#fff':'rgba(255,255,255,0.2)',boxShadow:input.trim()?'0 4px 16px rgba(99,102,241,0.30)':undefined}}>
+                style={{background:input.trim()?'linear-gradient(135deg,#3b82f6,#2563eb)':'rgba(255,255,255,0.05)',color:input.trim()?'#fff':'rgba(255,255,255,0.2)',boxShadow:input.trim()?'0 4px 16px rgba(63, 186, 235,0.30)':undefined}}>
                 ➤
               </button>
             </div>
@@ -399,7 +399,7 @@ export function MessengerPage() {
                   <p className="text-[10px] font-semibold text-white truncate">{c.name}</p>
                 </div>
                 <button onClick={e=>{e.stopPropagation();togglePin(c.id)}} className="text-[9px]"
-                  style={{color:pinnedIds.includes(c.id)?'#f0a500':'rgba(255,255,255,0.2)'}}>📌</button>
+                  style={{color:pinnedIds.includes(c.id)?'#00ae74':'rgba(255,255,255,0.2)'}}>📌</button>
               </div>
             ))}
           </div>
@@ -410,10 +410,10 @@ export function MessengerPage() {
           style={{background:'rgba(8,14,32,0.92)',border:'1px solid rgba(255,255,255,0.07)'}}>
           <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-3">Quick Actions</p>
           {[
-            {icon:'📥',label:'Import Contacts',color:'#6366f1'},
-            {icon:'📤',label:'Export Contacts',color:'#059669'},
-            {icon:'👥',label:'Create Group',color:'#7c3aed'},
-            {icon:'📁',label:'New Folder',color:'#f0a500'},
+            {icon:'📥',label:'Import Contacts',color:'#3b82f6'},
+            {icon:'📤',label:'Export Contacts',color:'#00ae74'},
+            {icon:'👥',label:'Create Group',color:'#2563eb'},
+            {icon:'📁',label:'New Folder',color:'#00ae74'},
             {icon:'📢',label:'Broadcast All',color:'#e11d48'},
           ].map(a=>(
             <button key={a.label} className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left transition hover:-translate-y-0.5"
@@ -448,7 +448,7 @@ export function MessengerPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{background:'rgba(0,0,0,0.75)'}}>
             <motion.div initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.95}}
               className="w-full max-w-md rounded-2xl overflow-hidden shadow-2xl"
-              style={{background:'#0a1228',border:'1px solid rgba(99,102,241,0.25)'}}>
+              style={{background:'#1d1668',border:'1px solid rgba(63, 186, 235,0.25)'}}>
               <div className="h-0.5 bg-gradient-to-r from-indigo-500 to-amber-400" />
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -459,11 +459,11 @@ export function MessengerPage() {
                   {([['name','Full Name','text'],['phone','Phone / WhatsApp','tel'],['email','Email','email'],['group','Group (optional)','text']] as const).map(([k,ph,t])=>(
                     <input key={k} type={t} placeholder={ph} value={(newContact as any)[k]} onChange={e=>setNewContact(p=>({...p,[k]:e.target.value}))} className={inpCls} />
                   ))}
-                  <select value={newContact.role} onChange={e=>setNewContact(p=>({...p,role:e.target.value}))} className={`${inpCls} bg-[#0a1228]`}>
+                  <select value={newContact.role} onChange={e=>setNewContact(p=>({...p,role:e.target.value}))} className={`${inpCls} bg-[#1d1668]`}>
                     <option value="student">🎓 Student</option><option value="teacher">👩‍🏫 Teacher</option>
                     <option value="parent">👪 Parent</option><option value="admin">👑 Admin</option>
                   </select>
-                  <select value={newContact.folder} onChange={e=>setNewContact(p=>({...p,folder:e.target.value}))} className={`${inpCls} bg-[#0a1228]`}>
+                  <select value={newContact.folder} onChange={e=>setNewContact(p=>({...p,folder:e.target.value}))} className={`${inpCls} bg-[#1d1668]`}>
                     <option value="staff">👥 Staff Folder</option><option value="students">🎓 Students Folder</option>
                   </select>
                 </div>
@@ -471,7 +471,7 @@ export function MessengerPage() {
                   <button onClick={()=>setShowAddContact(false)} className="flex-1 py-2.5 rounded-xl text-sm text-white/40 border border-white/10">Cancel</button>
                   <button onClick={addContact}
                     className="flex-1 py-2.5 rounded-xl text-sm font-bold"
-                    style={{background:'linear-gradient(135deg,#6366f1,#7c3aed)',color:'#fff'}}>
+                    style={{background:'linear-gradient(135deg,#3b82f6,#2563eb)',color:'#fff'}}>
                     Add Contact
                   </button>
                 </div>

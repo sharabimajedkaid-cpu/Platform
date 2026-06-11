@@ -43,7 +43,7 @@ function App() {
             position="top-right"
             toastOptions={{
               duration: 3000,
-              style: { background: '#0a1628', color: '#fff', borderRadius: '12px', fontSize: '14px' },
+              style: { background: '#1d1668', color: '#fff', borderRadius: '12px', fontSize: '14px' },
             }}
           />
         </LanguageProvider>

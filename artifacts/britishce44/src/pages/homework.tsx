@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 const CARD = 'rgba(11,22,62,0.85)'
 const BORDER = 'rgba(37,99,235,0.18)'
-const GOLD = '#c8940a'
+const GOLD = '#00ae74'
 const ROYAL = '#2563eb'
 
 interface Assignment {
@@ -38,7 +38,7 @@ const STATUS_CFG = {
   overdue: { color: '#f87171', bg: 'rgba(248,113,113,0.12)', label: 'Overdue' },
   closed:  { color: '#4b5563', bg: 'rgba(75,85,99,0.12)',    label: 'Closed'  },
   graded:  { color: '#34d399', bg: 'rgba(52,211,153,0.12)',  label: 'Graded'  },
-  pending: { color: GOLD,      bg: 'rgba(200,148,10,0.12)',  label: 'Pending' },
+  pending: { color: GOLD,      bg: 'rgba(0, 174, 116,0.12)',  label: 'Pending' },
   late:    { color: '#f87171', bg: 'rgba(248,113,113,0.12)', label: 'Late'    },
 }
 
@@ -82,7 +82,7 @@ export function HomeworkPage() {
           { label: 'Assignments',   value: ASSIGNMENTS.length, icon: '📋', color: ROYAL      },
           { label: 'Submissions',   value: totalSub,           icon: '📤', color: '#34d399'   },
           { label: 'Pending Grade', value: pending,            icon: '⏳', color: GOLD        },
-          { label: 'Graded',        value: graded,             icon: '✅', color: '#a78bfa'   },
+          { label: 'Graded',        value: graded,             icon: '✅', color: '#7dd3fc'   },
         ].map(k => (
           <div key={k.label} className="rounded-2xl p-4 relative overflow-hidden"
             style={{ background: CARD, border: `1px solid ${BORDER}` }}>
@@ -101,7 +101,7 @@ export function HomeworkPage() {
           <button key={t} onClick={() => setTab(t)}
             className="flex-1 py-2 rounded-lg text-xs font-semibold capitalize transition-all"
             style={tab === t ? {
-              background: 'linear-gradient(135deg,#1b3ea6,#2563eb)', color: '#fff',
+              background: 'linear-gradient(135deg,#2620a8,#2563eb)', color: '#fff',
               boxShadow: '0 2px 8px rgba(37,99,235,0.30)',
             } : { color: 'rgba(147,197,253,0.55)' }}>
             {t === 'assignments' ? '📋 Assignments' : t === 'submissions' ? '📥 Submissions' : '📤 Upload'}
@@ -120,7 +120,7 @@ export function HomeworkPage() {
                   <button key={s} onClick={() => setSubjectFilter(s)}
                     className="px-3 py-1 rounded-full text-xs font-medium transition-all"
                     style={subjectFilter === s ? {
-                      background: 'linear-gradient(135deg,#1b3ea6,#2563eb)', color: '#fff',
+                      background: 'linear-gradient(135deg,#2620a8,#2563eb)', color: '#fff',
                     } : {
                       background: CARD, color: 'rgba(147,197,253,0.6)', border: `1px solid ${BORDER}`,
                     }}>
@@ -230,7 +230,7 @@ export function HomeworkPage() {
                 </p>
                 <p className="text-xs mt-2" style={{ color: 'rgba(147,197,253,0.30)' }}>PDF, DOC, DOCX, ZIP, images — max 50 MB each</p>
                 <div className="mt-5 px-5 py-2 rounded-full text-xs font-bold inline-block"
-                  style={{ background: 'linear-gradient(135deg,#1b3ea6,#2563eb)', color: '#fff' }}>
+                  style={{ background: 'linear-gradient(135deg,#2620a8,#2563eb)', color: '#fff' }}>
                   Browse Files
                 </div>
               </div>

@@ -4,7 +4,7 @@ import { useI18n } from '@/lib/i18n'
 
 const KPIS = [
   { label: 'Active Students', value: '1,284', delta: '+6.2%', up: true, color: '#2563eb' },
-  { label: 'Monthly Revenue', value: '$18.4k', delta: '+11.8%', up: true, color: '#c8940a' },
+  { label: 'Monthly Revenue', value: '$18.4k', delta: '+11.8%', up: true, color: '#00ae74' },
   { label: 'Retention Rate', value: '93.1%', delta: '+1.4%', up: true, color: '#34d399' },
   { label: 'Churn Risk', value: '37', delta: '-9', up: true, color: '#f87171' },
 ]
@@ -23,7 +23,7 @@ const CHURN = [
 const SIGNALS = [
   { icon: '📉', text: 'Grade 7 cohort engagement dipped 12% this week', tone: '#f87171' },
   { icon: '🚀', text: 'Speaking-club students renew 2.3× more often', tone: '#34d399' },
-  { icon: '💡', text: 'Predicted: +84 enrollments if Aug placement opens early', tone: '#c8940a' },
+  { icon: '💡', text: 'Predicted: +84 enrollments if Aug placement opens early', tone: '#00ae74' },
 ]
 
 export function CommandCenterPage() {
@@ -47,7 +47,7 @@ export function CommandCenterPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {KPIS.map(k => (
           <div key={k.label} className="rounded-2xl p-4 relative overflow-hidden"
-            style={{ background: 'rgba(13,20,37,0.7)', border: `1px solid ${k.color}20` }}>
+            style={{ background: 'rgba(26, 19, 92,0.7)', border: `1px solid ${k.color}20` }}>
             <div className="absolute top-0 left-0 right-0 h-[1.5px]" style={{ background: `linear-gradient(90deg,transparent,${k.color},transparent)` }} />
             <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">{k.label}</p>
             <p className="text-2xl font-black mt-1" style={{ color: k.color }}>{k.value}</p>
@@ -60,7 +60,7 @@ export function CommandCenterPage() {
 
       <div className="grid md:grid-cols-3 gap-4">
         {/* Forecast chart */}
-        <div className="md:col-span-2 rounded-2xl p-4" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(200,148,10,0.18)' }}>
+        <div className="md:col-span-2 rounded-2xl p-4" style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(0, 174, 116,0.18)' }}>
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-bold text-white">💰 Revenue Forecast (AI projection)</p>
             <div className="flex items-center gap-3 text-[9px]">
@@ -73,7 +73,7 @@ export function CommandCenterPage() {
               <div key={i} className="flex-1 flex flex-col items-center gap-1 relative h-full justify-end">
                 <div className="w-full rounded-t" style={{ height: `${(v / max) * 100}%`, background: 'linear-gradient(to top,rgba(37,99,235,0.2),rgba(37,99,235,0.5))' }} />
                 {ACTUAL[i] > 0 && (
-                  <div className="absolute bottom-0 w-full rounded-t" style={{ height: `${(ACTUAL[i] / max) * 100}%`, background: 'linear-gradient(to top,#c8940a,#e0a800)' }} />
+                  <div className="absolute bottom-0 w-full rounded-t" style={{ height: `${(ACTUAL[i] / max) * 100}%`, background: 'linear-gradient(to top,#00ae74,#009e69)' }} />
                 )}
                 <span className="text-[7px] text-gray-600">{MONTHS[i]}</span>
               </div>
@@ -82,7 +82,7 @@ export function CommandCenterPage() {
         </div>
 
         {/* AI signals */}
-        <div className="rounded-2xl p-4" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
+        <div className="rounded-2xl p-4" style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
           <p className="text-xs font-bold text-white mb-3">🤖 AI Signals</p>
           <div className="space-y-2.5">
             {SIGNALS.map((s, i) => (
@@ -97,7 +97,7 @@ export function CommandCenterPage() {
       </div>
 
       {/* Churn watch */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(248,113,113,0.18)' }}>
+      <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(248,113,113,0.18)' }}>
         <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: 'rgba(248,113,113,0.1)' }}>
           <p className="text-xs font-bold text-white">⚠️ Churn Watch — students needing attention</p>
           <span className="text-[9px] text-gray-500">Ranked by predicted risk</span>

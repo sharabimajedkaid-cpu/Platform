@@ -15,13 +15,13 @@ interface ThemeVars {
 }
 
 const DEFAULT_THEME: ThemeVars = {
-  '--navy': '#080f22',
-  '--gold': '#f0a500',
-  '--royal-blue': '#1a2e5c',
+  '--navy': '#1d1668',
+  '--gold': '#00ae74',
+  '--royal-blue': '#2a2196',
   '--champagne': '#fef8ea',
-  '--accent-indigo': '#6366f1',
-  '--accent-violet': '#7c3aed',
-  '--accent-emerald': '#059669',
+  '--accent-indigo': '#3b82f6',
+  '--accent-violet': '#2563eb',
+  '--accent-emerald': '#00ae74',
   '--accent-rose': '#e11d48',
   '--accent-cyan': '#0891b2',
   '--app-font-sans': 'Inter, sans-serif',

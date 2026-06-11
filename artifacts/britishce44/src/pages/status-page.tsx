@@ -57,7 +57,7 @@ export function StatusPage() {
 
       {/* Overall banner */}
       <div className="rounded-2xl p-5 flex items-center gap-4 relative overflow-hidden"
-        style={{ background: `linear-gradient(120deg,${banner.color}22,rgba(13,20,37,0.7))`, border: `1px solid ${banner.color}40` }}>
+        style={{ background: `linear-gradient(120deg,${banner.color}22,rgba(26, 19, 92,0.7))`, border: `1px solid ${banner.color}40` }}>
         <span className="w-3 h-3 rounded-full animate-pulse" style={{ background: banner.color }} />
         <div>
           <p className="text-base font-black text-white">{allUp ? 'All systems operational' : 'Some systems degraded'}</p>
@@ -71,7 +71,7 @@ export function StatusPage() {
           const m = STATE_META[s.state]
           return (
             <motion.div key={s.name} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-              className="rounded-2xl p-4" style={{ background: 'rgba(13,20,37,0.7)', border: `1px solid ${m.color}22` }}>
+              className="rounded-2xl p-4" style={{ background: 'rgba(26, 19, 92,0.7)', border: `1px solid ${m.color}22` }}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2.5">
                   <span className="text-base">{s.icon}</span>
@@ -91,7 +91,7 @@ export function StatusPage() {
       </div>
 
       {/* Incidents */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
+      <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
         <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(37,99,235,0.1)' }}>
           <p className="text-xs font-bold text-white">📜 Incident History</p>
         </div>

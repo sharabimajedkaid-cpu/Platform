@@ -44,7 +44,7 @@ const SEED: User[] = [
 
 const ROLE_CFG: Record<Role,{color:string;bg:string;emoji:string;label:string}> = {
   admin:      { color:'#fbbf24', bg:'rgba(251,191,36,0.12)',  emoji:'👑',  label:'Admin' },
-  teacher:    { color:'#818cf8', bg:'rgba(129,140,248,0.12)', emoji:'👩‍🏫', label:'Teacher' },
+  teacher:    { color:'#60a5fa', bg:'rgba(129,140,248,0.12)', emoji:'👩‍🏫', label:'Teacher' },
   supervisor: { color:'#34d399', bg:'rgba(52,211,153,0.12)',  emoji:'🔭',  label:'Supervisor' },
   student:    { color:'#38bdf8', bg:'rgba(56,189,248,0.10)',  emoji:'🎓',  label:'Student' },
   parent:     { color:'#fb923c', bg:'rgba(251,146,60,0.10)',  emoji:'👪',  label:'Parent' },
@@ -75,7 +75,7 @@ function EditModal({user,onSave,onClose}:{user:User;onSave:(u:User)=>void;onClos
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{background:'rgba(0,0,0,0.75)',backdropFilter:'blur(8px)'}}>
       <motion.div initial={{opacity:0,scale:0.94}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.94}}
-        className="w-full max-w-2xl rounded-2xl overflow-auto shadow-2xl" style={{background:'#0a1228',border:'1px solid rgba(99,102,241,0.30)',maxHeight:'90vh'}}>
+        className="w-full max-w-2xl rounded-2xl overflow-auto shadow-2xl" style={{background:'#1d1668',border:'1px solid rgba(63, 186, 235,0.30)',maxHeight:'90vh'}}>
         <div className="h-0.5 bg-gradient-to-r from-indigo-500 via-violet-500 to-amber-400" />
         <div className="p-6">
           <div className="flex items-center justify-between mb-5">
@@ -98,13 +98,13 @@ function EditModal({user,onSave,onClose}:{user:User;onSave:(u:User)=>void;onClos
             </div>
             <div>
               <label className="block text-[10px] font-bold text-indigo-300/60 uppercase tracking-widest mb-1.5">Role</label>
-              <select className={`${inp} bg-[#0a1228]`} value={form.role} onChange={e=>setForm(f=>({...f,role:e.target.value as Role}))}>
+              <select className={`${inp} bg-[#1d1668]`} value={form.role} onChange={e=>setForm(f=>({...f,role:e.target.value as Role}))}>
                 {(Object.keys(ROLE_CFG) as Role[]).map(r=><option key={r} value={r}>{ROLE_CFG[r].emoji} {ROLE_CFG[r].label}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-[10px] font-bold text-indigo-300/60 uppercase tracking-widest mb-1.5">Status</label>
-              <select className={`${inp} bg-[#0a1228]`} value={form.status} onChange={e=>setForm(f=>({...f,status:e.target.value as Status}))}>
+              <select className={`${inp} bg-[#1d1668]`} value={form.status} onChange={e=>setForm(f=>({...f,status:e.target.value as Status}))}>
                 <option value="active">✅ Active</option>
                 <option value="inactive">⏸ Inactive</option>
                 <option value="suspended">🚫 Suspended</option>
@@ -137,9 +137,9 @@ function EditModal({user,onSave,onClose}:{user:User;onSave:(u:User)=>void;onClos
                 return (
                   <button key={p.key} onClick={()=>toggle(p.key)}
                     className="flex items-center gap-2.5 p-2.5 rounded-xl text-left transition"
-                    style={{background:on?'rgba(99,102,241,0.12)':'rgba(255,255,255,0.02)',border:`1px solid ${on?'rgba(99,102,241,0.35)':'rgba(255,255,255,0.05)'}`}}>
+                    style={{background:on?'rgba(63, 186, 235,0.12)':'rgba(255,255,255,0.02)',border:`1px solid ${on?'rgba(63, 186, 235,0.35)':'rgba(255,255,255,0.05)'}`}}>
                     <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
-                      style={{background:on?'#6366f1':'rgba(255,255,255,0.04)',border:`1px solid ${on?'#6366f1':'rgba(255,255,255,0.12)'}`}}>
+                      style={{background:on?'#3b82f6':'rgba(255,255,255,0.04)',border:`1px solid ${on?'#3b82f6':'rgba(255,255,255,0.12)'}`}}>
                       {on&&<span className="text-[8px] text-white font-black">✓</span>}
                     </div>
                     <div>
@@ -156,7 +156,7 @@ function EditModal({user,onSave,onClose}:{user:User;onSave:(u:User)=>void;onClos
             <button onClick={onClose} className="flex-1 py-2.5 rounded-xl text-sm text-white/40 border border-white/08 hover:border-white/20 transition">Cancel</button>
             <button onClick={()=>onSave(form)}
               className="flex-1 py-2.5 rounded-xl text-sm font-bold transition"
-              style={{background:'linear-gradient(135deg,#6366f1,#7c3aed)',color:'#fff',boxShadow:'0 4px 20px rgba(99,102,241,0.28)'}}>
+              style={{background:'linear-gradient(135deg,#3b82f6,#2563eb)',color:'#fff',boxShadow:'0 4px 20px rgba(63, 186, 235,0.28)'}}>
               💾 Save Changes
             </button>
           </div>
@@ -202,9 +202,9 @@ export function UsersPage() {
     <div className="space-y-5 animate-fade-in">
       {/* Page header */}
       <div className="rounded-2xl p-5 relative overflow-hidden"
-        style={{background:'linear-gradient(135deg,#080f22 0%,#131f40 100%)',border:'1px solid rgba(99,102,241,0.20)',boxShadow:'0 8px 32px rgba(8,15,34,0.30)'}}>
+        style={{background:'linear-gradient(135deg,#1d1668 0%,#131f40 100%)',border:'1px solid rgba(63, 186, 235,0.20)',boxShadow:'0 8px 32px rgba(8,15,34,0.30)'}}>
         <div className="absolute top-0 right-0 w-56 h-full opacity-8 pointer-events-none"
-          style={{background:'radial-gradient(ellipse at right,#6366f1,transparent)'}}/>
+          style={{background:'radial-gradient(ellipse at right,#3b82f6,transparent)'}}/>
         <div className="relative flex items-center justify-between flex-wrap gap-3">
           <div>
             <h2 className="text-xl font-black text-white flex items-center gap-2">👥 Manage Users</h2>
@@ -220,7 +220,7 @@ export function UsersPage() {
             )}
             <button onClick={()=>setShowAdd(true)}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold"
-              style={{background:'linear-gradient(135deg,#6366f1,#7c3aed)',color:'#fff',boxShadow:'0 4px 16px rgba(99,102,241,0.28)'}}>
+              style={{background:'linear-gradient(135deg,#3b82f6,#2563eb)',color:'#fff',boxShadow:'0 4px 16px rgba(63, 186, 235,0.28)'}}>
               ＋ Add User
             </button>
           </div>
@@ -276,7 +276,7 @@ export function UsersPage() {
               <motion.div key={u.id} initial={{opacity:0,y:4}} animate={{opacity:1,y:0}} exit={{opacity:0,x:-20}}
                 transition={{delay:i*0.02}}
                 className="px-4 py-3 border-b hover:bg-white/[0.025] transition group cursor-default"
-                style={{borderColor:'rgba(255,255,255,0.04)',background:isSel?'rgba(99,102,241,0.08)':undefined}}>
+                style={{borderColor:'rgba(255,255,255,0.04)',background:isSel?'rgba(63, 186, 235,0.08)':undefined}}>
                 {/* Mobile layout */}
                 <div className="flex md:hidden items-center gap-3 mb-2">
                   <input type="checkbox" checked={isSel} onChange={()=>toggleSel(u.id)} className="accent-indigo-500" />
@@ -346,7 +346,7 @@ export function UsersPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{background:'rgba(0,0,0,0.75)'}}>
             <motion.div initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.95}}
               className="rounded-2xl p-6 max-w-sm w-full shadow-2xl"
-              style={{background:'#0a1228',border:'1px solid rgba(248,113,113,0.30)'}}>
+              style={{background:'#1d1668',border:'1px solid rgba(248,113,113,0.30)'}}>
               <p className="text-xl mb-1">🗑</p>
               <p className="text-lg font-black text-white mb-2">Delete this user?</p>
               <p className="text-sm text-white/45 mb-6">This action is permanent and cannot be undone.</p>

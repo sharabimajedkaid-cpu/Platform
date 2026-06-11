@@ -1,3 +1,4 @@
 - [New student onboarding](onboarding-flow.md) — 4-step post-registration flow wired through RegisterForm → OnboardingFlow → login
 - [Page routing pattern](page-routing.md) — state-based nav; add to PageKey union + dashboard-layout switch + sidebar adminItems
 - [Bilingual + voice welcome](britishce44-i18n-voice.md) — i18n engine (LanguageProvider/useI18n/t), Basic-4+ English lock, login voice-clip pool conventions
+- [Britishce44 brand theme](britishce44-theme.md) — logo palette (indigo/sky/green); green primary needs dark-indigo foreground for AA; exclude whiteboard pen palette from sweeps; keep semantic amber/red during recolors.

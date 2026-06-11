@@ -39,7 +39,7 @@ export function CompliancePage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {FRAMEWORKS.map((f, i) => (
           <motion.div key={f.name} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-            className="rounded-2xl p-4 relative overflow-hidden" style={{ background: 'rgba(13,20,37,0.7)', border: `1px solid ${f.color}22` }}>
+            className="rounded-2xl p-4 relative overflow-hidden" style={{ background: 'rgba(26, 19, 92,0.7)', border: `1px solid ${f.color}22` }}>
             <div className="absolute top-0 left-0 right-0 h-[1.5px]" style={{ background: `linear-gradient(90deg,transparent,${f.color},transparent)` }} />
             <div className="flex items-center justify-between">
               <p className="text-sm font-black text-white">{f.name}</p>
@@ -55,7 +55,7 @@ export function CompliancePage() {
 
       <div className="grid md:grid-cols-3 gap-4">
         {/* Controls */}
-        <div className="md:col-span-2 rounded-2xl p-4" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
+        <div className="md:col-span-2 rounded-2xl p-4" style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
           <p className="text-xs font-bold text-white mb-3">⚙️ Privacy & Security Controls</p>
           <div className="grid sm:grid-cols-2 gap-2.5">
             {controls.map((c, idx) => (
@@ -77,11 +77,11 @@ export function CompliancePage() {
         </div>
 
         {/* Data requests */}
-        <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(200,148,10,0.18)' }}>
-          <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(200,148,10,0.1)' }}>
+        <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(0, 174, 116,0.18)' }}>
+          <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(0, 174, 116,0.1)' }}>
             <p className="text-xs font-bold text-white">📋 Data Subject Requests</p>
           </div>
-          <div className="divide-y" style={{ borderColor: 'rgba(200,148,10,0.06)' }}>
+          <div className="divide-y" style={{ borderColor: 'rgba(0, 174, 116,0.06)' }}>
             {REQUESTS.map((r, i) => (
               <div key={i} className="px-4 py-3">
                 <div className="flex items-center justify-between">
@@ -92,7 +92,7 @@ export function CompliancePage() {
               </div>
             ))}
           </div>
-          <div className="px-4 py-3 border-t" style={{ borderColor: 'rgba(200,148,10,0.06)' }}>
+          <div className="px-4 py-3 border-t" style={{ borderColor: 'rgba(0, 174, 116,0.06)' }}>
             <p className="text-[9px] text-gray-600 text-center">Avg. response time: 1.4 days · SLA: 30 days</p>
           </div>
         </div>

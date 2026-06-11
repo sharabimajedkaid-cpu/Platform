@@ -35,7 +35,7 @@ function LiveKPI({ label, value, change, color, sparkData, unit = '' }: {
 }) {
   return (
     <div className="rounded-2xl p-4 relative overflow-hidden"
-      style={{ background: 'rgba(13,20,37,0.7)', border: `1px solid ${color}20` }}>
+      style={{ background: 'rgba(26, 19, 92,0.7)', border: `1px solid ${color}20` }}>
       <div className="absolute top-0 left-0 right-0 h-[1.5px]"
         style={{ background: `linear-gradient(90deg,transparent,${color},transparent)` }} />
       <div className="flex items-start justify-between mb-1">
@@ -61,10 +61,10 @@ const EVENTS = [
   { time: '18:21', event: 'Student joined Classroom #3', type: 'join', color: '#34d399' },
   { time: '18:20', event: 'Exam #12 started — G7 English', type: 'exam', color: '#3b82f6' },
   { time: '18:18', event: 'Arabic alert: Ahmed in Classroom #1', type: 'alert', color: '#f87171' },
-  { time: '18:15', event: 'Recording started — Classroom #5', type: 'record', color: '#c8940a' },
+  { time: '18:15', event: 'Recording started — Classroom #5', type: 'record', color: '#00ae74' },
   { time: '18:12', event: 'New homework submitted — Sara G9', type: 'hw', color: '#67e8f9' },
   { time: '18:09', event: 'Teacher Suhair entered Classroom #1', type: 'join', color: '#34d399' },
-  { time: '18:05', event: 'AI Evaluation completed — Score 91%', type: 'ai', color: '#a78bfa' },
+  { time: '18:05', event: 'AI Evaluation completed — Score 91%', type: 'ai', color: '#7dd3fc' },
 ]
 
 export function LiveAnalyticsPage() {
@@ -104,14 +104,14 @@ export function LiveAnalyticsPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <LiveKPI label="Active Users" value={activeUsers} change="+8% today" color="#3b82f6" sparkData={sparkA} />
         <LiveKPI label="Live Classrooms" value={liveClassrooms} change="↑ 2 joined" color="#34d399" sparkData={sparkB} />
-        <LiveKPI label="Exams Running" value={examsRunning} change="steady" color="#a78bfa" sparkData={sparkC} />
-        <LiveKPI label="Submissions Today" value={submissions} change="+23%" color="#c8940a" sparkData={sparkD} />
+        <LiveKPI label="Exams Running" value={examsRunning} change="steady" color="#7dd3fc" sparkData={sparkC} />
+        <LiveKPI label="Submissions Today" value={submissions} change="+23%" color="#00ae74" sparkData={sparkD} />
       </div>
 
       <div className="grid md:grid-cols-3 gap-4">
         {/* Hourly activity bar chart */}
         <div className="md:col-span-2 rounded-2xl p-4"
-          style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
+          style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-bold text-white">⏰ Hourly Platform Activity</p>
             <span className="text-[9px] text-gray-600">Today</span>
@@ -122,7 +122,7 @@ export function LiveAnalyticsPage() {
                 <div className="w-full rounded-t relative overflow-hidden"
                   style={{ height: `${v}%`, background: 'linear-gradient(to top,rgba(37,99,235,0.45),rgba(27,62,166,0.75))' }}>
                   {i === 5 || i === 6 ? (
-                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to top,#1b3ea6,#2563eb)', boxShadow: '0 0 8px rgba(37,99,235,0.5)' }} />
+                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to top,#2620a8,#2563eb)', boxShadow: '0 0 8px rgba(37,99,235,0.5)' }} />
                   ) : null}
                 </div>
                 <span className="text-[7px] text-gray-600">{HOURS[i]}</span>
@@ -133,12 +133,12 @@ export function LiveAnalyticsPage() {
 
         {/* Geo distribution */}
         <div className="rounded-2xl p-4"
-          style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
+          style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
           <p className="text-xs font-bold text-white mb-3">🌍 User Geography</p>
           <div className="space-y-2.5">
             {[
               { flag: '🇾🇪', country: 'Yemen',        pct: 78, color: '#2563eb' },
-              { flag: '🇸🇦', country: 'Saudi Arabia', pct: 12, color: '#c8940a' },
+              { flag: '🇸🇦', country: 'Saudi Arabia', pct: 12, color: '#00ae74' },
               { flag: '🇦🇪', country: 'UAE',           pct: 6,  color: '#34d399' },
               { flag: '🌐', country: 'Other',          pct: 4,  color: '#6b7280' },
             ].map(g => (
@@ -164,7 +164,7 @@ export function LiveAnalyticsPage() {
       <div className="grid md:grid-cols-2 gap-4">
         {/* Live classrooms table */}
         <div className="rounded-2xl overflow-hidden"
-          style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(52,211,153,0.12)' }}>
+          style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(52,211,153,0.12)' }}>
           <div className="px-4 py-3 flex items-center justify-between border-b" style={{ borderColor: 'rgba(52,211,153,0.08)' }}>
             <p className="text-xs font-bold text-white">🔴 Live Classrooms ({liveClassrooms})</p>
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -187,11 +187,11 @@ export function LiveAnalyticsPage() {
 
         {/* Live event feed */}
         <div className="rounded-2xl overflow-hidden"
-          style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(99,102,241,0.12)' }}>
-          <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(99,102,241,0.08)' }}>
+          style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(63, 186, 235,0.12)' }}>
+          <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(63, 186, 235,0.08)' }}>
             <p className="text-xs font-bold text-white">⚡ Live Event Feed</p>
           </div>
-          <div className="divide-y" style={{ borderColor: 'rgba(99,102,241,0.06)' }}>
+          <div className="divide-y" style={{ borderColor: 'rgba(63, 186, 235,0.06)' }}>
             {EVENTS.map((e, i) => (
               <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.04 }}
