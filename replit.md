@@ -51,7 +51,10 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- The `api-server` dev workflow is **build + start** (esbuild bundle, no watch). After editing any backend code you must restart the `artifacts/api-server: API Server` workflow for changes to take effect — there is no hot reload.
+- Startup seeding is idempotent and runs on boot; restarting the API server re-seeds safely (no separate seed command needed).
+- Google delivery (Gmail/Drive/Calendar) reads live tokens from the Replit connectors proxy (connector names `google-mail`, `google-drive`, `google-calendar`). When not connected, reports stay `emailStatus`/`driveStatus` `pending`; `flushPendingDeliveries()` completes them after authorization.
+- AI reports require the Replit AI proxy env (`AI_INTEGRATIONS_OPENAI_*`); without it, generation falls back to a valid bilingual template.
 
 ## Pointers
 

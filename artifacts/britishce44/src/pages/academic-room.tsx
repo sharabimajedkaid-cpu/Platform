@@ -1,10 +1,11 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { AssessmentAdmin } from './academic-room-assessment'
 
 /* Academic Management Room — Comprehensive center for all academic operations */
 
-type Tab = 'overview'|'monitor'|'writer'|'intake'|'students'|'schedule'|'templates'|'archive'|'reports'
+type Tab = 'overview'|'monitor'|'writer'|'intake'|'students'|'schedule'|'templates'|'archive'|'reports'|'assessment'
 
 /* ── Live room monitor data ─────────────────────────────── */
 interface MonRoom {
@@ -183,6 +184,7 @@ export function AcademicRoomPage() {
     {id:'templates',label:'Templates',labelAr:'النماذج',emoji:'📋'},
     {id:'archive',label:'Archive',labelAr:'الأرشيف',emoji:'🗂'},
     {id:'reports',label:'Reports',labelAr:'التقارير',emoji:'📈'},
+    {id:'assessment',label:'In-Class Reports',labelAr:'تقارير الأداء',emoji:'✍️'},
   ]
 
   const statusCounts=Object.keys(STATUS_CFG).reduce((a,s)=>({...a,[s]:students.filter(st=>st.status===s).length}),{} as Record<string,number>)
@@ -248,6 +250,9 @@ export function AcademicRoomPage() {
           </button>
         ))}
       </div>
+
+      {/* IN-CLASS ASSESSMENT MANAGEMENT */}
+      {tab==='assessment'&&<AssessmentAdmin/>}
 
       {/* OVERVIEW */}
       {tab==='overview'&&(
