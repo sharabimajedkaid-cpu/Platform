@@ -41,7 +41,7 @@ function StepDots({total,current}:{total:number;current:number}) {
     <div className="flex gap-2 items-center justify-center">
       {Array.from({length:total}).map((_,i)=>(
         <div key={i} className="rounded-full transition-all duration-300"
-          style={{width:i===current?'24px':'8px',height:'8px',background:i===current?'#f0a500':i<current?'rgba(240,165,0,0.40)':'rgba(255,255,255,0.12)'}} />
+          style={{width:i===current?'24px':'8px',height:'8px',background:i===current?'#00ae74':i<current?'rgba(0, 174, 116,0.40)':'rgba(255,255,255,0.12)'}} />
       ))}
     </div>
   )
@@ -63,12 +63,12 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
-      style={{background:'linear-gradient(160deg,#060b18 0%,#0d1830 50%,#060b18 100%)'}}>
+      style={{background:'linear-gradient(160deg,#17125c 0%,#241c80 50%,#17125c 100%)'}}>
       {/* Background */}
       <div className="absolute inset-0 opacity-[0.025]"
-        style={{backgroundImage:'linear-gradient(rgba(196,125,0,1) 1px, transparent 1px), linear-gradient(90deg,rgba(196,125,0,1) 1px, transparent 1px)',backgroundSize:'40px 40px'}} />
+        style={{backgroundImage:'linear-gradient(rgba(0, 174, 116,1) 1px, transparent 1px), linear-gradient(90deg,rgba(0, 174, 116,1) 1px, transparent 1px)',backgroundSize:'40px 40px'}} />
       <div className="absolute top-1/3 left-1/3 w-80 h-80 rounded-full pointer-events-none"
-        style={{background:'radial-gradient(circle,rgba(196,125,0,0.10),transparent)',filter:'blur(60px)'}} />
+        style={{background:'radial-gradient(circle,rgba(0, 174, 116,0.10),transparent)',filter:'blur(60px)'}} />
 
       <div className="relative w-full max-w-2xl">
         {/* Header */}
@@ -85,7 +85,7 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
           {step===0&&(
             <motion.div key="profile" initial={{opacity:0,x:30}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-30}}
               className="rounded-2xl overflow-hidden"
-              style={{background:'rgba(8,14,35,0.88)',backdropFilter:'blur(24px)',border:'1px solid rgba(196,125,0,0.22)',boxShadow:'0 32px 80px rgba(0,0,0,0.50)'}}>
+              style={{background:'rgba(8,14,35,0.88)',backdropFilter:'blur(24px)',border:'1px solid rgba(0, 174, 116,0.22)',boxShadow:'0 32px 80px rgba(0,0,0,0.50)'}}>
               <div className="h-0.5 bg-gradient-to-r from-amber-400 via-indigo-500 to-violet-500" />
               <div className="p-6">
                 <h2 className="text-lg font-black text-white mb-1">📋 Complete Your Profile</h2>
@@ -118,14 +118,14 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-amber-300/60 uppercase tracking-widest mb-1.5">Interested Course</label>
-                    <select className={`${inp} bg-[#0a1228]`} value={profile.course} onChange={e=>setProfile(p=>({...p,course:e.target.value}))}>
+                    <select className={`${inp} bg-[#1d1668]`} value={profile.course} onChange={e=>setProfile(p=>({...p,course:e.target.value}))}>
                       <option value="">Select a course…</option>
                       {COURSES.map(c=><option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-amber-300/60 uppercase tracking-widest mb-1.5">Current English Level</label>
-                    <select className={`${inp} bg-[#0a1228]`} value={profile.levelGuess} onChange={e=>setProfile(p=>({...p,levelGuess:e.target.value}))}>
+                    <select className={`${inp} bg-[#1d1668]`} value={profile.levelGuess} onChange={e=>setProfile(p=>({...p,levelGuess:e.target.value}))}>
                       <option value="beginner">Beginner / مبتدئ</option>
                       <option value="elementary">Elementary</option>
                       <option value="pre-int">Pre-Intermediate</option>
@@ -146,7 +146,7 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
 
                 <button onClick={()=>setStep(1)} disabled={!profile.fullName||!profile.phone}
                   className="w-full mt-5 py-3 rounded-xl font-bold text-sm transition"
-                  style={{background:profile.fullName&&profile.phone?'linear-gradient(135deg,#c47d00,#f0a500)':'rgba(255,255,255,0.08)',color:profile.fullName&&profile.phone?'#060b18':'rgba(255,255,255,0.25)',fontFamily:'Cairo,sans-serif'}}>
+                  style={{background:profile.fullName&&profile.phone?'linear-gradient(135deg,#00875a,#00ae74)':'rgba(255,255,255,0.08)',color:profile.fullName&&profile.phone?'#17125c':'rgba(255,255,255,0.25)',fontFamily:'Cairo,sans-serif'}}>
                   حفظ ومتابعة → Submit & Continue
                 </button>
               </div>
@@ -174,15 +174,15 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
                     <p className="text-white/30 text-xs mb-6" style={{fontFamily:'Tajawal,sans-serif'}}>ستتحدث مع المنسق الأكاديمي لتحديد مستواك وتحديد دورتك</p>
                     <button onClick={()=>setMeetingJoined(true)}
                       className="px-8 py-3 rounded-xl font-bold text-sm"
-                      style={{background:'linear-gradient(135deg,#059669,#10b981)',color:'#fff',boxShadow:'0 4px 20px rgba(16,185,129,0.30)'}}>
+                      style={{background:'linear-gradient(135deg,#00ae74,#00ae74)',color:'#fff',boxShadow:'0 4px 20px rgba(16,185,129,0.30)'}}>
                       🟢 Join Academic Meeting / انضم للمقابلة
                     </button>
                   </div>
                 ) : !meetingDone ? (
                   <div>
                     {/* Simulated meeting room */}
-                    <div className="rounded-2xl overflow-hidden mb-4" style={{background:'#060e1c',border:'1px solid rgba(52,211,153,0.20)'}}>
-                      <div className="relative h-48 flex items-center justify-center" style={{background:'linear-gradient(135deg,#0a1428,#0d1c38)'}}>
+                    <div className="rounded-2xl overflow-hidden mb-4" style={{background:'#17125c',border:'1px solid rgba(52,211,153,0.20)'}}>
+                      <div className="relative h-48 flex items-center justify-center" style={{background:'linear-gradient(135deg,#1d1668,#241c80)'}}>
                         <div className="text-center">
                           <p className="text-4xl mb-2">👩‍💼</p>
                           <p className="text-sm text-emerald-400 font-semibold">Academic Coordinator</p>
@@ -225,7 +225,7 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
                     </div>
                     <button onClick={()=>{setMeetingDone(true)}}
                       className="w-full mt-4 py-3 rounded-xl font-bold text-sm"
-                      style={{background:'linear-gradient(135deg,#c47d00,#f0a500)',color:'#060b18',fontFamily:'Cairo,sans-serif'}}>
+                      style={{background:'linear-gradient(135deg,#00875a,#00ae74)',color:'#17125c',fontFamily:'Cairo,sans-serif'}}>
                       ✅ End Meeting & Continue / إنهاء المقابلة والمتابعة
                     </button>
                   </div>
@@ -241,7 +241,7 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
                     </div>
                     <button onClick={()=>setStep(2)}
                       className="w-full mt-5 py-3 rounded-xl font-bold text-sm"
-                      style={{background:'linear-gradient(135deg,#c47d00,#f0a500)',color:'#060b18'}}>
+                      style={{background:'linear-gradient(135deg,#00875a,#00ae74)',color:'#17125c'}}>
                       Continue to Payment Info →
                     </button>
                   </div>
@@ -254,7 +254,7 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
           {step===2&&(
             <motion.div key="payment" initial={{opacity:0,x:30}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-30}}
               className="rounded-2xl overflow-hidden"
-              style={{background:'rgba(8,14,35,0.88)',backdropFilter:'blur(24px)',border:'1px solid rgba(240,165,0,0.22)',boxShadow:'0 32px 80px rgba(0,0,0,0.50)'}}>
+              style={{background:'rgba(8,14,35,0.88)',backdropFilter:'blur(24px)',border:'1px solid rgba(0, 174, 116,0.22)',boxShadow:'0 32px 80px rgba(0,0,0,0.50)'}}>
               <div className="h-0.5 bg-gradient-to-r from-amber-400 via-yellow-500 to-orange-500" />
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-1">
@@ -268,10 +268,10 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
 
                 {/* Video placeholder */}
                 <div className="rounded-2xl overflow-hidden mb-5 cursor-pointer hover:opacity-90 transition"
-                  style={{background:'linear-gradient(135deg,#0a1228,#0d1640)',border:'1px solid rgba(240,165,0,0.20)'}}>
+                  style={{background:'linear-gradient(135deg,#1d1668,#241c80)',border:'1px solid rgba(0, 174, 116,0.20)'}}>
                   <div className="h-32 flex flex-col items-center justify-center gap-2">
                     <div className="w-12 h-12 rounded-full flex items-center justify-center"
-                      style={{background:'rgba(240,165,0,0.15)',border:'2px solid rgba(240,165,0,0.30)'}}>
+                      style={{background:'rgba(0, 174, 116,0.15)',border:'2px solid rgba(0, 174, 116,0.30)'}}>
                       <span className="text-xl text-amber-400">▶</span>
                     </div>
                     <p className="text-xs text-amber-400/70 font-semibold">Watch: How to pay — كيفية الدفع</p>
@@ -282,9 +282,9 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
                 {/* Account cards */}
                 <div className="space-y-4 mb-5">
                   {/* Al-Rajhi */}
-                  <div className="rounded-2xl p-4" style={{background:'linear-gradient(135deg,rgba(45,15,0,0.8),rgba(60,20,0,0.6))',border:'1px solid rgba(240,165,0,0.20)'}}>
+                  <div className="rounded-2xl p-4" style={{background:'linear-gradient(135deg,rgba(45,15,0,0.8),rgba(60,20,0,0.6))',border:'1px solid rgba(0, 174, 116,0.20)'}}>
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-8 h-8 rounded-xl flex items-center justify-center text-lg" style={{background:'rgba(240,165,0,0.15)'}}>🏦</div>
+                      <div className="w-8 h-8 rounded-xl flex items-center justify-center text-lg" style={{background:'rgba(0, 174, 116,0.15)'}}>🏦</div>
                       <div>
                         <p className="text-sm font-black text-white">Al-Rajhi Bank / بنك الراجحي</p>
                         <p className="text-[10px] text-amber-400/60">International Transfer / تحويل دولي</p>
@@ -301,7 +301,7 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
                     <div className="grid md:grid-cols-2 gap-x-4 gap-y-1">
                       {BANK_STEPS_EN.map((s,i)=>(
                         <div key={i} className="flex items-start gap-2 text-[9px] text-white/45">
-                          <span className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 font-black" style={{background:'rgba(240,165,0,0.12)',color:'#f0a500'}}>{i+1}</span>
+                          <span className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 font-black" style={{background:'rgba(0, 174, 116,0.12)',color:'#00ae74'}}>{i+1}</span>
                           <span>{s}</span>
                         </div>
                       ))}
@@ -330,14 +330,14 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
                   <div className="space-y-1.5">
                     {BANK_STEPS_AR.map((s,i)=>(
                       <div key={i} className="flex items-start gap-2 text-[10px] text-white/50" style={{fontFamily:'Tajawal,sans-serif'}}>
-                        <span className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 font-black text-[9px]" style={{background:'rgba(240,165,0,0.12)',color:'#f0a500'}}>{i+1}</span>
+                        <span className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 font-black text-[9px]" style={{background:'rgba(0, 174, 116,0.12)',color:'#00ae74'}}>{i+1}</span>
                         <span>{s}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="p-3 rounded-xl mb-5" style={{background:'rgba(240,165,0,0.06)',border:'1px solid rgba(240,165,0,0.15)'}}>
+                <div className="p-3 rounded-xl mb-5" style={{background:'rgba(0, 174, 116,0.06)',border:'1px solid rgba(0, 174, 116,0.15)'}}>
                   <p className="text-[10px] text-amber-400/80">
                     ⚠️ After payment, send your receipt to <strong>britishce44@gmail.com</strong> with your name and course.
                     Your account will be activated within 24 hours.
@@ -349,7 +349,7 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
 
                 <button onClick={()=>setStep(3)}
                   className="w-full py-3 rounded-xl font-bold text-sm"
-                  style={{background:'linear-gradient(135deg,#c47d00,#f0a500)',color:'#060b18',fontFamily:'Cairo,sans-serif',boxShadow:'0 4px 20px rgba(240,165,0,0.25)'}}>
+                  style={{background:'linear-gradient(135deg,#00875a,#00ae74)',color:'#17125c',fontFamily:'Cairo,sans-serif',boxShadow:'0 4px 20px rgba(0, 174, 116,0.25)'}}>
                   ✅ I understand — Take me to my dashboard / فهمت — اذهب إلى لوحتي
                 </button>
               </div>
@@ -377,7 +377,7 @@ export function OnboardingFlow({ onComplete, studentName='Student' }: Onboarding
                 </div>
                 <button onClick={onComplete}
                   className="w-full py-3.5 rounded-xl font-black text-base"
-                  style={{background:'linear-gradient(135deg,#c47d00,#f0a500,#ffd166)',color:'#060b18',boxShadow:'0 8px 24px rgba(240,165,0,0.30)',fontFamily:'Cairo,sans-serif'}}>
+                  style={{background:'linear-gradient(135deg,#00875a,#00ae74,#ffd166)',color:'#17125c',boxShadow:'0 8px 24px rgba(0, 174, 116,0.30)',fontFamily:'Cairo,sans-serif'}}>
                   🚀 Go to My Dashboard / الانتقال إلى لوحتي
                 </button>
               </div>

@@ -15,7 +15,7 @@ interface Question { id:string; text:string; type:'mcq'|'truefalse'|'short'|'ess
 const STATUS_CFG: Record<ExamStatus,{label:string;color:string;bg:string}> = {
   draft:     {label:'Draft',     color:'#94a3b8',bg:'rgba(148,163,184,0.12)'},
   approved:  {label:'Approved',  color:'#34d399',bg:'rgba(52,211,153,0.12)'},
-  scheduled: {label:'Scheduled', color:'#818cf8',bg:'rgba(129,140,248,0.12)'},
+  scheduled: {label:'Scheduled', color:'#60a5fa',bg:'rgba(129,140,248,0.12)'},
   live:      {label:'🔴 Live',    color:'#f87171',bg:'rgba(248,113,113,0.15)'},
   closed:    {label:'Closed',    color:'#6b7280',bg:'rgba(107,114,128,0.12)'},
 }
@@ -52,7 +52,7 @@ function ExamSettingsModal({exam,onSave,onClose}:{exam:Exam;onSave:(e:Exam)=>voi
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{background:'rgba(0,0,0,0.80)',backdropFilter:'blur(8px)'}}>
       <motion.div initial={{opacity:0,scale:0.94}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.94}}
-        className="w-full max-w-2xl rounded-2xl overflow-auto shadow-2xl" style={{background:'#0a1228',border:'1px solid rgba(99,102,241,0.30)',maxHeight:'92vh'}}>
+        className="w-full max-w-2xl rounded-2xl overflow-auto shadow-2xl" style={{background:'#1d1668',border:'1px solid rgba(63, 186, 235,0.30)',maxHeight:'92vh'}}>
         <div className="h-0.5 bg-gradient-to-r from-amber-400 via-indigo-500 to-violet-500" />
         <div className="p-6">
           <div className="flex items-center justify-between mb-5">
@@ -70,7 +70,7 @@ function ExamSettingsModal({exam,onSave,onClose}:{exam:Exam;onSave:(e:Exam)=>voi
             </div>
             <div>
               <label className="block text-[10px] font-bold text-indigo-300/60 uppercase tracking-widest mb-1.5">Status</label>
-              <select className={`${inp} bg-[#0a1228]`} value={f.status} onChange={e=>setF(p=>({...p,status:e.target.value as ExamStatus}))}>
+              <select className={`${inp} bg-[#1d1668]`} value={f.status} onChange={e=>setF(p=>({...p,status:e.target.value as ExamStatus}))}>
                 {(Object.keys(STATUS_CFG) as ExamStatus[]).map(s=><option key={s} value={s}>{STATUS_CFG[s].label}</option>)}
               </select>
             </div>
@@ -104,7 +104,7 @@ function ExamSettingsModal({exam,onSave,onClose}:{exam:Exam;onSave:(e:Exam)=>voi
               {[['📱','WhatsApp Message','whatsapp'],['✉️','Gmail Email','gmail'],['🤖','AI Voice Call (CE4)','ai-call']].map(([icon,label,key])=>(
                 <div key={key} className="flex items-center gap-2 mb-2">
                   <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
-                    style={{background:f.reminders?'#6366f1':'rgba(255,255,255,0.05)',border:`1px solid ${f.reminders?'#6366f1':'rgba(255,255,255,0.12)'}`}}>
+                    style={{background:f.reminders?'#3b82f6':'rgba(255,255,255,0.05)',border:`1px solid ${f.reminders?'#3b82f6':'rgba(255,255,255,0.12)'}`}}>
                     {f.reminders&&<span className="text-[7px] text-white">✓</span>}
                   </div>
                   <span className="text-sm">{icon}</span>
@@ -138,7 +138,7 @@ function ExamSettingsModal({exam,onSave,onClose}:{exam:Exam;onSave:(e:Exam)=>voi
             <button onClick={onClose} className="flex-1 py-2.5 rounded-xl text-sm text-white/40 border border-white/10 hover:border-white/20 transition">Cancel</button>
             <button onClick={()=>onSave(f)}
               className="flex-1 py-2.5 rounded-xl text-sm font-bold"
-              style={{background:'linear-gradient(135deg,#f59e0b,#d97706)',color:'#060b18',boxShadow:'0 4px 20px rgba(245,158,11,0.25)'}}>
+              style={{background:'linear-gradient(135deg,#f59e0b,#d97706)',color:'#17125c',boxShadow:'0 4px 20px rgba(245,158,11,0.25)'}}>
               💾 Save Settings
             </button>
           </div>
@@ -157,7 +157,7 @@ function PdfImportModal({onClose}:{onClose:()=>void}) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{background:'rgba(0,0,0,0.80)'}}>
       <motion.div initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.95}}
         className="w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl"
-        style={{background:'#0a1228',border:'1px solid rgba(99,102,241,0.30)'}}>
+        style={{background:'#1d1668',border:'1px solid rgba(63, 186, 235,0.30)'}}>
         <div className="h-0.5 bg-gradient-to-r from-violet-500 to-amber-400" />
         <div className="p-6">
           <div className="flex items-center justify-between mb-5">
@@ -171,7 +171,7 @@ function PdfImportModal({onClose}:{onClose:()=>void}) {
           {step==='upload'&&(
             <div>
               <div className="border-2 border-dashed rounded-2xl p-10 text-center mb-4 transition hover:border-indigo-500/60 cursor-pointer"
-                style={{borderColor:'rgba(99,102,241,0.25)',background:'rgba(99,102,241,0.03)'}}
+                style={{borderColor:'rgba(63, 186, 235,0.25)',background:'rgba(63, 186, 235,0.03)'}}
                 onClick={()=>{setFile('sample_exam.pdf');setStep('preview')}}>
                 <p className="text-4xl mb-3">📄</p>
                 <p className="text-sm font-bold text-white/70">Drop PDF exam file here</p>
@@ -181,7 +181,7 @@ function PdfImportModal({onClose}:{onClose:()=>void}) {
                 {['Template A (Quiz 1)','Template B (Speaking)','Oxford Phonics Test'].map(t=>(
                   <button key={t} onClick={()=>{setFile(t);setStep('preview')}}
                     className="flex-1 py-2 rounded-xl text-[10px] font-semibold transition"
-                    style={{background:'rgba(99,102,241,0.10)',color:'#a5b4fc',border:'1px solid rgba(99,102,241,0.20)'}}>
+                    style={{background:'rgba(63, 186, 235,0.10)',color:'#93c5fd',border:'1px solid rgba(63, 186, 235,0.20)'}}>
                     {t}
                   </button>
                 ))}
@@ -211,7 +211,7 @@ function PdfImportModal({onClose}:{onClose:()=>void}) {
                 <button onClick={()=>setStep('upload')} className="flex-1 py-2.5 rounded-xl text-sm text-white/40 border border-white/10 transition">← Back</button>
                 <button onClick={()=>setStep('done')}
                   className="flex-1 py-2.5 rounded-xl text-sm font-bold"
-                  style={{background:'linear-gradient(135deg,#6366f1,#7c3aed)',color:'#fff'}}>
+                  style={{background:'linear-gradient(135deg,#3b82f6,#2563eb)',color:'#fff'}}>
                   Import to Tests Archive →
                 </button>
               </div>
@@ -225,7 +225,7 @@ function PdfImportModal({onClose}:{onClose:()=>void}) {
               <p className="text-sm text-white/45 mt-1">25 questions imported to the Tests Archive</p>
               <button onClick={onClose}
                 className="mt-5 px-6 py-2.5 rounded-xl text-sm font-bold"
-                style={{background:'linear-gradient(135deg,#6366f1,#7c3aed)',color:'#fff'}}>
+                style={{background:'linear-gradient(135deg,#3b82f6,#2563eb)',color:'#fff'}}>
                 View in Archive
               </button>
             </div>
@@ -253,7 +253,7 @@ function TestsBakery() {
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="rounded-2xl p-4" style={{background:'linear-gradient(135deg,#1a0a3a,#0d1640)',border:'1px solid rgba(139,92,246,0.25)'}}>
+      <div className="rounded-2xl p-4" style={{background:'linear-gradient(135deg,#1a0a3a,#241c80)',border:'1px solid rgba(139,92,246,0.25)'}}>
         <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
           <div>
             <h3 className="text-lg font-black text-white">🧁 Tests Bakery</h3>
@@ -262,7 +262,7 @@ function TestsBakery() {
           <div className="flex gap-2">
             <button onClick={()=>setShowPdfImport(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition"
-              style={{background:'rgba(139,92,246,0.15)',color:'#c4b5fd',border:'1px solid rgba(139,92,246,0.25)'}}>
+              style={{background:'rgba(139,92,246,0.15)',color:'#bae6fd',border:'1px solid rgba(139,92,246,0.25)'}}>
               📄 Import PDF
             </button>
             <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition"
@@ -270,7 +270,7 @@ function TestsBakery() {
               💾 Save Test
             </button>
             <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition"
-              style={{background:'rgba(240,165,0,0.15)',color:'#f0a500',border:'1px solid rgba(240,165,0,0.25)'}}>
+              style={{background:'rgba(0, 174, 116,0.15)',color:'#00ae74',border:'1px solid rgba(0, 174, 116,0.25)'}}>
               👁 Preview
             </button>
           </div>
@@ -307,17 +307,17 @@ function TestsBakery() {
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0"
-                  style={{background:'rgba(99,102,241,0.20)',color:'#a5b4fc'}}>
+                  style={{background:'rgba(63, 186, 235,0.20)',color:'#93c5fd'}}>
                   {i+1}
                 </span>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{background:'rgba(139,92,246,0.15)',color:'#c4b5fd'}}>
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{background:'rgba(139,92,246,0.15)',color:'#bae6fd'}}>
                   {Q_TYPES.find(t=>t.id===q.type)?.label}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <input type="number" value={q.points} onChange={e=>updateQ(q.id,{points:Number(e.target.value)})} min={1}
                   className="w-12 rounded-lg px-2 py-1 text-xs text-white text-center outline-none"
-                  style={{background:'rgba(240,165,0,0.10)',border:'1px solid rgba(240,165,0,0.20)',color:'#f0a500'}} />
+                  style={{background:'rgba(0, 174, 116,0.10)',border:'1px solid rgba(0, 174, 116,0.20)',color:'#00ae74'}} />
                 <span className="text-[9px] text-white/30">pts</span>
                 <button onClick={()=>delQ(q.id)} className="p-1 rounded-lg text-red-400/60 hover:text-red-400 hover:bg-red-500/15 transition">🗑</button>
               </div>
@@ -344,7 +344,7 @@ function TestsBakery() {
                 {['True ✅','False ❌'].map(o=>(
                   <button key={o} onClick={()=>updateQ(q.id,{answer:o})}
                     className="flex-1 py-2 rounded-xl text-xs font-semibold transition"
-                    style={{background:q.answer===o?'rgba(99,102,241,0.20)':'rgba(255,255,255,0.04)',border:`1px solid ${q.answer===o?'rgba(99,102,241,0.40)':'rgba(255,255,255,0.08)'}`,color:q.answer===o?'#a5b4fc':'rgba(255,255,255,0.50)'}}>
+                    style={{background:q.answer===o?'rgba(63, 186, 235,0.20)':'rgba(255,255,255,0.04)',border:`1px solid ${q.answer===o?'rgba(63, 186, 235,0.40)':'rgba(255,255,255,0.08)'}`,color:q.answer===o?'#93c5fd':'rgba(255,255,255,0.50)'}}>
                     {o}
                   </button>
                 ))}
@@ -392,9 +392,9 @@ export function ExamSystemPage() {
     <div className="space-y-5 animate-fade-in">
       {/* Page header */}
       <div className="rounded-2xl p-5 relative overflow-hidden"
-        style={{background:'linear-gradient(135deg,#1a0a00 0%,#2a1200 50%,#1a0a00 100%)',border:'1px solid rgba(240,165,0,0.25)',boxShadow:'0 8px 32px rgba(0,0,0,0.35)'}}>
+        style={{background:'linear-gradient(135deg,#1a0a00 0%,#2a1200 50%,#1a0a00 100%)',border:'1px solid rgba(0, 174, 116,0.25)',boxShadow:'0 8px 32px rgba(0,0,0,0.35)'}}>
         <div className="absolute inset-0 opacity-[0.025]"
-          style={{backgroundImage:'linear-gradient(rgba(240,165,0,1) 1px, transparent 1px), linear-gradient(90deg, rgba(240,165,0,1) 1px, transparent 1px)',backgroundSize:'32px 32px'}} />
+          style={{backgroundImage:'linear-gradient(rgba(0, 174, 116,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 174, 116,1) 1px, transparent 1px)',backgroundSize:'32px 32px'}} />
         <div className="relative flex items-center justify-between flex-wrap gap-3">
           <div>
             <h2 className="text-xl font-black text-white">📝 Exam System</h2>
@@ -403,11 +403,11 @@ export function ExamSystemPage() {
           <div className="flex gap-2 flex-wrap">
             <button onClick={()=>setShowPdfImport(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold"
-              style={{background:'rgba(139,92,246,0.15)',color:'#c4b5fd',border:'1px solid rgba(139,92,246,0.25)'}}>
+              style={{background:'rgba(139,92,246,0.15)',color:'#bae6fd',border:'1px solid rgba(139,92,246,0.25)'}}>
               📄 Import PDF
             </button>
             <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold"
-              style={{background:'rgba(240,165,0,0.15)',color:'#f0a500',border:'1px solid rgba(240,165,0,0.25)'}}>
+              style={{background:'rgba(0, 174, 116,0.15)',color:'#00ae74',border:'1px solid rgba(0, 174, 116,0.25)'}}>
               ➕ New Exam
             </button>
           </div>
@@ -429,7 +429,7 @@ export function ExamSystemPage() {
         {([['bank','📚 Exam Bank'],['bakery','🧁 Tests Bakery'],['schedule','📅 Schedule'],['results','📊 Results']] as const).map(([t,label])=>(
           <button key={t} onClick={()=>setTab(t)}
             className="px-4 py-2.5 rounded-xl text-sm font-bold transition"
-            style={{background:tab===t?'linear-gradient(135deg,#f59e0b,#d97706)':tab===t?'':' rgba(255,255,255,0.04)',color:tab===t?'#060b18':'rgba(255,255,255,0.50)',boxShadow:tab===t?'0 4px 16px rgba(245,158,11,0.25)':undefined,border:tab!==t?'1px solid rgba(255,255,255,0.07)':undefined}}>
+            style={{background:tab===t?'linear-gradient(135deg,#f59e0b,#d97706)':tab===t?'':' rgba(255,255,255,0.04)',color:tab===t?'#17125c':'rgba(255,255,255,0.50)',boxShadow:tab===t?'0 4px 16px rgba(245,158,11,0.25)':undefined,border:tab!==t?'1px solid rgba(255,255,255,0.07)':undefined}}>
             {label}
           </button>
         ))}
@@ -481,7 +481,7 @@ export function ExamSystemPage() {
                     <div className="flex gap-1.5">
                       <button onClick={()=>setSettingsExam(e)}
                         className="flex-1 py-1.5 rounded-lg text-[10px] font-semibold transition"
-                        style={{background:'rgba(99,102,241,0.12)',color:'#a5b4fc',border:'1px solid rgba(99,102,241,0.20)'}}>
+                        style={{background:'rgba(63, 186, 235,0.12)',color:'#93c5fd',border:'1px solid rgba(63, 186, 235,0.20)'}}>
                         ⚙️ Settings
                       </button>
                       {e.status==='draft'&&(
@@ -512,7 +512,7 @@ export function ExamSystemPage() {
       {tab==='schedule'&&(
         <div className="space-y-3">
           <div className="rounded-2xl p-4 mb-4"
-            style={{background:'rgba(99,102,241,0.06)',border:'1px solid rgba(99,102,241,0.15)'}}>
+            style={{background:'rgba(63, 186, 235,0.06)',border:'1px solid rgba(63, 186, 235,0.15)'}}>
             <p className="text-xs font-bold text-indigo-400 mb-1">📅 Upcoming Scheduled Exams</p>
             <p className="text-[10px] text-white/40">Exams auto-open at their scheduled time for assigned users. AI Monitor activates automatically.</p>
           </div>

@@ -4,7 +4,7 @@ import { useI18n } from '@/lib/i18n'
 
 const CHILDREN = [
   { id: 1, name: 'Sara Al-Mansoori', grade: 'Grade 9', avatar: 'S', color: '#2563eb', attendance: 96, avg: 88, fees: 'Paid' },
-  { id: 2, name: 'Yusuf Al-Mansoori', grade: 'Grade 6', avatar: 'Y', color: '#c8940a', attendance: 82, avg: 74, fees: 'Due' },
+  { id: 2, name: 'Yusuf Al-Mansoori', grade: 'Grade 6', avatar: 'Y', color: '#00ae74', attendance: 82, avg: 74, fees: 'Due' },
 ]
 
 const SUBJECTS: Record<number, { subject: string; grade: number; color: string }[]> = {
@@ -12,13 +12,13 @@ const SUBJECTS: Record<number, { subject: string; grade: number; color: string }
     { subject: 'English', grade: 92, color: '#34d399' },
     { subject: 'Mathematics', grade: 85, color: '#2563eb' },
     { subject: 'Science', grade: 90, color: '#67e8f9' },
-    { subject: 'ICT', grade: 84, color: '#a78bfa' },
+    { subject: 'ICT', grade: 84, color: '#7dd3fc' },
   ],
   2: [
     { subject: 'English', grade: 70, color: '#fb923c' },
     { subject: 'Mathematics', grade: 78, color: '#2563eb' },
     { subject: 'Science', grade: 76, color: '#67e8f9' },
-    { subject: 'Arabic', grade: 72, color: '#c8940a' },
+    { subject: 'Arabic', grade: 72, color: '#00ae74' },
   ],
 }
 
@@ -26,7 +26,7 @@ const TIMELINE: Record<number, { icon: string; text: string; time: string; color
   1: [
     { icon: '🏆', text: 'Scored 95% on English mid-term', time: 'Today', color: '#34d399' },
     { icon: '✅', text: 'Submitted Science homework', time: 'Yesterday', color: '#2563eb' },
-    { icon: '🎓', text: 'Attended all 5 live classes this week', time: '2 days ago', color: '#c8940a' },
+    { icon: '🎓', text: 'Attended all 5 live classes this week', time: '2 days ago', color: '#00ae74' },
   ],
   2: [
     { icon: '⚠️', text: 'Missed Mathematics live class', time: 'Today', color: '#f87171' },
@@ -52,7 +52,7 @@ export function ParentPortalPage() {
         {CHILDREN.map(c => (
           <button key={c.id} onClick={() => setActive(c.id)}
             className="flex items-center gap-2.5 px-3 py-2 rounded-2xl transition-all"
-            style={{ background: active === c.id ? `${c.color}1f` : 'rgba(13,20,37,0.7)', border: `1px solid ${active === c.id ? `${c.color}55` : 'rgba(255,255,255,0.06)'}` }}>
+            style={{ background: active === c.id ? `${c.color}1f` : 'rgba(26, 19, 92,0.7)', border: `1px solid ${active === c.id ? `${c.color}55` : 'rgba(255,255,255,0.06)'}` }}>
             <span className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black text-white" style={{ background: c.color }}>{c.avatar}</span>
             <div className="text-left">
               <p className="text-xs font-bold text-white">{c.name.split(' ')[0]}</p>
@@ -69,7 +69,7 @@ export function ParentPortalPage() {
           { label: 'Average Grade', value: `${child.avg}%`, color: '#2563eb' },
           { label: 'Tuition', value: child.fees, color: child.fees === 'Paid' ? '#34d399' : '#f87171' },
         ].map(s => (
-          <div key={s.label} className="rounded-2xl p-4 relative overflow-hidden" style={{ background: 'rgba(13,20,37,0.7)', border: `1px solid ${s.color}20` }}>
+          <div key={s.label} className="rounded-2xl p-4 relative overflow-hidden" style={{ background: 'rgba(26, 19, 92,0.7)', border: `1px solid ${s.color}20` }}>
             <div className="absolute top-0 left-0 right-0 h-[1.5px]" style={{ background: `linear-gradient(90deg,transparent,${s.color},transparent)` }} />
             <p className="text-[10px] text-gray-500 uppercase tracking-wider">{s.label}</p>
             <p className="text-2xl font-black mt-1" style={{ color: s.color }}>{s.value}</p>
@@ -79,7 +79,7 @@ export function ParentPortalPage() {
 
       <div className="grid md:grid-cols-2 gap-4">
         {/* Subjects */}
-        <div className="rounded-2xl p-4" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
+        <div className="rounded-2xl p-4" style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(37,99,235,0.18)' }}>
           <p className="text-xs font-bold text-white mb-3">📚 Subject Performance</p>
           <div className="space-y-2.5">
             {SUBJECTS[active].map(s => (
@@ -96,11 +96,11 @@ export function ParentPortalPage() {
         </div>
 
         {/* Timeline */}
-        <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(200,148,10,0.18)' }}>
-          <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(200,148,10,0.1)' }}>
+        <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(0, 174, 116,0.18)' }}>
+          <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(0, 174, 116,0.1)' }}>
             <p className="text-xs font-bold text-white">🕒 Recent Activity</p>
           </div>
-          <div className="divide-y" style={{ borderColor: 'rgba(200,148,10,0.06)' }}>
+          <div className="divide-y" style={{ borderColor: 'rgba(0, 174, 116,0.06)' }}>
             {TIMELINE[active].map((e, i) => (
               <motion.div key={i} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
                 className="px-4 py-3 flex items-center gap-3">
@@ -110,7 +110,7 @@ export function ParentPortalPage() {
               </motion.div>
             ))}
           </div>
-          <div className="px-4 py-3 border-t" style={{ borderColor: 'rgba(200,148,10,0.06)' }}>
+          <div className="px-4 py-3 border-t" style={{ borderColor: 'rgba(0, 174, 116,0.06)' }}>
             <button className="w-full py-2 rounded-xl text-[11px] font-bold text-white" style={{ background: 'rgba(37,99,235,0.2)', border: '1px solid rgba(37,99,235,0.3)' }}>
               💬 Message {child.name.split(' ')[0]}’s teacher
             </button>

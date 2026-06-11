@@ -13,7 +13,7 @@ const adminItems: NavItem[] = [
   { page: 'classrooms', icon: '🚪', label: 'nav.classrooms', color: 'from-blue-600 to-blue-700' },
   { page: 'users', icon: '👥', label: 'nav.users', color: 'from-sky-500 to-sky-600' },
   { page: 'ce4messenger', icon: '💬', label: 'nav.messenger', color: 'from-emerald-500 to-emerald-600' },
-  { page: 'examsystem', icon: '📝', label: 'nav.exams', color: 'from-amber-500 to-amber-600' },
+  { page: 'examsystem', icon: '📝', label: 'nav.exams', color: 'from-sky-500 to-sky-600' },
   { page: 'placementtest', icon: '🎯', label: 'nav.placement', color: 'from-orange-500 to-orange-600' },
   { page: 'teachereval', icon: '⭐', label: 'nav.teachereval', color: 'from-yellow-500 to-yellow-600' },
   { page: 'dailyperf', icon: '📋', label: 'nav.dailyperf', color: 'from-cyan-500 to-cyan-600' },
@@ -25,12 +25,12 @@ const adminItems: NavItem[] = [
   { page: 'homework', icon: '📄', label: 'nav.homework', color: 'from-lime-500 to-lime-600' },
   { page: 'videoarchive', icon: '🎞️', label: 'nav.videoarchive', color: 'from-fuchsia-500 to-fuchsia-600' },
   { page: 'liveanalytics', icon: '📈', label: 'nav.liveanalytics', color: 'from-green-500 to-green-600' },
-  { page: 'commandcenter', icon: '📊', label: 'nav.commandcenter', color: 'from-amber-500 to-orange-600' },
+  { page: 'commandcenter', icon: '📊', label: 'nav.commandcenter', color: 'from-indigo-500 to-indigo-600' },
   { page: 'globalsearch', icon: '🔎', label: 'nav.globalsearch', color: 'from-blue-500 to-blue-600' },
   { page: 'notifications', icon: '🔔', label: 'nav.notifications', color: 'from-sky-500 to-blue-600' },
   { page: 'ailearning', icon: '🧠', label: 'nav.ailearning', color: 'from-violet-500 to-purple-600' },
   { page: 'parentportal', icon: '👨‍👩‍👧', label: 'nav.parentportal', color: 'from-pink-500 to-rose-600' },
-  { page: 'academicroom', icon: '🏛️', label: 'nav.academicroom', color: 'from-amber-600 to-yellow-600' },
+  { page: 'academicroom', icon: '🏛️', label: 'nav.academicroom', color: 'from-emerald-500 to-teal-600' },
   { page: 'aidev', icon: '🧠', label: 'nav.aidev', color: 'from-blue-500 to-indigo-600' },
   { page: 'settings', icon: '⚙️', label: 'nav.settings', color: 'from-gray-500 to-gray-600' },
   { page: 'compliance', icon: '🛡️', label: 'nav.compliance', color: 'from-emerald-500 to-teal-600' },
@@ -56,7 +56,7 @@ const studentItems: NavItem[] = [
   { page: 'dashboard', icon: '🏠', label: 'nav.myDashboard', color: 'from-blue-500 to-blue-600' },
   { page: 'classrooms', icon: '🚪', label: 'nav.classroomsPlain', color: 'from-blue-600 to-blue-700' },
   { page: 'ailearning', icon: '🧠', label: 'nav.ailearning', color: 'from-violet-500 to-purple-600' },
-  { page: 'examsystem', icon: '📝', label: 'nav.myExams', color: 'from-amber-500 to-amber-600' },
+  { page: 'examsystem', icon: '📝', label: 'nav.myExams', color: 'from-sky-500 to-sky-600' },
   { page: 'placementtest', icon: '🎯', label: 'nav.placement', color: 'from-orange-500 to-orange-600' },
   { page: 'homework', icon: '📄', label: 'nav.homework', color: 'from-lime-500 to-lime-600' },
   { page: 'ce4messenger', icon: '💬', label: 'nav.messenger', color: 'from-emerald-500 to-emerald-600' },
@@ -104,7 +104,7 @@ export function Sidebar({ userRole, currentPage, onNavigate, isOpen, onClose }: 
 
       <aside className={`
         w-64 flex-shrink-0 flex flex-col z-20 transition-transform duration-300
-        bg-[#060b18] border-r border-white/5
+        bg-[#17125c] border-r border-white/5
         fixed lg:relative h-full
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         shadow-2xl shadow-black/50
@@ -113,7 +113,7 @@ export function Sidebar({ userRole, currentPage, onNavigate, isOpen, onClose }: 
         {/* Brand header */}
         <div className="p-4 border-b border-white/5 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30 flex-shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30 flex-shrink-0">
               <span className="text-white font-black text-sm">B</span>
             </div>
             <div>
@@ -150,7 +150,7 @@ export function Sidebar({ userRole, currentPage, onNavigate, isOpen, onClose }: 
                     {item.icon}
                   </div>
                   <span className="text-[11px] font-medium truncate flex-1">{t(item.label)}</span>
-                  {isActive && <span className="w-1 h-5 rounded-full bg-amber-400 flex-shrink-0" />}
+                  {isActive && <span className="w-1 h-5 rounded-full bg-emerald-400 flex-shrink-0" />}
                 </button>
               </div>
             )
@@ -175,7 +175,7 @@ export function Sidebar({ userRole, currentPage, onNavigate, isOpen, onClose }: 
         <div className="p-3 border-t border-white/5 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-black text-white flex-shrink-0
-              ${userRole === 'admin' ? 'bg-gradient-to-br from-amber-400 to-orange-600'
+              ${userRole === 'admin' ? 'bg-gradient-to-br from-emerald-400 to-emerald-600'
                 : userRole === 'teacher' ? 'bg-gradient-to-br from-blue-400 to-blue-600'
                 : 'bg-gradient-to-br from-emerald-400 to-emerald-600'}`}>
               {userRole.charAt(0).toUpperCase()}

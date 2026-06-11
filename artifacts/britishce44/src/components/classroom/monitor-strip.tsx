@@ -14,15 +14,15 @@ interface MonitorStripProps {
 }
 
 const PRESET_BGS = [
-  { id: 'default', label: 'Dark Navy', css: '#0d1425' },
-  { id: 'space',   label: 'Deep Space', css: 'linear-gradient(135deg,#060b18 0%,#1a1040 50%,#080f22 100%)' },
-  { id: 'ocean',   label: 'Ocean Depth', css: 'linear-gradient(135deg,#0c1b33 0%,#1e3a8a 100%)' },
-  { id: 'forest',  label: 'Emerald', css: 'linear-gradient(135deg,#052e16 0%,#065f46 100%)' },
+  { id: 'default', label: 'Dark Navy', css: '#241c80' },
+  { id: 'space',   label: 'Deep Space', css: 'linear-gradient(135deg,#17125c 0%,#281f6e 50%,#1d1668 100%)' },
+  { id: 'ocean',   label: 'Ocean Depth', css: 'linear-gradient(135deg,#241c80 0%,#1e3a8a 100%)' },
+  { id: 'forest',  label: 'Emerald', css: 'linear-gradient(135deg,#052e16 0%,#00684a 100%)' },
   { id: 'royal',   label: 'Royal Violet', css: 'linear-gradient(135deg,#150529 0%,#4c1d95 100%)' },
   { id: 'crimson', label: 'Crimson', css: 'linear-gradient(135deg,#1c0000 0%,#7f1d1d 100%)' },
   { id: 'amber',   label: 'Amber', css: 'linear-gradient(135deg,#1c0f00 0%,#92400e 100%)' },
   { id: 'cyber',   label: 'Cyber', css: 'linear-gradient(135deg,#042f2e 0%,#164e63 100%)' },
-  { id: 'aurora',  label: 'Aurora', css: 'linear-gradient(135deg,#0d1425 0%,#1a1040 33%,#042f2e 66%,#0d1425 100%)' },
+  { id: 'aurora',  label: 'Aurora', css: 'linear-gradient(135deg,#241c80 0%,#281f6e 33%,#042f2e 66%,#241c80 100%)' },
 ]
 
 interface MonitorTileProps {
@@ -45,10 +45,10 @@ function MonitorTile({ participant: p, bg, height, isLarge, isTeacher, onBgClick
     <div className="relative flex-shrink-0 rounded-xl overflow-hidden group select-none"
       style={{
         width: w, height: height - 16,
-        background: bg || (p.isTeacher ? 'linear-gradient(135deg,#1a1040,#0d1425)' : 'linear-gradient(135deg,#0d1425,#060b18)'),
-        border: p.isTeacher ? '1.5px solid rgba(240,165,0,0.45)' : '1px solid rgba(99,102,241,0.2)',
+        background: bg || (p.isTeacher ? 'linear-gradient(135deg,#281f6e,#241c80)' : 'linear-gradient(135deg,#241c80,#17125c)'),
+        border: p.isTeacher ? '1.5px solid rgba(0, 174, 116,0.45)' : '1px solid rgba(63, 186, 235,0.2)',
         boxShadow: p.isTeacher
-          ? '0 4px 20px rgba(240,165,0,0.15), inset 0 1px 0 rgba(255,255,255,0.05)'
+          ? '0 4px 20px rgba(0, 174, 116,0.15), inset 0 1px 0 rgba(255,255,255,0.05)'
           : '0 2px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)',
       }}>
 
@@ -82,7 +82,7 @@ function MonitorTile({ participant: p, bg, height, isLarge, isTeacher, onBgClick
       {/* Teacher badge */}
       {p.isTeacher && (
         <div className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-full text-[8px] font-bold"
-          style={{ background: 'linear-gradient(135deg,#c47d00,#f0a500)', color: '#060b18' }}>
+          style={{ background: 'linear-gradient(135deg,#00875a,#00ae74)', color: '#17125c' }}>
           👑 Teacher
         </div>
       )}
@@ -119,7 +119,7 @@ function MonitorTile({ participant: p, bg, height, isLarge, isTeacher, onBgClick
 
 export function MonitorStrip({ participants, isTeacher, stripHeight, onStripHeightChange }: MonitorStripProps) {
   const [monitorBgs, setMonitorBgs] = useState<Record<string, string>>({})
-  const [stripBg, setStripBg] = useState('linear-gradient(180deg,#080f22 0%,#0d1425 100%)')
+  const [stripBg, setStripBg] = useState('linear-gradient(180deg,#1d1668 0%,#241c80 100%)')
   const [showBgPicker, setShowBgPicker] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [customUploadUrl, setCustomUploadUrl] = useState<string | null>(null)
@@ -225,7 +225,7 @@ export function MonitorStrip({ participants, isTeacher, stripHeight, onStripHeig
       {showBgPicker && (
         <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
           className="absolute top-10 right-2 z-50 rounded-2xl overflow-hidden shadow-2xl"
-          style={{ background: '#0d1425', border: '1px solid rgba(99,102,241,0.25)', width: 280 }}>
+          style={{ background: '#241c80', border: '1px solid rgba(63, 186, 235,0.25)', width: 280 }}>
           <div className="px-3 pt-3 pb-2 border-b border-white/5 flex items-center justify-between">
             <div>
               <p className="text-[10px] font-bold text-white">
@@ -268,7 +268,7 @@ export function MonitorStrip({ participants, isTeacher, stripHeight, onStripHeig
 
             {/* Reset */}
             <button onClick={() => {
-              if (selectedId === '__strip__') setStripBg('linear-gradient(180deg,#080f22 0%,#0d1425 100%)')
+              if (selectedId === '__strip__') setStripBg('linear-gradient(180deg,#1d1668 0%,#241c80 100%)')
               else if (selectedId) setMonitorBgs(prev => { const n = { ...prev }; delete n[selectedId]; return n })
             }} className="w-full py-1.5 text-[9px] text-gray-500 hover:text-red-400 transition">
               ↺ Reset to default

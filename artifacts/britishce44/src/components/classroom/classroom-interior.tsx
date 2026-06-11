@@ -162,15 +162,15 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
 
   return (
     <div dir={dir} className="flex flex-col h-full overflow-hidden rounded-2xl shadow-2xl"
-      style={{ background: '#080f22', border: '1px solid rgba(99,102,241,0.15)' }}>
+      style={{ background: '#1d1668', border: '1px solid rgba(63, 186, 235,0.15)' }}>
 
       {/* ── Header ── */}
       <header className="flex items-center justify-between px-4 py-2.5 shrink-0 relative"
-        style={{ background: '#060b18', borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
-        <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-indigo-500/60 via-violet-500/40 to-amber-500/40" />
+        style={{ background: '#17125c', borderBottom: '1px solid rgba(63, 186, 235,0.12)' }}>
+        <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-indigo-500/60 via-sky-500/40 to-emerald-500/40" />
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[9px] font-black shadow-sm"
-            style={{ background: 'linear-gradient(135deg,#c47d00,#f0a500)', color: '#060b18' }}>BC</div>
+            style={{ background: 'linear-gradient(135deg,#00875a,#00ae74)', color: '#17125c' }}>BC</div>
           <div>
             <h2 className="font-bold text-white text-sm">Classroom {roomId}</h2>
             <p className="text-[9px] flex items-center gap-1.5" style={{ color: 'rgba(165,180,252,0.6)' }}>
@@ -255,7 +255,7 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
           />
         ) : (
           <div className="flex items-center justify-between px-3 py-1.5 shrink-0"
-            style={{ background: '#080f22', borderBottom: '1px solid rgba(99,102,241,0.10)', height: 36 }}>
+            style={{ background: '#1d1668', borderBottom: '1px solid rgba(63, 186, 235,0.10)', height: 36 }}>
             <span className="text-[9px] text-gray-600">Monitor strip hidden · {allParticipants.length} online</span>
             {isTeacher && (
               <button onClick={() => setStripCollapsed(false)}
@@ -292,7 +292,7 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
           {/* ── GRID mode: participant tiles ── */}
           {wbLayout === 'grid' && (
             <div className="flex-1 grid grid-cols-4 grid-rows-2 gap-2 p-2 min-h-0"
-              style={{ background: 'rgba(13,20,37,0.6)' }}>
+              style={{ background: 'rgba(26, 19, 92,0.6)' }}>
               {allParticipants.map(p => (
                 <ParticipantTile key={p.id} participant={p}
                   onDoubleClick={() => setFullscreenTile(fullscreenTile === p.id ? null : p.id)}
@@ -346,9 +346,9 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
 
       {/* ── Control bar ── */}
       <div className="h-14 flex items-center justify-center gap-1 px-3 shrink-0 relative"
-        style={{ background: 'linear-gradient(to right,#060b18,#080f22)', borderTop: '1px solid rgba(240,165,0,0.1)' }}>
+        style={{ background: 'linear-gradient(to right,#17125c,#1d1668)', borderTop: '1px solid rgba(0, 174, 116,0.1)' }}>
         {/* Subtle glow line */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
 
         {[
           { icon: isMuted ? '🔇' : '🎤', label: isMuted ? 'Unmute' : 'Mute', active: !isMuted, onClick: toggleMic },
@@ -359,9 +359,9 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
           <button key={i} onClick={btn.onClick}
             className={`flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-xl text-[9px] font-medium transition
               ${btn.active
-                ? 'text-[#060b18] font-bold shadow-lg'
+                ? 'text-[#17125c] font-bold shadow-lg'
                 : 'text-gray-400 hover:text-white hover:bg-white/8'}`}
-            style={btn.active ? { background: 'linear-gradient(135deg,#c47d00,#f0a500)', boxShadow: '0 2px 10px rgba(240,165,0,0.25)' } : {}}>
+            style={btn.active ? { background: 'linear-gradient(135deg,#00875a,#00ae74)', boxShadow: '0 2px 10px rgba(0, 174, 116,0.25)' } : {}}>
             <span className="text-base leading-none">{btn.icon}</span>
             <span>{btn.label}</span>
           </button>
@@ -395,8 +395,8 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
 
         <button onClick={() => setShowMonkey(!showMonkey)}
           className={`flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-xl text-[9px] font-medium transition
-            ${showMonkey ? 'text-[#060b18] shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/8'}`}
-          style={showMonkey ? { background: 'linear-gradient(135deg,#c47d00,#f0a500)' } : {}}>
+            ${showMonkey ? 'text-[#17125c] shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/8'}`}
+          style={showMonkey ? { background: 'linear-gradient(135deg,#00875a,#00ae74)' } : {}}>
           <span className="text-base">🐵</span>
           <span>Quiz</span>
         </button>

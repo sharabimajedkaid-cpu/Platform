@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 const CARD = 'rgba(11,22,62,0.85)'
 const BORDER = 'rgba(37,99,235,0.18)'
-const GOLD = '#c8940a'
+const GOLD = '#00ae74'
 const ROYAL = '#2563eb'
 
 interface Detection { name: string; desc: string; descAr: string; icon: string; active: boolean; sensitivity: 'high'|'medium'|'low'; triggered: number }
@@ -36,12 +36,12 @@ const INIT_ALERTS: Alert[] = [
 
 const RISK_CFG = {
   critical: { color: '#f87171', bg: 'rgba(248,113,113,0.12)', label: 'Critical' },
-  high:     { color: GOLD,      bg: 'rgba(200,148,10,0.12)',  label: 'High'     },
+  high:     { color: '#f97316', bg: 'rgba(249,115,22,0.12)',  label: 'High'     },
   medium:   { color: '#fbbf24', bg: 'rgba(251,191,36,0.10)', label: 'Medium'   },
   low:      { color: '#34d399', bg: 'rgba(52,211,153,0.10)', label: 'Low'      },
 }
 
-const SENS_COLOR = { high: '#f87171', medium: GOLD, low: '#34d399' }
+const SENS_COLOR = { high: '#f87171', medium: '#fbbf24', low: '#34d399' }
 
 export function AnticheatPage() {
   const [systems, setSystems] = useState(SYSTEMS)
@@ -120,7 +120,7 @@ export function AnticheatPage() {
               <div className="flex flex-col items-end gap-2 flex-shrink-0">
                 <button onClick={() => setSystems(s => s.map((x, j) => j === i ? { ...x, active: !x.active } : x))}
                   className="w-10 h-5 rounded-full relative transition-all"
-                  style={{ background: sys.active ? '#1b3ea6' : 'rgba(255,255,255,0.10)', border: `1px solid ${sys.active ? ROYAL : 'rgba(255,255,255,0.15)'}` }}>
+                  style={{ background: sys.active ? '#2620a8' : 'rgba(255,255,255,0.10)', border: `1px solid ${sys.active ? ROYAL : 'rgba(255,255,255,0.15)'}` }}>
                   <div className="absolute top-0.5 w-4 h-4 rounded-full transition-all"
                     style={{ background: sys.active ? '#3b82f6' : 'rgba(255,255,255,0.3)', left: sys.active ? '20px' : '2px', boxShadow: sys.active ? '0 0 6px #3b82f680' : undefined }} />
                 </button>
@@ -179,7 +179,7 @@ export function AnticheatPage() {
             <div className="divide-y max-h-64 overflow-y-auto" style={{ borderColor: BORDER }}>
               <AnimatePresence initial={false}>
                 {alerts.slice(0, 8).map(a => {
-                  const c = a.severity === 'critical' ? '#f87171' : a.severity === 'warn' ? GOLD : '#3b82f6'
+                  const c = a.severity === 'critical' ? '#f87171' : a.severity === 'warn' ? '#fbbf24' : '#3b82f6'
                   return (
                     <motion.div key={a.id} initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0 }}
                       className="px-4 py-2.5">

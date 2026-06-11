@@ -8,11 +8,11 @@ interface Result { id: number; kind: Kind; title: string; sub: string }
 
 const KIND_META: Record<Kind, { icon: string; color: string; label: string }> = {
   classroom: { icon: '🚪', color: '#2563eb', label: 'Classroom' },
-  exam: { icon: '📝', color: '#a78bfa', label: 'Exam' },
+  exam: { icon: '📝', color: '#7dd3fc', label: 'Exam' },
   message: { icon: '💬', color: '#34d399', label: 'Message' },
   recording: { icon: '🎞️', color: '#f472b6', label: 'Recording' },
   report: { icon: '📊', color: '#67e8f9', label: 'Report' },
-  user: { icon: '👤', color: '#c8940a', label: 'User' },
+  user: { icon: '👤', color: '#00ae74', label: 'User' },
 }
 
 const DATA: Result[] = [
@@ -60,7 +60,7 @@ export function GlobalSearchPage() {
       </div>
 
       <div className="rounded-2xl p-1.5 relative overflow-hidden"
-        style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(37,99,235,0.3)' }}>
+        style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(37,99,235,0.3)' }}>
         <div className="absolute top-0 left-0 right-0 h-[1.5px]"
           style={{ background: 'linear-gradient(90deg,transparent,#2563eb,transparent)' }} />
         <input autoFocus value={q} onChange={e => setQ(e.target.value)}
@@ -80,7 +80,7 @@ export function GlobalSearchPage() {
       </div>
 
       {results.length === 0 ? (
-        <div className="rounded-2xl p-10 text-center" style={{ background: 'rgba(13,20,37,0.7)', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="rounded-2xl p-10 text-center" style={{ background: 'rgba(26, 19, 92,0.7)', border: '1px solid rgba(255,255,255,0.05)' }}>
           <p className="text-3xl mb-2">🔍</p>
           <p className="text-sm text-gray-400">No matches for “{q}”</p>
         </div>
@@ -96,7 +96,7 @@ export function GlobalSearchPage() {
                 {grouped[kind]!.map((r, i) => (
                   <motion.div key={r.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}
                     className="rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:bg-white/[0.03] transition-colors"
-                    style={{ background: 'rgba(13,20,37,0.7)', border: `1px solid ${KIND_META[kind].color}22` }}>
+                    style={{ background: 'rgba(26, 19, 92,0.7)', border: `1px solid ${KIND_META[kind].color}22` }}>
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center text-base flex-shrink-0"
                       style={{ background: `${KIND_META[kind].color}1a`, border: `1px solid ${KIND_META[kind].color}33` }}>
                       {KIND_META[kind].icon}

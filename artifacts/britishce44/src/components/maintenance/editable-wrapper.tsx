@@ -113,7 +113,7 @@ export function EditableWrapper({ children, id, label, className = '', style }: 
           style={{ top: -30, left: 0 }}
           onDoubleClick={e => e.stopPropagation()}>
           <div className="flex items-center rounded-full overflow-hidden shadow-xl"
-            style={{ background: editMode === 'move' ? '#6366f1' : '#7c3aed', border: '1px solid rgba(255,255,255,0.2)' }}>
+            style={{ background: editMode === 'move' ? '#3b82f6' : '#2563eb', border: '1px solid rgba(255,255,255,0.2)' }}>
             <span className="text-[9px] text-white px-2.5 py-1 font-bold flex items-center gap-1">
               {editMode === 'move' ? '✋' : '↔'}
               <span>{label || id}</span>
@@ -158,7 +158,7 @@ export function EditableWrapper({ children, id, label, className = '', style }: 
               onDoubleClick={e => e.stopPropagation()}
               className="absolute z-[200] w-3 h-3 rounded-sm border-2 border-white shadow-lg"
               style={{
-                background: '#7c3aed',
+                background: '#2563eb',
                 cursor: h.cursor,
                 top: (h as any).top,
                 bottom: (h as any).bottom,

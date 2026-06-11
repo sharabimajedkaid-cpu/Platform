@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 const CARD = 'rgba(11,22,62,0.85)'
 const BORDER = 'rgba(37,99,235,0.18)'
-const GOLD = '#c8940a'
+const GOLD = '#00ae74'
 const ROYAL = '#2563eb'
 
 const TEACHERS = [
@@ -81,7 +81,7 @@ export function TeacherEvalPage() {
           </p>
         </div>
         <div className="text-xs px-3 py-1.5 rounded-full font-semibold"
-          style={{ background: 'rgba(200,148,10,0.12)', color: GOLD, border: `1px solid ${GOLD}30` }}>
+          style={{ background: 'rgba(0, 174, 116,0.12)', color: GOLD, border: `1px solid ${GOLD}30` }}>
           🤖 AI Analysis: Updated today
         </div>
       </div>
@@ -94,14 +94,14 @@ export function TeacherEvalPage() {
             <button key={t.id} onClick={() => setSelectedIdx(i)}
               className="w-full text-left p-3 rounded-xl transition-all flex items-center gap-3"
               style={selectedIdx === i ? {
-                background: 'linear-gradient(135deg,#1b3ea6,#1e3fa8)',
+                background: 'linear-gradient(135deg,#2620a8,#1e3fa8)',
                 border: '1px solid rgba(37,99,235,0.50)',
                 boxShadow: '0 4px 16px rgba(37,99,235,0.25)',
               } : {
                 background: CARD, border: `1px solid ${BORDER}`,
               }}>
               <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0"
-                style={{ background: selectedIdx === i ? 'rgba(200,148,10,0.20)' : 'rgba(37,99,235,0.15)', color: selectedIdx === i ? GOLD : 'rgba(147,197,253,0.7)' }}>
+                style={{ background: selectedIdx === i ? 'rgba(0, 174, 116,0.20)' : 'rgba(37,99,235,0.15)', color: selectedIdx === i ? GOLD : 'rgba(147,197,253,0.7)' }}>
                 {t.avatar}
               </div>
               <div className="min-w-0">
@@ -149,7 +149,7 @@ export function TeacherEvalPage() {
               <button key={t} onClick={() => setTab(t)}
                 className="flex-1 py-2 rounded-lg text-xs font-semibold capitalize transition-all"
                 style={tab === t ? {
-                  background: 'linear-gradient(135deg,#1b3ea6,#2563eb)', color: '#fff',
+                  background: 'linear-gradient(135deg,#2620a8,#2563eb)', color: '#fff',
                   boxShadow: '0 2px 8px rgba(37,99,235,0.30)',
                 } : { color: 'rgba(147,197,253,0.55)' }}>
                 {t === 'criteria' ? '📊 Criteria' : t === 'history' ? '📅 History' : '🤖 AI Insights'}
@@ -198,13 +198,13 @@ export function TeacherEvalPage() {
                         <motion.div className="w-full rounded-t-lg"
                           initial={{ height: 0 }} animate={{ height: `${((score - 60) / 40) * 100}%` }}
                           transition={{ duration: 0.6, delay: i * 0.08 }}
-                          style={{ background: `linear-gradient(to top, #1b3ea680, #2563eb)`, maxHeight: '100%', minHeight: '8px' }} />
+                          style={{ background: `linear-gradient(to top, #2620a880, #2563eb)`, maxHeight: '100%', minHeight: '8px' }} />
                         <span className="text-[8px] text-gray-600">{MONTHS[i]}</span>
                       </div>
                     ))}
                   </div>
                   <div className="mt-4 flex items-center gap-2 p-3 rounded-xl"
-                    style={{ background: 'rgba(200,148,10,0.08)', border: `1px solid ${GOLD}25` }}>
+                    style={{ background: 'rgba(0, 174, 116,0.08)', border: `1px solid ${GOLD}25` }}>
                     <span className="text-sm">📈</span>
                     <p className="text-xs" style={{ color: GOLD }}>
                       Overall improvement of <strong>+{monthlyData[5] - monthlyData[0]} pts</strong> over 6 months
@@ -215,7 +215,7 @@ export function TeacherEvalPage() {
 
               {tab === 'ai' && (
                 <div className="space-y-3">
-                  <div className="rounded-xl p-4" style={{ background: 'rgba(200,148,10,0.07)', border: `1px solid ${GOLD}25` }}>
+                  <div className="rounded-xl p-4" style={{ background: 'rgba(0, 174, 116,0.07)', border: `1px solid ${GOLD}25` }}>
                     <p className="text-[10px] font-bold uppercase tracking-wider mb-3" style={{ color: GOLD }}>🤖 AI-Generated Insights</p>
                     <div className="space-y-2.5">
                       {AI_INSIGHTS.map((ins, i) => (

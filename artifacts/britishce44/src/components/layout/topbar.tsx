@@ -20,9 +20,9 @@ export function TopBar({ user, onLogout, onToggleSidebar }: TopBarProps) {
   }, [])
 
   return (
-    <header className="h-14 bg-[#060b18] flex items-center justify-between px-4 flex-shrink-0 z-30 relative select-none">
+    <header className="h-14 bg-[#17125c] flex items-center justify-between px-4 flex-shrink-0 z-30 relative select-none">
       {/* Accent gradient line */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-700 via-blue-500 to-amber-400" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-700 via-sky-500 to-emerald-400" />
 
       {/* Left: Logo + toggle */}
       <div className="flex items-center gap-3">
@@ -36,10 +36,10 @@ export function TopBar({ user, onLogout, onToggleSidebar }: TopBarProps) {
         {/* Logo */}
         <div className="flex items-center gap-2.5">
           <div className="relative">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30 flex-shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30 flex-shrink-0">
               <span className="text-white font-black text-xs">B</span>
             </div>
-            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#060b18] animate-pulse" />
+            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#17125c] animate-pulse" />
           </div>
           <div>
             <span className="text-white font-bold text-sm tracking-wide">Britishce44</span>
@@ -71,7 +71,7 @@ export function TopBar({ user, onLogout, onToggleSidebar }: TopBarProps) {
         {/* Language switcher */}
         {!locked ? (
           <button onClick={toggleLang} title={t('common.language')}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-bold bg-white/5 text-gray-300 border border-white/10 hover:border-amber-400/40 hover:text-amber-400 transition">
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-bold bg-white/5 text-gray-300 border border-white/10 hover:border-emerald-400/40 hover:text-emerald-400 transition">
             <span>🌐</span>
             <span>{lang === 'ar' ? 'EN' : 'ع'}</span>
           </button>
@@ -110,7 +110,7 @@ export function TopBar({ user, onLogout, onToggleSidebar }: TopBarProps) {
 
         {user && (
           <>
-            <button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-amber-400 hover:bg-amber-400/10 rounded-full transition text-sm" title={t('topbar.notifications')}>
+            <button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-full transition text-sm" title={t('topbar.notifications')}>
               🔔
             </button>
             <div className="flex items-center gap-2 pl-2 border-l border-white/10">

@@ -231,8 +231,8 @@ export function WhiteboardArea({ onSyncDraw, lang = 'en' }: WhiteboardAreaProps)
       canvas.add(group)
     }
 
-    const eraseAt = (e: any) => {
-      const target = canvas.findTarget(e)
+    const eraseAt = (opt: any) => {
+      const target = opt.target as fabric.Object | undefined
       if (target) canvas.remove(target)
     }
 
@@ -248,7 +248,7 @@ export function WhiteboardArea({ onSyncDraw, lang = 'en' }: WhiteboardAreaProps)
       if (t === 'eraser') {
         erasing = true
         suppress.current = true
-        eraseAt(opt.e)
+        eraseAt(opt)
         return
       }
       if (t === 'text') {
@@ -284,7 +284,7 @@ export function WhiteboardArea({ onSyncDraw, lang = 'en' }: WhiteboardAreaProps)
         canvas.relativePan(new fabric.Point(dx, dy))
         return
       }
-      if (erasing) { eraseAt(opt.e); return }
+      if (erasing) { eraseAt(opt); return }
       if (drawingShape) {
         const p = canvas.getScenePoint(opt.e)
         updateShape(toolRef.current, drawingShape, p.x, p.y)

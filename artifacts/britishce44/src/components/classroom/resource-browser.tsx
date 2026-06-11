@@ -103,7 +103,7 @@ export function ResourceBrowser({ onMinimize }: ResourceBrowserProps) {
     <div className="flex flex-col h-full bg-[#111827] overflow-hidden">
 
       {/* ── Top bar ── */}
-      <div className="flex items-center gap-1.5 px-3 py-2 bg-[#0f172a] border-b border-white/10 shrink-0 overflow-x-auto">
+      <div className="flex items-center gap-1.5 px-3 py-2 bg-[#241c80] border-b border-white/10 shrink-0 overflow-x-auto">
         {PRESETS.map(p => (
           <button key={p.type} onClick={() => openPreset(p.type)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold text-white

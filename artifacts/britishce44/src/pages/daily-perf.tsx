@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 
 const CARD = 'rgba(11,22,62,0.85)'
 const BORDER = 'rgba(37,99,235,0.18)'
-const GOLD = '#c8940a'
+const GOLD = '#00ae74'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const WEEKLY_DATA = [72, 85, 68, 91, 88, 94]
@@ -61,7 +61,7 @@ export function DailyPerfPage() {
           { label: 'Completion Rate', value: `${completionPct}%`, sub: `${done.length}/${CHECKLIST.length} tasks`, icon: '🎯', color: completionPct >= 75 ? '#34d399' : GOLD },
           { label: 'Points Earned',  value: totalPoints,          sub: 'of 90 possible',                         icon: '⭐', color: GOLD },
           { label: 'Attendance',     value: '96%',                sub: '6 day streak 🔥',                        icon: '📅', color: '#3b82f6' },
-          { label: 'Weekly Avg',     value: `${Math.round(WEEKLY_DATA.reduce((a,b)=>a+b)/WEEKLY_DATA.length)}%`, sub: 'Last 6 days',   icon: '📈', color: '#a78bfa' },
+          { label: 'Weekly Avg',     value: `${Math.round(WEEKLY_DATA.reduce((a,b)=>a+b)/WEEKLY_DATA.length)}%`, sub: 'Last 6 days',   icon: '📈', color: '#7dd3fc' },
         ].map(k => (
           <div key={k.label} className="rounded-2xl p-4 relative overflow-hidden"
             style={{ background: CARD, border: `1px solid ${BORDER}` }}>
@@ -129,7 +129,7 @@ export function DailyPerfPage() {
                     style={{
                       background: selectedDay === i
                         ? `linear-gradient(to top, ${GOLD}90, ${GOLD})`
-                        : `linear-gradient(to top, #1b3ea680, #2563eb)`,
+                        : `linear-gradient(to top, #2620a880, #2563eb)`,
                       maxHeight: '100%', minHeight: '6px',
                       boxShadow: selectedDay === i ? `0 0 10px ${GOLD}50` : undefined,
                     }} />

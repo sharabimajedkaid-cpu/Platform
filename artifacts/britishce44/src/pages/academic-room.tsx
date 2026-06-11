@@ -27,7 +27,7 @@ const TOTAL_ROOMS=240
 
 const ROOM_STATUS={
   live:{color:'#34d399',label:'LIVE',labelAr:'مباشر'},
-  exam:{color:'#f0a500',label:'EXAM',labelAr:'اختبار'},
+  exam:{color:'#f59e0b',label:'EXAM',labelAr:'اختبار'},
   idle:{color:'#64748b',label:'IDLE',labelAr:'خامل'},
 } as const
 
@@ -81,15 +81,15 @@ const TEMPLATES = [
 ]
 
 const STATUS_CFG = {
-  'new':              {color:'#818cf8',bg:'rgba(129,140,248,0.12)',label:'New',labelAr:'جديد'},
+  'new':              {color:'#60a5fa',bg:'rgba(129,140,248,0.12)',label:'New',labelAr:'جديد'},
   'enrolled':         {color:'#38bdf8',bg:'rgba(56,189,248,0.12)',label:'Enrolled',labelAr:'مسجل'},
-  'pending-payment':  {color:'#f0a500',bg:'rgba(240,165,0,0.12)',label:'Pending Payment',labelAr:'في انتظار الدفع'},
+  'pending-payment':  {color:'#f59e0b',bg:'rgba(245,158,11,0.12)',label:'Pending Payment',labelAr:'في انتظار الدفع'},
   'active':           {color:'#34d399',bg:'rgba(52,211,153,0.12)',label:'Active',labelAr:'نشط'},
-  'completed':        {color:'#a78bfa',bg:'rgba(167,139,250,0.12)',label:'Completed',labelAr:'مكتمل'},
+  'completed':        {color:'#7dd3fc',bg:'rgba(167,139,250,0.12)',label:'Completed',labelAr:'مكتمل'},
 }
 const PAY_CFG = {
   paid:    {color:'#34d399',label:'Paid',labelAr:'مدفوع'},
-  partial: {color:'#f0a500',label:'Partial',labelAr:'جزئي'},
+  partial: {color:'#f59e0b',label:'Partial',labelAr:'جزئي'},
   pending: {color:'#f87171',label:'Pending',labelAr:'معلق'},
 }
 
@@ -191,11 +191,11 @@ export function AcademicRoomPage() {
     <div className="space-y-5 animate-fade-in">
       {/* Page header */}
       <div className="rounded-2xl p-5 relative overflow-hidden"
-        style={{background:'linear-gradient(135deg,#060b18 0%,#0a1628 50%,#060e1e 100%)',border:'1px solid rgba(196,125,0,0.22)',boxShadow:'0 8px 32px rgba(0,0,0,0.35)'}}>
+        style={{background:'linear-gradient(135deg,#17125c 0%,#1d1668 50%,#17125c 100%)',border:'1px solid rgba(0, 174, 116,0.22)',boxShadow:'0 8px 32px rgba(0,0,0,0.35)'}}>
         <div className="absolute inset-0 opacity-[0.025]"
-          style={{backgroundImage:'radial-gradient(circle, rgba(196,125,0,0.9) 1px, transparent 1px)',backgroundSize:'20px 20px'}} />
+          style={{backgroundImage:'radial-gradient(circle, rgba(0, 174, 116,0.9) 1px, transparent 1px)',backgroundSize:'20px 20px'}} />
         <div className="absolute top-0 right-0 w-48 h-full pointer-events-none opacity-10"
-          style={{background:'radial-gradient(ellipse at right,#c47d00,transparent)'}} />
+          style={{background:'radial-gradient(ellipse at right,#00875a,transparent)'}} />
         <div className="relative flex items-center justify-between flex-wrap gap-3">
           <div>
             <div className="flex items-center gap-3 mb-1">
@@ -210,12 +210,12 @@ export function AcademicRoomPage() {
           <div className="flex gap-2 flex-wrap">
             <button onClick={()=>{setMeetingActive(true);setMeetingMinimized(false)}}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold"
-              style={{background:'linear-gradient(135deg,#059669,#10b981)',color:'#fff',boxShadow:'0 4px 16px rgba(16,185,129,0.25)'}}>
+              style={{background:'linear-gradient(135deg,#00ae74,#00ae74)',color:'#fff',boxShadow:'0 4px 16px rgba(16,185,129,0.25)'}}>
               🎥 Start Meeting
             </button>
             <button onClick={()=>setTab('intake')}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold"
-              style={{background:'linear-gradient(135deg,#c47d00,#f0a500)',color:'#060b18',boxShadow:'0 4px 16px rgba(240,165,0,0.25)'}}>
+              style={{background:'linear-gradient(135deg,#00875a,#00ae74)',color:'#17125c',boxShadow:'0 4px 16px rgba(0, 174, 116,0.25)'}}>
               ➕ New Intake
             </button>
           </div>
@@ -243,7 +243,7 @@ export function AcademicRoomPage() {
         {tabs.map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition flex-shrink-0"
-            style={{background:tab===t.id?'linear-gradient(135deg,#c47d00,#f0a500)':' rgba(255,255,255,0.04)',color:tab===t.id?'#060b18':'rgba(255,255,255,0.45)',boxShadow:tab===t.id?'0 4px 16px rgba(240,165,0,0.22)':undefined,border:tab!==t.id?'1px solid rgba(255,255,255,0.07)':undefined}}>
+            style={{background:tab===t.id?'linear-gradient(135deg,#00875a,#00ae74)':' rgba(255,255,255,0.04)',color:tab===t.id?'#17125c':'rgba(255,255,255,0.45)',boxShadow:tab===t.id?'0 4px 16px rgba(0, 174, 116,0.22)':undefined,border:tab!==t.id?'1px solid rgba(255,255,255,0.07)':undefined}}>
             {t.emoji} {t.label}
           </button>
         ))}
@@ -253,11 +253,11 @@ export function AcademicRoomPage() {
       {tab==='overview'&&(
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
-            {title:'New Applications',titleAr:'الطلبات الجديدة',value:students.filter(s=>s.status==='new').length,icon:'📥',color:'#818cf8',action:'Review Now'},
+            {title:'New Applications',titleAr:'الطلبات الجديدة',value:students.filter(s=>s.status==='new').length,icon:'📥',color:'#60a5fa',action:'Review Now'},
             {title:'Pending Interviews',titleAr:'مقابلات معلقة',value:students.filter(s=>s.status==='new'&&s.interviewDate).length,icon:'🎥',color:'#38bdf8',action:'Schedule'},
             {title:'Active Students',titleAr:'الطلاب النشطون',value:students.filter(s=>s.status==='active').length,icon:'🎓',color:'#34d399',action:'View All'},
-            {title:'Pending Payments',titleAr:'دفعات معلقة',value:students.filter(s=>s.paymentStatus==='pending').length,icon:'💳',color:'#f0a500',action:'Follow Up'},
-            {title:'Templates Available',titleAr:'النماذج المتاحة',value:TEMPLATES.length,icon:'📋',color:'#a78bfa',action:'Open Library'},
+            {title:'Pending Payments',titleAr:'دفعات معلقة',value:students.filter(s=>s.paymentStatus==='pending').length,icon:'💳',color:'#f59e0b',action:'Follow Up'},
+            {title:'Templates Available',titleAr:'النماذج المتاحة',value:TEMPLATES.length,icon:'📋',color:'#7dd3fc',action:'Open Library'},
             {title:'Today\'s Classes',titleAr:'فصول اليوم',value:12,icon:'🚪',color:'#f87171',action:'View Schedule'},
           ].map((stat,i)=>(
             <motion.div key={i} initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{delay:i*0.07}}
@@ -284,11 +284,11 @@ export function AcademicRoomPage() {
             <p className="text-sm font-black text-white mb-4">🔔 Recent Academic Activity</p>
             <div className="space-y-2.5">
               {[
-                {text:'New student application received — Khaled Alawi',time:'5 min ago',color:'#818cf8',textAr:'استلام طلب تسجيل جديد'},
+                {text:'New student application received — Khaled Alawi',time:'5 min ago',color:'#60a5fa',textAr:'استلام طلب تسجيل جديد'},
                 {text:'Payment confirmed — Sara Almahdi (Speakout Int)',time:'20 min ago',color:'#34d399',textAr:'تأكيد الدفع'},
                 {text:'Interview scheduled — Nour Alqaiti — Oct 8 at 11:00',time:'1 hr ago',color:'#38bdf8',textAr:'جدولة المقابلة'},
-                {text:'Placement test completed — Ali Mohammed — Level B1',time:'2 hr ago',color:'#f0a500',textAr:'إتمام اختبار تحديد المستوى'},
-                {text:'Course assigned — Fatima Hassan → Speakout Pre-Int',time:'3 hr ago',color:'#a78bfa',textAr:'تعيين الدورة'},
+                {text:'Placement test completed — Ali Mohammed — Level B1',time:'2 hr ago',color:'#00ae74',textAr:'إتمام اختبار تحديد المستوى'},
+                {text:'Course assigned — Fatima Hassan → Speakout Pre-Int',time:'3 hr ago',color:'#7dd3fc',textAr:'تعيين الدورة'},
               ].map((a,i)=>(
                 <div key={i} className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.03] transition">
                   <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{background:a.color}} />
@@ -309,7 +309,7 @@ export function AcademicRoomPage() {
         <div className="space-y-4">
           {/* Ghost mode + recorder control bar */}
           <div className="rounded-2xl p-4 relative overflow-hidden"
-            style={{background:'linear-gradient(135deg,#0a1024,#0d1730)',border:`1px solid ${(ghostMic||ghostCam)?'rgba(239,68,68,0.4)':'rgba(37,99,235,0.3)'}`}}>
+            style={{background:'linear-gradient(135deg,#1d1668,#241c80)',border:`1px solid ${(ghostMic||ghostCam)?'rgba(239,68,68,0.4)':'rgba(37,99,235,0.3)'}`}}>
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
@@ -343,7 +343,7 @@ export function AcademicRoomPage() {
                 <div className="w-px h-7 bg-white/10" />
                 <button onClick={toggleRecord}
                   className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition"
-                  style={{background:recording?'rgba(239,68,68,0.2)':'rgba(200,148,10,0.15)',color:recording?'#f87171':'#f0a500',border:`1px solid ${recording?'rgba(239,68,68,0.45)':'rgba(200,148,10,0.35)'}`}}>
+                  style={{background:recording?'rgba(239,68,68,0.2)':'rgba(0, 174, 116,0.15)',color:recording?'#f87171':'#00ae74',border:`1px solid ${recording?'rgba(239,68,68,0.45)':'rgba(0, 174, 116,0.35)'}`}}>
                   {recording?<><span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> Stop · {fmtTime(recSecs)}</>:'⏺ Record'}
                 </button>
               </div>
@@ -373,7 +373,7 @@ export function AcademicRoomPage() {
                   whileHover={{y:-3}} className="rounded-2xl overflow-hidden text-left"
                   style={{background:'rgba(8,14,32,0.9)',border:`1px solid ${sc.color}22`}}>
                   {/* feed */}
-                  <div className="relative h-24" style={{background:'linear-gradient(135deg,#060e1c,#0d1a30)'}}>
+                  <div className="relative h-24" style={{background:'linear-gradient(135deg,#17125c,#241c80)'}}>
                     <div className="absolute inset-0 flex items-center justify-center text-2xl opacity-50">{r.status==='idle'?'💤':'🎥'}</div>
                     <div className="absolute top-1.5 left-1.5 flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[8px] font-black"
                       style={{background:'rgba(0,0,0,0.5)',color:sc.color}}>
@@ -406,7 +406,7 @@ export function AcademicRoomPage() {
               {recordings.map(rec=>(
                 <div key={rec.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/[0.03] transition"
                   style={{border:'1px solid rgba(255,255,255,0.05)'}}>
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center text-base flex-shrink-0" style={{background:'rgba(200,148,10,0.12)',border:'1px solid rgba(200,148,10,0.22)'}}>▶</div>
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center text-base flex-shrink-0" style={{background:'rgba(0, 174, 116,0.12)',border:'1px solid rgba(0, 174, 116,0.22)'}}>▶</div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold text-white truncate">{rec.name}</p>
                     <p className="text-[9px] text-white/35">{rec.room} · {rec.date}</p>
@@ -447,7 +447,7 @@ export function AcademicRoomPage() {
               <div className="flex-1" />
               <button onClick={saveDoc}
                 className="px-4 py-1.5 rounded-lg text-xs font-bold transition"
-                style={{background:docSaved?'linear-gradient(135deg,#059669,#065f46)':'linear-gradient(135deg,#2563eb,#1b3ea6)',color:'#fff'}}>
+                style={{background:docSaved?'linear-gradient(135deg,#00ae74,#00684a)':'linear-gradient(135deg,#2563eb,#2620a8)',color:'#fff'}}>
                 {docSaved?'✓ Saved':'💾 Save'}
               </button>
             </div>
@@ -481,16 +481,16 @@ export function AcademicRoomPage() {
       {/* NEW INTAKE */}
       {tab==='intake'&&(
         <div className="space-y-5">
-          <div className="rounded-2xl p-5" style={{background:'rgba(8,14,32,0.90)',border:'1px solid rgba(99,102,241,0.15)'}}>
+          <div className="rounded-2xl p-5" style={{background:'rgba(8,14,32,0.90)',border:'1px solid rgba(63, 186, 235,0.15)'}}>
             <p className="text-sm font-black text-white mb-1">🎓 New Student Intake Flow</p>
             <p className="text-xs text-white/40 mb-5">Manage the full journey from first contact to enrollment</p>
 
             {/* Flow steps */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
               {[
-                {step:1,label:'Application\nReceived',labelAr:'استلام الطلب',icon:'📥',color:'#818cf8'},
+                {step:1,label:'Application\nReceived',labelAr:'استلام الطلب',icon:'📥',color:'#60a5fa'},
                 {step:2,label:'Interview\nScheduled',labelAr:'جدولة المقابلة',icon:'📅',color:'#38bdf8'},
-                {step:3,label:'Level\nAssessed',labelAr:'تحديد المستوى',icon:'🎯',color:'#f0a500'},
+                {step:3,label:'Level\nAssessed',labelAr:'تحديد المستوى',icon:'🎯',color:'#00ae74'},
                 {step:4,label:'Course\nAssigned',labelAr:'تعيين الدورة',icon:'📚',color:'#34d399'},
               ].map(s=>(
                 <div key={s.step} className="p-4 rounded-2xl text-center"
@@ -510,7 +510,7 @@ export function AcademicRoomPage() {
                 <div key={s.id} className="flex items-center gap-4 p-4 rounded-xl mb-2 hover:bg-white/[0.03] transition"
                   style={{border:'1px solid rgba(255,255,255,0.05)'}}>
                   <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold flex-shrink-0"
-                    style={{background:'rgba(99,102,241,0.15)',color:'#a5b4fc'}}>
+                    style={{background:'rgba(63, 186, 235,0.15)',color:'#93c5fd'}}>
                     {s.name.charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -572,7 +572,7 @@ export function AcademicRoomPage() {
                     style={{gridTemplateColumns:'1fr 1fr 80px 100px 80px 110px 100px'}}>
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
-                        style={{background:'rgba(99,102,241,0.15)',color:'#a5b4fc'}}>{s.name.charAt(0)}</div>
+                        style={{background:'rgba(63, 186, 235,0.15)',color:'#93c5fd'}}>{s.name.charAt(0)}</div>
                       <div className="min-w-0">
                         <p className="text-xs font-semibold text-white truncate">{s.name}</p>
                         <p className="text-[9px] text-white/30 truncate" style={{fontFamily:'Tajawal,sans-serif'}}>{s.nameAr}</p>
@@ -592,7 +592,7 @@ export function AcademicRoomPage() {
                   {/* Mobile */}
                   <div className="md:hidden flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold flex-shrink-0"
-                      style={{background:'rgba(99,102,241,0.15)',color:'#a5b4fc'}}>{s.name.charAt(0)}</div>
+                      style={{background:'rgba(63, 186, 235,0.15)',color:'#93c5fd'}}>{s.name.charAt(0)}</div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-white">{s.name}</p>
                       <p className="text-xs text-white/40">{s.course} · {s.teacher}</p>
@@ -612,7 +612,7 @@ export function AcademicRoomPage() {
           <div className="flex items-center justify-between">
             <p className="text-sm font-black text-white/70">📋 Template Library — {TEMPLATES.length} templates</p>
             <button className="px-4 py-2 rounded-xl text-sm font-bold"
-              style={{background:'linear-gradient(135deg,#6366f1,#7c3aed)',color:'#fff'}}>
+              style={{background:'linear-gradient(135deg,#3b82f6,#2563eb)',color:'#fff'}}>
               ➕ New Template
             </button>
           </div>
@@ -625,11 +625,11 @@ export function AcademicRoomPage() {
                 <p className="text-sm font-bold text-white leading-snug mb-0.5">{t.title}</p>
                 <p className="text-[10px] text-white/35 mb-2" style={{fontFamily:'Tajawal,sans-serif'}}>{t.titleAr}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] px-2 py-0.5 rounded-full font-semibold" style={{background:'rgba(99,102,241,0.12)',color:'#a5b4fc'}}>{t.category}</span>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full font-semibold" style={{background:'rgba(63, 186, 235,0.12)',color:'#93c5fd'}}>{t.category}</span>
                   <span className="text-[9px] text-white/25">{t.uses} uses</span>
                 </div>
                 <div className="flex gap-1.5 mt-3">
-                  <button className="flex-1 py-1.5 rounded-lg text-[10px] font-semibold" style={{background:'rgba(99,102,241,0.10)',color:'#a5b4fc',border:'1px solid rgba(99,102,241,0.18)'}}>Use</button>
+                  <button className="flex-1 py-1.5 rounded-lg text-[10px] font-semibold" style={{background:'rgba(63, 186, 235,0.10)',color:'#93c5fd',border:'1px solid rgba(63, 186, 235,0.18)'}}>Use</button>
                   <button className="flex-1 py-1.5 rounded-lg text-[10px] font-semibold" style={{background:'rgba(255,255,255,0.04)',color:'rgba(255,255,255,0.40)',border:'1px solid rgba(255,255,255,0.07)'}}>Edit</button>
                   <button className="py-1.5 px-2 rounded-lg text-[10px] text-white/25 hover:text-red-400 transition">🗑</button>
                 </div>
@@ -661,10 +661,10 @@ export function AcademicRoomPage() {
       {tab==='reports'&&(
         <div className="grid md:grid-cols-2 gap-4">
           {[
-            {title:'Enrollment Report',titleAr:'تقرير التسجيل',emoji:'📊',color:'#6366f1'},
-            {title:'Payment Report',titleAr:'تقرير المدفوعات',emoji:'💰',color:'#f0a500'},
+            {title:'Enrollment Report',titleAr:'تقرير التسجيل',emoji:'📊',color:'#3b82f6'},
+            {title:'Payment Report',titleAr:'تقرير المدفوعات',emoji:'💰',color:'#00ae74'},
             {title:'Academic Progress',titleAr:'التقدم الأكاديمي',emoji:'📈',color:'#34d399'},
-            {title:'Teacher Performance',titleAr:'أداء المدرسين',emoji:'⭐',color:'#a78bfa'},
+            {title:'Teacher Performance',titleAr:'أداء المدرسين',emoji:'⭐',color:'#7dd3fc'},
           ].map(r=>(
             <div key={r.title} className="rounded-2xl p-5 cursor-pointer hover:-translate-y-1 transition"
               style={{background:'rgba(8,14,32,0.90)',border:`1px solid ${r.color}18`}}>
@@ -690,7 +690,7 @@ export function AcademicRoomPage() {
             <motion.div initial={{scale:0.9,y:20}} animate={{scale:1,y:0}} exit={{scale:0.9,y:20}}
               onClick={e=>e.stopPropagation()}
               className="w-full max-w-2xl rounded-2xl overflow-hidden"
-              style={{background:'#0a1228',border:`1px solid ${(ghostMic||ghostCam)?'rgba(239,68,68,0.4)':'rgba(37,99,235,0.35)'}`,boxShadow:'0 24px 64px rgba(0,0,0,0.6)'}}>
+              style={{background:'#1d1668',border:`1px solid ${(ghostMic||ghostCam)?'rgba(239,68,68,0.4)':'rgba(37,99,235,0.35)'}`,boxShadow:'0 24px 64px rgba(0,0,0,0.6)'}}>
               {/* header */}
               <div className="flex items-center gap-2 px-4 py-3" style={{borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
                 <span className="w-2 h-2 rounded-full animate-pulse" style={{background:ROOM_STATUS[focusedRoom.status].color}} />
@@ -705,7 +705,7 @@ export function AcademicRoomPage() {
                 <button onClick={()=>setFocusedRoom(null)} className="text-white/40 hover:text-red-400 transition text-sm ml-1">✕</button>
               </div>
               {/* feed */}
-              <div className="relative h-72" style={{background:'linear-gradient(135deg,#060e1c,#0d1a30)'}}>
+              <div className="relative h-72" style={{background:'linear-gradient(135deg,#17125c,#241c80)'}}>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <p className="text-5xl mb-2">{focusedRoom.status==='idle'?'💤':'🎥'}</p>
                   <p className="text-xs text-white/40">Watching &amp; listening · {focusedRoom.teacher}</p>
@@ -736,7 +736,7 @@ export function AcademicRoomPage() {
                 </button>
                 <button onClick={toggleRecord}
                   className="px-3 py-2 rounded-xl text-xs font-bold transition"
-                  style={{background:recording?'rgba(239,68,68,0.2)':'rgba(200,148,10,0.15)',color:recording?'#f87171':'#f0a500',border:`1px solid ${recording?'rgba(239,68,68,0.45)':'rgba(200,148,10,0.35)'}`}}>
+                  style={{background:recording?'rgba(239,68,68,0.2)':'rgba(0, 174, 116,0.15)',color:recording?'#f87171':'#00ae74',border:`1px solid ${recording?'rgba(239,68,68,0.45)':'rgba(0, 174, 116,0.35)'}`}}>
                   {recording?`⏹ ${fmtTime(recSecs)}`:'⏺ Rec'}
                 </button>
               </div>
@@ -755,7 +755,7 @@ export function AcademicRoomPage() {
               width:meetingMinimized?'220px':'480px',
               height:meetingMinimized?'52px':'320px',
               transform:meetingMinimized?undefined:'translateY(50%)',
-              background:'#0a1228',border:'1px solid rgba(52,211,153,0.35)',
+              background:'#1d1668',border:'1px solid rgba(52,211,153,0.35)',
               boxShadow:'0 24px 64px rgba(0,0,0,0.60)',
             }}>
             {/* Meeting header */}
@@ -773,7 +773,7 @@ export function AcademicRoomPage() {
             {!meetingMinimized&&(
               <div className="flex flex-col h-full">
                 {/* Video area */}
-                <div className="flex-1 relative" style={{background:'linear-gradient(135deg,#060e1c,#0d1a30)'}}>
+                <div className="flex-1 relative" style={{background:'linear-gradient(135deg,#17125c,#241c80)'}}>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
                       <p className="text-4xl mb-2">🎥</p>
