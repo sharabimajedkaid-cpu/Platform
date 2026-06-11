@@ -332,8 +332,10 @@ router.post(
       .where(eq(evalSheets.id, id))
       .limit(1);
     if (!sheet) return res.status(404).json({ message: "sheet not found" });
-    if (sheet.status === "locked")
-      return res.status(409).json({ message: "sheet is locked" });
+    if (sheet.status !== "open")
+      return res
+        .status(409)
+        .json({ message: "sheet is not open for editing" });
 
     const { scores, dayMeta } = req.body ?? {};
 
@@ -414,6 +416,8 @@ router.post("/v1/eval/sheet/:id/submit", requireAuth, staff, async (req, res) =>
     .where(eq(evalSheets.id, id))
     .limit(1);
   if (!sheet) return res.status(404).json({ message: "sheet not found" });
+  if (sheet.status === "locked")
+    return res.status(409).json({ message: "sheet is locked" });
   await db
     .update(evalSheets)
     .set({ status: "submitted", submittedAt: new Date() })
@@ -422,8 +426,14 @@ router.post("/v1/eval/sheet/:id/submit", requireAuth, staff, async (req, res) =>
   try {
     const r = await generateEvalReportsForSheet(id);
     generated = r.created;
+    const rows = await db
+      .select()
+      .from(reports)
+      .where(eq(reports.evalSheetId, id));
+    for (const row of rows) await deliverReport(row, sheet.termLabel);
   } catch {
-    // generation failure should not block submission
+    // generation/delivery failure should not block submission; pending
+    // reports are completed later by a manual flush once Google is connected
   }
   return res.json({ ok: true, generated });
 });
