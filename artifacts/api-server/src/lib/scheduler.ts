@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import cron from "node-cron";
 import {
   db,
@@ -10,6 +10,8 @@ import {
   notifications,
   messages,
   reports,
+  evalTemplates,
+  evalSheets,
 } from "@workspace/db";
 import { addDaysISO, todayISO } from "./teaching-days";
 import { generateReportsForSheet } from "./reports";
@@ -228,10 +230,89 @@ export async function tick(): Promise<{
   return { reminders, milestones };
 }
 
+// Label of the current teaching week, anchored to its Saturday (week start).
+function currentWeekLabel(): string {
+  const d = new Date();
+  const back = (d.getUTCDay() - 6 + 7) % 7; // days since most recent Saturday
+  d.setUTCDate(d.getUTCDate() - back);
+  return `Week of ${d.toISOString().slice(0, 10)}`;
+}
+
+// Thursday job: ensure the current week's evaluation sheet exists for each
+// active template and remind the academic / assessor to complete it. Idempotent
+// via dedupeKey. Returns counts for the manual-trigger response.
+export async function weeklyEvalTick(): Promise<{
+  ensured: number;
+  notified: number;
+}> {
+  const templates = await db
+    .select()
+    .from(evalTemplates)
+    .where(eq(evalTemplates.active, true));
+  let ensured = 0;
+  let notified = 0;
+  for (const tpl of templates) {
+    const week = tpl.layout === "weekly" ? currentWeekLabel() : "";
+    const termLabel = tpl.termLabel || "Term 3 — 2026";
+
+    let [sheet] = await db
+      .select()
+      .from(evalSheets)
+      .where(
+        and(
+          eq(evalSheets.templateId, tpl.id),
+          eq(evalSheets.termLabel, termLabel),
+          eq(evalSheets.weekLabel, week),
+        ),
+      )
+      .limit(1);
+    if (!sheet) {
+      const [row] = await db
+        .insert(evalSheets)
+        .values({ templateId: tpl.id, termLabel, weekLabel: week, status: "open" })
+        .onConflictDoNothing({
+          target: [
+            evalSheets.templateId,
+            evalSheets.termLabel,
+            evalSheets.weekLabel,
+          ],
+        })
+        .returning();
+      sheet = row;
+      if (sheet) ensured++;
+    }
+    if (!sheet) continue;
+
+    await notifyIfNew({
+      audienceRole: "admin",
+      title: `Weekly teacher evaluation due — ${tpl.name}`,
+      body: `It's Thursday. Please complete the teacher performance evaluation (${tpl.name}${week ? ` · ${week}` : ""}) and submit it so reports are sent to each teacher.`,
+      category: "evaluation",
+      icon: "📝",
+      dedupeKey: `notif:teval:${sheet.id}`,
+    });
+    await messageIfNew({
+      threadKey: "academic",
+      toRole: "supervisor",
+      body: `Weekly teacher evaluation reminder — ${tpl.name}${week ? ` · ${week}` : ""}. Please complete and submit.`,
+      dedupeKey: `msg:teval:${sheet.id}`,
+    });
+    notified++;
+  }
+  logger.info({ ensured, notified }, "weekly eval tick complete");
+  return { ensured, notified };
+}
+
 export function startScheduler(): void {
   // Daily at 06:00 server time.
   cron.schedule("0 6 * * *", () => {
     tick().catch((err) => logger.error({ err }, "scheduled tick failed"));
   });
-  logger.info("assessment scheduler started (daily 06:00)");
+  // Thursday at 06:00 — weekly teacher-evaluation reminder.
+  cron.schedule("0 6 * * 4", () => {
+    weeklyEvalTick().catch((err) =>
+      logger.error({ err }, "weekly eval tick failed"),
+    );
+  });
+  logger.info("assessment scheduler started (daily 06:00, weekly Thu 06:00)");
 }

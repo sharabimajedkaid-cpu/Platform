@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { sql, eq, and } from "drizzle-orm";
 import {
   db,
   teachers,
@@ -9,6 +9,9 @@ import {
   assessmentSheets,
   dailyMonitoring,
   appUsers,
+  evalTemplates,
+  evalCriteria,
+  evalSheets,
 } from "@workspace/db";
 import { nthTeachingDayISO } from "./teaching-days";
 import { logger } from "./logger";
@@ -217,4 +220,168 @@ export async function seedIfEmpty(): Promise<void> {
   await db.insert(appUsers).values(userRows);
 
   logger.info({ teachers: TEACHERS.length }, "Seed complete");
+}
+
+/* ── Teacher Performance Evaluation seed (idempotent) ───────────────────── */
+
+// The five evaluated teachers from the reference forms. The first two already
+// exist (course teachers); matched by email so no duplicates are created.
+const EVAL_TEACHERS: { name: string; tag: string; login: string }[] = [
+  { name: "Suhair Al-Mojahid", tag: "suhair", login: "suhair.almojahid" },
+  { name: "Waad Al-Hammadi", tag: "waad", login: "waad.alhammadi" },
+  { name: "Jamal Al-Shameeri", tag: "jamal", login: "jamal.alshameeri" },
+  { name: "Amani Al-Sharabi", tag: "amani", login: "amani.alsharabi" },
+  { name: "Shihab Al-Omary", tag: "shihab", login: "shihab.alomary" },
+];
+
+type CritSeed = {
+  key: string;
+  labelEn: string;
+  labelAr: string;
+  kind?: "score" | "text";
+};
+
+// Table 1 — "columns" layout: scored criteria + two free-text columns.
+const COLUMN_CRITERIA: CritSeed[] = [
+  { key: "strategy", labelEn: "Strategy", labelAr: "الاستراتيجية" },
+  { key: "lesson_org", labelEn: "Lesson Organization", labelAr: "تنظيم الدرس" },
+  { key: "tasks_activities", labelEn: "Tasks and Activities", labelAr: "المهام والأنشطة" },
+  { key: "classroom_language", labelEn: "Classroom Language", labelAr: "لغة الفصل" },
+  { key: "classroom_mgmt", labelEn: "Classroom Management", labelAr: "إدارة الفصل" },
+  { key: "learning_atmosphere", labelEn: "Learning Atmosphere", labelAr: "أجواء التعلم" },
+  { key: "teaching_tools", labelEn: "Teaching Tools & English", labelAr: "أدوات التدريس والإنجليزية" },
+  { key: "whiteboard", labelEn: "Whiteboard Use", labelAr: "استخدام السبورة" },
+  { key: "appearance", labelEn: "Professional Appearance", labelAr: "المظهر المهني" },
+  { key: "language_accuracy", labelEn: "Language Accuracy", labelAr: "دقة اللغة" },
+  { key: "recommendations", labelEn: "Recommendations", labelAr: "التوصيات", kind: "text" },
+  { key: "followup", labelEn: "Follow-up", labelAr: "المتابعة", kind: "text" },
+];
+
+// Table 2 — "weekly" layout: five evaluation points scored across the week.
+const WEEKLY_CRITERIA: CritSeed[] = [
+  { key: "clear_english", labelEn: "Ts. teach in a clear, easy-to-understand and at level English", labelAr: "يدرّس المعلم بإنجليزية واضحة ومناسبة للمستوى" },
+  { key: "ss_speak", labelEn: "Ss. speak English during every class", labelAr: "يتحدث الطلاب الإنجليزية في كل حصة" },
+  { key: "ss_practice", labelEn: "Ss. practice English every day", labelAr: "يمارس الطلاب الإنجليزية يومياً" },
+  { key: "movement", labelEn: "Movement and interaction in class every 20 to 30 minutes", labelAr: "الحركة والتفاعل في الفصل كل 20 إلى 30 دقيقة" },
+  { key: "goals", labelEn: "Teacher knows and states the lesson goals to the students", labelAr: "يعرف المعلم أهداف الدرس ويوضحها للطلاب" },
+];
+
+const EVAL_TEMPLATES: {
+  key: string;
+  name: string;
+  nameAr: string;
+  layout: "columns" | "weekly";
+  orderIndex: number;
+  criteria: CritSeed[];
+}[] = [
+  { key: "teacher_eval_columns", name: "Teachers' Performance Evaluation — Page 1", nameAr: "تقييم أداء المعلمين — صفحة ١", layout: "columns", orderIndex: 0, criteria: COLUMN_CRITERIA },
+  { key: "teacher_eval_weekly", name: "Teachers Performance Evaluation Form", nameAr: "نموذج تقييم أداء المعلمين", layout: "weekly", orderIndex: 1, criteria: WEEKLY_CRITERIA },
+];
+
+// Ensures the evaluated teachers, both templates, their criteria, and a current
+// sheet per template exist. Safe to run on every boot.
+export async function seedEval(): Promise<void> {
+  for (const t of EVAL_TEACHERS) {
+    const email = inbox(t.tag);
+    const existing = await db
+      .select()
+      .from(teachers)
+      .where(eq(teachers.email, email))
+      .limit(1);
+    let teacherId: number;
+    if (existing.length) {
+      teacherId = existing[0].id;
+    } else {
+      const [row] = await db
+        .insert(teachers)
+        .values({ name: t.name, email })
+        .returning();
+      teacherId = row.id;
+    }
+
+    const login = await db
+      .select()
+      .from(appUsers)
+      .where(eq(appUsers.email, t.login))
+      .limit(1);
+    if (!login.length) {
+      await db.insert(appUsers).values({
+        email: t.login,
+        password: "teacher123",
+        name: t.name,
+        role: "teacher",
+        teacherId,
+        parentId: null,
+        studentId: null,
+      });
+    }
+  }
+
+  for (const tpl of EVAL_TEMPLATES) {
+    const found = await db
+      .select()
+      .from(evalTemplates)
+      .where(eq(evalTemplates.key, tpl.key))
+      .limit(1);
+    let tplRow = found[0];
+    if (!tplRow) {
+      const ins = await db
+        .insert(evalTemplates)
+        .values({
+          key: tpl.key,
+          name: tpl.name,
+          nameAr: tpl.nameAr,
+          subjectType: "teacher",
+          layout: tpl.layout,
+          termLabel: TERM_LABEL,
+          orderIndex: tpl.orderIndex,
+          active: true,
+        })
+        .returning();
+      tplRow = ins[0];
+    }
+
+    const existingCrit = await db
+      .select()
+      .from(evalCriteria)
+      .where(eq(evalCriteria.templateId, tplRow.id));
+    const haveKeys = new Set(existingCrit.map((c) => c.key));
+    const toInsert = tpl.criteria
+      .map((c, i) => ({ c, i }))
+      .filter(({ c }) => !haveKeys.has(c.key))
+      .map(({ c, i }) => ({
+        templateId: tplRow.id,
+        key: c.key,
+        labelEn: c.labelEn,
+        labelAr: c.labelAr,
+        kind: c.kind ?? "score",
+        maxScore: 5,
+        orderIndex: i,
+        active: true,
+      }));
+    if (toInsert.length) await db.insert(evalCriteria).values(toInsert);
+
+    const week = tpl.layout === "weekly" ? "Week 1" : "";
+    const sheet = await db
+      .select()
+      .from(evalSheets)
+      .where(
+        and(
+          eq(evalSheets.templateId, tplRow.id),
+          eq(evalSheets.termLabel, TERM_LABEL),
+          eq(evalSheets.weekLabel, week),
+        ),
+      )
+      .limit(1);
+    if (!sheet.length) {
+      await db.insert(evalSheets).values({
+        templateId: tplRow.id,
+        termLabel: TERM_LABEL,
+        weekLabel: week,
+        status: "open",
+      });
+    }
+  }
+
+  logger.info({ templates: EVAL_TEMPLATES.length }, "Eval templates seeded");
 }

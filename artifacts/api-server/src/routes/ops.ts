@@ -15,7 +15,7 @@ import {
   teacherCourseIds,
 } from "../lib/auth";
 import { googleStatus } from "../lib/google";
-import { tick } from "../lib/scheduler";
+import { tick, weeklyEvalTick } from "../lib/scheduler";
 
 const router: IRouter = Router();
 
@@ -130,6 +130,17 @@ router.post(
   requireRole("admin", "supervisor"),
   async (_req, res) => {
     return res.json(await tick());
+  },
+);
+
+// Manual weekly teacher-evaluation reminder trigger (staff). Cron fires this
+// every Thursday; this lets the academic test it on demand.
+router.post(
+  "/v1/scheduler/eval-tick",
+  requireAuth,
+  requireRole("admin", "supervisor"),
+  async (_req, res) => {
+    return res.json(await weeklyEvalTick());
   },
 );
 

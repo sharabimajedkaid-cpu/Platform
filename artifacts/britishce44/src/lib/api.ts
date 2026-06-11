@@ -55,6 +55,8 @@ export const apiPatch = <T = unknown>(path: string, body?: unknown) =>
     method: 'PATCH',
     body: body === undefined ? undefined : JSON.stringify(body),
   })
+export const apiDelete = <T = unknown>(path: string) =>
+  apiFetch<T>(path, { method: 'DELETE' })
 
 /* ── Shared API entity types ── */
 
@@ -117,6 +119,9 @@ export interface Report {
   courseId: number
   audience: 'parent' | 'teacher'
   language: 'en' | 'ar'
+  kind?: 'student' | 'teacher_eval'
+  evalSheetId?: number | null
+  evalTeacherId?: number | null
   recipientEmail: string | null
   recipientName: string | null
   level: string | null
@@ -132,6 +137,68 @@ export interface Report {
   updatedAt: string
   studentName?: string | null
   courseName?: string | null
+  teacherName?: string | null
+}
+
+/* ── Teacher evaluation types ── */
+
+export type EvalLayout = 'columns' | 'weekly'
+export type EvalCritKind = 'score' | 'text'
+
+export interface EvalCriterion {
+  id: number
+  templateId: number
+  key: string
+  labelEn: string
+  labelAr: string | null
+  kind: EvalCritKind
+  maxScore: number
+  orderIndex: number
+  active: boolean
+}
+
+export interface EvalTemplate {
+  id: number
+  key: string
+  name: string
+  nameAr: string | null
+  subjectType: string
+  layout: EvalLayout
+  termLabel: string | null
+  description: string | null
+  orderIndex: number
+  active: boolean
+  criteria: EvalCriterion[]
+}
+
+export interface EvalSheet {
+  id: number
+  templateId: number
+  termLabel: string
+  weekLabel: string
+  dueDate: string | null
+  status: SheetStatus
+  submittedAt: string | null
+  reportsGeneratedAt: string | null
+  createdAt: string
+}
+
+export interface EvalTeacherRef {
+  id: number
+  name: string
+  email: string | null
+}
+
+export type EvalScoreCell = { score: number | null; note: string | null }
+
+export interface EvalGrid {
+  sheet: EvalSheet
+  template: EvalTemplate
+  criteria: EvalCriterion[]
+  teachers: EvalTeacherRef[]
+  days: number[]
+  scores: Record<number, Record<number, Record<number, EvalScoreCell>>>
+  dayMeta: Record<number, Record<number, number | null>>
 }
 
 export interface Task {
