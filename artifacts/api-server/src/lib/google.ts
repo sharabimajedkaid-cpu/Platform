@@ -1,5 +1,6 @@
 import { and, eq, or } from "drizzle-orm";
 import { db, reports, type Report } from "@workspace/db";
+import { addDaysISO } from "./teaching-days";
 import { logger } from "./logger";
 
 // Connector names as known to the Replit connectors proxy.
@@ -279,8 +280,10 @@ export async function createGoogleCalendarEvent(opts: {
       requestBody: {
         summary: opts.summary,
         description: opts.description,
+        // For all-day events Google treats end.date as exclusive, so the end
+        // must be the day after the start or the insert is rejected (400).
         start: { date: opts.date },
-        end: { date: opts.date },
+        end: { date: addDaysISO(opts.date, 1) },
       },
     });
     return (res.data.id as string) ?? null;
