@@ -3,10 +3,12 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AssessmentAdmin } from './academic-room-assessment'
 import { EvalAdmin } from './academic-room-eval'
+import { GoogleFormsSection } from './google-forms'
+import { ScreenConsentViewer } from '@/components/exams/screen-consent-viewer'
 
 /* Academic Management Room — Comprehensive center for all academic operations */
 
-type Tab = 'overview'|'monitor'|'writer'|'intake'|'students'|'schedule'|'templates'|'archive'|'reports'|'assessment'|'teachereval'
+type Tab = 'overview'|'monitor'|'writer'|'intake'|'students'|'schedule'|'templates'|'archive'|'reports'|'assessment'|'teachereval'|'googleforms'
 
 /* ── Live room monitor data ─────────────────────────────── */
 interface MonRoom {
@@ -104,6 +106,7 @@ export function AcademicRoomPage() {
   const [selectedStudent,setSelectedStudent]=useState<Student|null>(null)
   const [meetingActive,setMeetingActive]=useState(false)
   const [meetingMinimized,setMeetingMinimized]=useState(false)
+  const [screenViewer,setScreenViewer]=useState<{name:string;ctx:string}|null>(null)
 
   // ── Ghost monitor + recorder ──
   const [ghostMic,setGhostMic]=useState(false)
@@ -183,6 +186,7 @@ export function AcademicRoomPage() {
     {id:'students',label:'All Students',labelAr:'جميع الطلاب',emoji:'👥'},
     {id:'schedule',label:'Schedule',labelAr:'الجدول',emoji:'📅'},
     {id:'templates',label:'Templates',labelAr:'النماذج',emoji:'📋'},
+    {id:'googleforms',label:'From Google Forms',labelAr:'من نماذج جوجل',emoji:'📋'},
     {id:'archive',label:'Archive',labelAr:'الأرشيف',emoji:'🗂'},
     {id:'reports',label:'Reports',labelAr:'التقارير',emoji:'📈'},
     {id:'assessment',label:'In-Class Reports',labelAr:'تقارير الأداء',emoji:'✍️'},
@@ -252,6 +256,9 @@ export function AcademicRoomPage() {
           </button>
         ))}
       </div>
+
+      {/* FROM GOOGLE FORMS — full section under Academic Room control */}
+      {tab==='googleforms'&&<GoogleFormsSection/>}
 
       {/* IN-CLASS ASSESSMENT MANAGEMENT */}
       {tab==='assessment'&&<AssessmentAdmin/>}
@@ -641,6 +648,10 @@ export function AcademicRoomPage() {
                 <div className="flex gap-1.5 mt-3">
                   <button className="flex-1 py-1.5 rounded-lg text-[10px] font-semibold" style={{background:'rgba(63, 186, 235,0.10)',color:'#93c5fd',border:'1px solid rgba(63, 186, 235,0.18)'}}>Use</button>
                   <button className="flex-1 py-1.5 rounded-lg text-[10px] font-semibold" style={{background:'rgba(255,255,255,0.04)',color:'rgba(255,255,255,0.40)',border:'1px solid rgba(255,255,255,0.07)'}}>Edit</button>
+                  <button onClick={()=>setScreenViewer({name:'Selected student',ctx:t.title})}
+                    className="py-1.5 px-2 rounded-lg text-[10px] font-semibold transition"
+                    style={{background:'rgba(124,58,237,0.12)',color:'#c4b5fd',border:'1px solid rgba(124,58,237,0.25)'}}
+                    title="View screen with student consent">🖥️</button>
                   <button className="py-1.5 px-2 rounded-lg text-[10px] text-white/25 hover:text-red-400 transition">🗑</button>
                 </div>
               </motion.div>
@@ -812,6 +823,11 @@ export function AcademicRoomPage() {
             )}
           </motion.div>
         )}
+      </AnimatePresence>
+
+      {/* Consent-gated student screen viewer */}
+      <AnimatePresence>
+        {screenViewer&&<ScreenConsentViewer studentName={screenViewer.name} contextLabel={screenViewer.ctx} onClose={()=>setScreenViewer(null)} />}
       </AnimatePresence>
     </div>
   )

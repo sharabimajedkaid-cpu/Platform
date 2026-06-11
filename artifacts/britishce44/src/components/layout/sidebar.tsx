@@ -32,6 +32,7 @@ const adminItems: NavItem[] = [
   { page: 'ailearning', icon: '🧠', label: 'nav.ailearning', color: 'from-violet-500 to-purple-600' },
   { page: 'parentportal', icon: '👨‍👩‍👧', label: 'nav.parentportal', color: 'from-pink-500 to-rose-600' },
   { page: 'academicroom', icon: '🏛️', label: 'nav.academicroom', color: 'from-emerald-500 to-teal-600' },
+  { page: 'googleforms', icon: '📋', label: 'nav.googleforms', color: 'from-violet-500 to-purple-600' },
   { page: 'calendar', icon: '📅', label: 'nav.calendar', color: 'from-blue-500 to-indigo-600' },
   { page: 'tasks', icon: '✅', label: 'nav.tasks', color: 'from-emerald-500 to-green-600' },
   { page: 'aidev', icon: '🧠', label: 'nav.aidev', color: 'from-blue-500 to-indigo-600' },

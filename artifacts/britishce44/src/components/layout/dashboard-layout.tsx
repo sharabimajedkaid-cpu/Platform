@@ -24,6 +24,7 @@ import { MarketingPage } from '@/pages/marketing'
 import { AutoMessagingPage } from '@/pages/auto-messaging'
 import { VideoEditorPage } from '@/pages/video-editor'
 import { AcademicRoomPage } from '@/pages/academic-room'
+import { GoogleFormsPage } from '@/pages/google-forms'
 import { AssessmentPage } from '@/pages/assessment'
 import { CalendarPage } from '@/pages/calendar'
 import { TasksPage } from '@/pages/tasks'
@@ -45,7 +46,7 @@ export type PageKey =
   | 'videoarchive' | 'examroom' | 'aidev' | 'settings' | 'academicroom'
   | 'notifications' | 'globalsearch' | 'ailearning' | 'commandcenter'
   | 'downloadcenter' | 'parentportal' | 'compliance' | 'statuspage'
-  | 'assessment' | 'calendar' | 'tasks'
+  | 'assessment' | 'calendar' | 'tasks' | 'googleforms'
 
 function DashboardInner() {
   const { user, logout } = useAuth()
@@ -77,6 +78,7 @@ function DashboardInner() {
       case 'automessaging': return <AutoMessagingPage />
       case 'videoeditor': return <VideoEditorPage />
       case 'academicroom': return <AcademicRoomPage />
+      case 'googleforms': return <GoogleFormsPage />
       case 'assessment': return <AssessmentPage />
       case 'calendar': return <CalendarPage />
       case 'tasks': return <TasksPage />
