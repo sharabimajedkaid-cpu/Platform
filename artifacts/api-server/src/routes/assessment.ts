@@ -9,6 +9,7 @@ import {
   criteria,
   assessmentSheets,
   assessmentScores,
+  reports,
   tasks,
   type Course,
 } from "@workspace/db";
@@ -20,6 +21,7 @@ import {
   type AuthUser,
 } from "../lib/auth";
 import { generateReportsForSheet } from "../lib/reports";
+import { deliverReport } from "../lib/google";
 
 const router: IRouter = Router();
 
@@ -224,8 +226,10 @@ router.post("/v1/assessment/sheet/:id/scores", requireAuth, async (req, res) => 
   if (!sheet) return res.status(404).json({ message: "Sheet not found" });
   if (!(await canAccessCourse(req.user!, sheet.courseId)))
     return res.status(403).json({ message: "No access" });
-  if (sheet.status === "locked")
-    return res.status(409).json({ message: "Sheet is locked" });
+  if (sheet.status !== "open")
+    return res
+      .status(409)
+      .json({ message: "Sheet is not open for editing" });
 
   const { scores } = req.body ?? {};
   if (!Array.isArray(scores))
@@ -265,6 +269,8 @@ router.post("/v1/assessment/sheet/:id/submit", requireAuth, async (req, res) => 
   if (!sheet) return res.status(404).json({ message: "Sheet not found" });
   if (!(await canAccessCourse(req.user!, sheet.courseId)))
     return res.status(403).json({ message: "No access" });
+  if (sheet.status === "locked")
+    return res.status(409).json({ message: "Sheet is locked" });
 
   await db
     .update(assessmentSheets)
@@ -276,8 +282,14 @@ router.post("/v1/assessment/sheet/:id/submit", requireAuth, async (req, res) => 
   try {
     const r = await generateReportsForSheet(id);
     generated = r.created;
+    const rows = await db
+      .select()
+      .from(reports)
+      .where(eq(reports.sheetId, id));
+    for (const row of rows) await deliverReport(row, sheet.termLabel);
   } catch {
-    // generation failures shouldn't block submission
+    // generation/delivery failures shouldn't block submission; pending
+    // reports are completed later by the scheduler or a manual flush
   }
   return res.json({ ok: true, generated });
 });
