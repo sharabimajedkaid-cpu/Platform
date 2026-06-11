@@ -1,249 +1,627 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
+import { useI18n } from '@/lib/i18n'
+import { useAuth } from '@/components/providers/auth-provider'
+import {
+  apiGet, apiPost, apiPatch, ApiError,
+  type EvalTemplate, type EvalSheet, type EvalGrid, type EvalScoreCell,
+} from '@/lib/api'
 
-const CARD = 'rgba(11,22,62,0.85)'
+/* ── Theme ── */
+const CARD = 'rgba(26,19,92,0.7)'
 const BORDER = 'rgba(37,99,235,0.18)'
-const GOLD = '#00ae74'
-const ROYAL = '#2563eb'
+const GREEN = '#00AE74'
+const SKY = '#3FBAEB'
 
-const TEACHERS = [
-  { id: 't1', name: 'Suhair Almojahid',  subject: 'Mathematics', grade: 'G5–G8', overall: 91, trend: +3,  sessions: 48, students: 85,  avatar: 'SA' },
-  { id: 't2', name: "Wa'ad Alhammadi",   subject: 'English',     grade: 'G6–G9', overall: 87, trend: +1,  sessions: 44, students: 72,  avatar: 'WA' },
-  { id: 't3', name: 'Jamal Alshameeri',  subject: 'Science',     grade: 'G7–G10',overall: 83, trend: -1,  sessions: 40, students: 68,  avatar: 'JA' },
-  { id: 't4', name: 'Amani Alsharabi',   subject: 'Arabic',      grade: 'G4–G7', overall: 79, trend: +4,  sessions: 36, students: 60,  avatar: 'AA' },
-  { id: 't5', name: 'Hassan Almakhlafi', subject: 'ICT',         grade: 'G8–G10',overall: 88, trend: +2,  sessions: 42, students: 55,  avatar: 'HA' },
-  { id: 't6', name: 'Nadia Alqaiti',     subject: 'Chemistry',   grade: 'G9–G10',overall: 85, trend: 0,   sessions: 38, students: 48,  avatar: 'NA' },
-]
-
-const CRITERIA = [
-  { label: 'Lesson Preparation',       labelAr: 'تحضير الدرس',            icon: '📋', scores: [95, 88, 82, 76, 90, 86] },
-  { label: 'Classroom Management',     labelAr: 'إدارة الفصل',            icon: '🏫', scores: [88, 85, 80, 74, 86, 83] },
-  { label: 'Student Engagement',       labelAr: 'تفاعل الطلاب',           icon: '🎯', scores: [92, 89, 83, 81, 88, 85] },
-  { label: 'Assessment & Feedback',    labelAr: 'التقييم والتغذية الراجعة',icon: '📊', scores: [90, 86, 84, 78, 87, 84] },
-  { label: 'Communication Skills',     labelAr: 'مهارات التواصل',         icon: '💬', scores: [94, 88, 85, 80, 90, 87] },
-  { label: 'Professional Development', labelAr: 'التطوير المهني',         icon: '🌟', scores: [88, 84, 82, 79, 86, 81] },
-]
-
-const AI_INSIGHTS: string[] = [
-  'Lesson preparation scores are consistently high — recommend sharing best practices across the team.',
-  "Wa'ad Alhammadi's English classes show the highest speaking activity rates (94%) this month.",
-  'Student engagement improved by 7% platform-wide compared to last month.',
-  "Amani Alsharabi\u2019s Arabic grades show a strong +4 trend \u2014 recognize and reward improvement.",
-  'Schedule professional development workshop on formative assessment methodology for G7–G9 teachers.',
-  'Classroom management dipped in two sessions last week — suggest peer observation pairing.',
-]
-
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
-const MONTHLY_SCORES = [
-  [82, 85, 87, 88, 90, 91],
-  [80, 81, 83, 85, 86, 87],
-  [78, 79, 80, 81, 82, 83],
-  [72, 74, 76, 77, 78, 79],
-  [83, 84, 85, 86, 87, 88],
-  [80, 81, 82, 83, 84, 85],
-]
-
-function ScoreGauge({ score }: { score: number }) {
-  const r = 48; const circ = 2 * Math.PI * r
-  const pct = score / 100
-  const color = score >= 90 ? '#34d399' : score >= 80 ? GOLD : '#f87171'
-  return (
-    <svg width="120" height="120" viewBox="0 0 120 120" className="mx-auto">
-      <circle cx="60" cy="60" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
-      <circle cx="60" cy="60" r={r} fill="none" stroke={color} strokeWidth="10"
-        strokeDasharray={circ} strokeDashoffset={circ * (1 - pct)}
-        strokeLinecap="round" transform="rotate(-90 60 60)"
-        style={{ filter: `drop-shadow(0 0 8px ${color}80)` }} />
-      <text x="60" y="56" textAnchor="middle" fill={color} fontSize="22" fontWeight="900">{score}</text>
-      <text x="60" y="72" textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize="10">/ 100</text>
-    </svg>
-  )
+/* Day numbers follow getUTCDay: Sat=6 … Thu=4. Weekly order is Sat→Thu. */
+const DAY_LABELS: Record<number, { en: string; ar: string }> = {
+  6: { en: 'Sat', ar: 'السبت' },
+  0: { en: 'Sun', ar: 'الأحد' },
+  1: { en: 'Mon', ar: 'الإثنين' },
+  2: { en: 'Tue', ar: 'الثلاثاء' },
+  3: { en: 'Wed', ar: 'الأربعاء' },
+  4: { en: 'Thu', ar: 'الخميس' },
 }
 
-type Tab = 'criteria' | 'history' | 'ai'
+const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
+  open: { bg: 'rgba(63,186,235,0.15)', color: SKY, label: 'Open' },
+  submitted: { bg: 'rgba(0,174,116,0.15)', color: GREEN, label: 'Submitted' },
+  locked: { bg: 'rgba(148,163,184,0.15)', color: '#94a3b8', label: 'Locked' },
+}
+
+const EMPTY_CELL: EvalScoreCell = { score: null, note: null }
+
+type ScoreState = Record<number, Record<number, Record<number, EvalScoreCell>>>
+type MetaState = Record<number, Record<number, number | null>>
+
+function cellColor(v: number | null, max: number): string {
+  if (v == null) return 'rgba(255,255,255,0.04)'
+  const ratio = v / max
+  if (ratio <= 0.4) return 'rgba(239,68,68,0.22)'
+  if (ratio <= 0.6) return 'rgba(245,158,11,0.22)'
+  if (ratio <= 0.8) return 'rgba(63,186,235,0.22)'
+  return 'rgba(0,174,116,0.25)'
+}
 
 export function TeacherEvalPage() {
-  const [selectedIdx, setSelectedIdx] = useState(0)
-  const [tab, setTab] = useState<Tab>('criteria')
-  const teacher = TEACHERS[selectedIdx]
-  const criteriaScores = CRITERIA.map(c => c.scores[selectedIdx])
-  const monthlyData = MONTHLY_SCORES[selectedIdx]
+  const { lang, isRTL } = useI18n()
+  const { user } = useAuth()
+  const isAcademic = user?.role === 'admin' || user?.role === 'supervisor'
 
-  const scoreColor = (s: number) => s >= 90 ? '#34d399' : s >= 80 ? GOLD : '#f87171'
+  const [templates, setTemplates] = useState<EvalTemplate[]>([])
+  const [templateId, setTemplateId] = useState<number | null>(null)
+  const [sheets, setSheets] = useState<EvalSheet[]>([])
+  const [sheetId, setSheetId] = useState<number | null>(null)
+  const [grid, setGrid] = useState<EvalGrid | null>(null)
+  const [scores, setScores] = useState<ScoreState>({})
+  const [dayMeta, setDayMeta] = useState<MetaState>({})
+  const [teacherIdx, setTeacherIdx] = useState(0)
+  const [dirty, setDirty] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
+  const [newWeek, setNewWeek] = useState('')
+
+  const flash = (kind: 'ok' | 'err', text: string) => { setMsg({ kind, text }); setTimeout(() => setMsg(null), 4500) }
+
+  const template = useMemo(() => templates.find(t => t.id === templateId) ?? null, [templates, templateId])
+  const isWeekly = grid?.template.layout === 'weekly'
+  const editable = grid?.sheet.status === 'open'
+
+  /* ── Loaders ── */
+  const loadTemplates = useCallback(async () => {
+    setLoading(true)
+    try {
+      const d = await apiGet<{ templates: EvalTemplate[] }>('/eval/templates')
+      setTemplates(d.templates)
+      setTemplateId(prev => prev ?? d.templates[0]?.id ?? null)
+    } catch (e) {
+      flash('err', e instanceof ApiError ? e.message : 'Failed to load templates')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const loadSheets = useCallback(async (tid: number) => {
+    try {
+      const d = await apiGet<{ sheets: EvalSheet[] }>(`/eval/sheets?templateId=${tid}`)
+      setSheets(d.sheets)
+      setSheetId(prev => {
+        if (prev != null && d.sheets.some(s => s.id === prev)) return prev
+        return d.sheets.find(s => s.status === 'open')?.id ?? d.sheets[0]?.id ?? null
+      })
+    } catch (e) {
+      flash('err', e instanceof ApiError ? e.message : 'Failed to load sheets')
+    }
+  }, [])
+
+  const loadGrid = useCallback(async (id: number) => {
+    try {
+      const g = await apiGet<EvalGrid>(`/eval/sheet/${id}`)
+      setGrid(g)
+      setScores(structuredClone(g.scores) as ScoreState)
+      setDayMeta(structuredClone(g.dayMeta) as MetaState)
+      setTeacherIdx(0)
+      setDirty(false)
+    } catch (e) {
+      flash('err', e instanceof ApiError ? e.message : 'Failed to load sheet')
+    }
+  }, [])
+
+  useEffect(() => { if (isAcademic) loadTemplates() }, [isAcademic, loadTemplates])
+  useEffect(() => { if (templateId != null) loadSheets(templateId) }, [templateId, loadSheets])
+  useEffect(() => { if (sheetId != null) loadGrid(sheetId); else setGrid(null) }, [sheetId, loadGrid])
+
+  /* ── Cell helpers ── */
+  const getCell = useCallback((t: number, c: number, d: number): EvalScoreCell =>
+    scores[t]?.[c]?.[d] ?? EMPTY_CELL, [scores])
+
+  const setCell = (t: number, c: number, d: number, patch: Partial<EvalScoreCell>) => {
+    setScores(prev => {
+      const next: ScoreState = { ...prev }
+      next[t] = { ...(next[t] ?? {}) }
+      next[t][c] = { ...(next[t][c] ?? {}) }
+      next[t][c][d] = { ...(next[t][c][d] ?? EMPTY_CELL), ...patch }
+      return next
+    })
+    setDirty(true)
+  }
+
+  const setMinutes = (t: number, d: number, minutes: number | null) => {
+    setDayMeta(prev => ({ ...prev, [t]: { ...(prev[t] ?? {}), [d]: minutes } }))
+    setDirty(true)
+  }
+
+  /* ── Serialise + save ── */
+  const serialise = useCallback(() => {
+    if (!grid) return { scores: [], dayMeta: [] }
+    const flatScores: { teacherId: number; criterionId: number; day: number; score?: number | null; note?: string | null }[] = []
+    const flatMeta: { teacherId: number; day: number; minutes: number | null }[] = []
+    if (grid.template.layout === 'weekly') {
+      for (const t of grid.teachers)
+        for (const c of grid.criteria)
+          for (const d of grid.days)
+            flatScores.push({ teacherId: t.id, criterionId: c.id, day: d, score: getCell(t.id, c.id, d).score })
+      for (const t of grid.teachers)
+        for (const d of grid.days)
+          flatMeta.push({ teacherId: t.id, day: d, minutes: dayMeta[t.id]?.[d] ?? null })
+    } else {
+      for (const t of grid.teachers)
+        for (const c of grid.criteria) {
+          const cell = getCell(t.id, c.id, 0)
+          if (c.kind === 'text') flatScores.push({ teacherId: t.id, criterionId: c.id, day: 0, note: cell.note })
+          else flatScores.push({ teacherId: t.id, criterionId: c.id, day: 0, score: cell.score })
+        }
+    }
+    return { scores: flatScores, dayMeta: flatMeta }
+  }, [grid, getCell, dayMeta])
+
+  const save = async () => {
+    if (!grid) return
+    setBusy(true)
+    try {
+      await apiPost(`/eval/sheet/${grid.sheet.id}/scores`, serialise())
+      setDirty(false)
+      flash('ok', 'Evaluation saved.')
+    } catch (e) { flash('err', e instanceof ApiError ? e.message : 'Save failed') } finally { setBusy(false) }
+  }
+
+  const submit = async () => {
+    if (!grid) return
+    if (!confirm('Submit this evaluation? Reports will be generated for each teacher and queued to their Gmail and the Britishce44 Drive.')) return
+    setBusy(true)
+    try {
+      if (dirty) await apiPost(`/eval/sheet/${grid.sheet.id}/scores`, serialise())
+      const r = await apiPost<{ ok: boolean; generated: number }>(`/eval/sheet/${grid.sheet.id}/submit`)
+      flash('ok', `Submitted — ${r.generated} teacher report(s) generated.`)
+      await Promise.all([loadSheets(grid.sheet.templateId), loadGrid(grid.sheet.id)])
+    } catch (e) { flash('err', e instanceof ApiError ? e.message : 'Submit failed') } finally { setBusy(false) }
+  }
+
+  const generateAll = async () => {
+    if (!grid) return
+    setBusy(true)
+    try {
+      if (dirty) await apiPost(`/eval/sheet/${grid.sheet.id}/scores`, serialise())
+      const r = await apiPost<{ created: number }>(`/eval/sheet/${grid.sheet.id}/generate`)
+      flash('ok', `Generated ${r.created} report draft(s) — review & send from the Academic Room.`)
+      setDirty(false)
+    } catch (e) { flash('err', e instanceof ApiError ? e.message : 'Generate failed') } finally { setBusy(false) }
+  }
+
+  const sendAll = async () => {
+    if (!grid) return
+    if (!confirm('Generate and send reports to every teacher now?')) return
+    setBusy(true)
+    try {
+      if (dirty) await apiPost(`/eval/sheet/${grid.sheet.id}/scores`, serialise())
+      const r = await apiPost<{ sent: number }>(`/eval/sheet/${grid.sheet.id}/send`)
+      flash('ok', `Delivery attempted for ${r.sent} report(s) (queued as pending if Google is offline).`)
+      setDirty(false)
+    } catch (e) { flash('err', e instanceof ApiError ? e.message : 'Send failed') } finally { setBusy(false) }
+  }
+
+  const setStatus = async (status: string) => {
+    if (!grid) return
+    setBusy(true)
+    try {
+      if (dirty) await apiPost(`/eval/sheet/${grid.sheet.id}/scores`, serialise())
+      await apiPatch(`/eval/sheets/${grid.sheet.id}`, { status })
+      await Promise.all([loadSheets(grid.sheet.templateId), loadGrid(grid.sheet.id)])
+      flash('ok', `Sheet ${status}.`)
+    } catch (e) { flash('err', e instanceof ApiError ? e.message : 'Failed') } finally { setBusy(false) }
+  }
+
+  const createSheet = async () => {
+    if (!template) return
+    setBusy(true)
+    try {
+      const term = template.termLabel || 'Term 3 — 2026'
+      const week = template.layout === 'weekly' ? (newWeek.trim() || `Week of ${new Date().toISOString().slice(0, 10)}`) : ''
+      const r = await apiPost<{ sheet: EvalSheet }>('/eval/sheets', { templateId: template.id, termLabel: term, weekLabel: week })
+      setNewWeek('')
+      await loadSheets(template.id)
+      if (r.sheet) setSheetId(r.sheet.id)
+      flash('ok', 'Sheet ready.')
+    } catch (e) { flash('err', e instanceof ApiError ? e.message : 'Failed') } finally { setBusy(false) }
+  }
+
+  /* ── Bulk tools ── */
+  const bulkFill = (value: number) => {
+    if (!grid || !editable) return
+    setScores(prev => {
+      const next = structuredClone(prev) as ScoreState
+      const apply = (t: number, c: number, d: number) => {
+        next[t] = { ...(next[t] ?? {}) }
+        next[t][c] = { ...(next[t][c] ?? {}) }
+        next[t][c][d] = { ...(next[t][c][d] ?? EMPTY_CELL), score: value }
+      }
+      if (grid.template.layout === 'weekly') {
+        const t = grid.teachers[teacherIdx]
+        if (t) for (const c of grid.criteria) for (const d of grid.days) apply(t.id, c.id, d)
+      } else {
+        for (const t of grid.teachers) for (const c of grid.criteria) if (c.kind === 'score') apply(t.id, c.id, 0)
+      }
+      return next
+    })
+    setDirty(true)
+  }
+
+  const bulkClear = () => {
+    if (!grid || !editable) return
+    if (!confirm('Clear all scores in the current view?')) return
+    setScores(prev => {
+      const next = structuredClone(prev) as ScoreState
+      const clear = (t: number, c: number, d: number) => {
+        next[t] = { ...(next[t] ?? {}) }
+        next[t][c] = { ...(next[t][c] ?? {}) }
+        next[t][c][d] = { score: null, note: next[t][c][d]?.note ?? null }
+      }
+      if (grid.template.layout === 'weekly') {
+        const t = grid.teachers[teacherIdx]
+        if (t) { for (const c of grid.criteria) for (const d of grid.days) clear(t.id, c.id, d); setDayMeta(m => ({ ...m, [t.id]: {} })) }
+      } else {
+        for (const t of grid.teachers) for (const c of grid.criteria) if (c.kind === 'score') clear(t.id, c.id, 0)
+      }
+      return next
+    })
+    setDirty(true)
+  }
+
+  /* ── Averages ── */
+  const teacherAvgColumns = useCallback((tId: number): number | null => {
+    if (!grid) return null
+    const vals = grid.criteria
+      .filter(c => c.kind === 'score')
+      .map(c => getCell(tId, c.id, 0).score)
+      .filter((v): v is number => typeof v === 'number')
+    if (!vals.length) return null
+    return Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10
+  }, [grid, getCell])
+
+  const dayTotal = useCallback((tId: number, d: number): number | null => {
+    if (!grid) return null
+    const vals = grid.criteria
+      .map(c => getCell(tId, c.id, d).score)
+      .filter((v): v is number => typeof v === 'number')
+    if (!vals.length) return null
+    return vals.reduce((a, b) => a + b, 0)
+  }, [grid, getCell])
+
+  /* ── Export CSV ── */
+  const exportCsv = () => {
+    if (!grid) return
+    const rows: string[][] = []
+    const q = (s: string) => `"${String(s ?? '').replace(/"/g, '""')}"`
+    if (grid.template.layout === 'weekly') {
+      const t = grid.teachers[teacherIdx]
+      rows.push(['Criterion', ...grid.days.map(d => DAY_LABELS[d]?.en ?? String(d))])
+      for (const c of grid.criteria)
+        rows.push([c.labelEn, ...grid.days.map(d => String(getCell(t.id, c.id, d).score ?? ''))])
+      rows.push(['Duration (min)', ...grid.days.map(d => String(dayMeta[t.id]?.[d] ?? ''))])
+    } else {
+      rows.push(['Teacher', ...grid.criteria.map(c => c.labelEn), 'Average'])
+      for (const t of grid.teachers) {
+        rows.push([
+          t.name,
+          ...grid.criteria.map(c => c.kind === 'text' ? (getCell(t.id, c.id, 0).note ?? '') : String(getCell(t.id, c.id, 0).score ?? '')),
+          String(teacherAvgColumns(t.id) ?? ''),
+        ])
+      }
+    }
+    const csv = rows.map(r => r.map(q).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = `teacher-eval-${grid.sheet.id}.csv`
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
+  if (!isAcademic) {
+    return (
+      <div className="rounded-2xl p-10 text-center text-sm text-gray-400" style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+        🔒 Teacher performance evaluation is managed by the academic team. Your evaluation reports are delivered to your email and appear in your Reports page.
+      </div>
+    )
+  }
+
+  const scoreCriteria = grid?.criteria.filter(c => c.kind === 'score') ?? []
+  const textCriteria = grid?.criteria.filter(c => c.kind === 'text') ?? []
+  const wkTeacher = grid?.teachers[teacherIdx]
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-black text-gradient-aurora">⭐ AI Teacher Evaluation</h2>
-          <p className="text-sm mt-0.5" style={{ color: 'rgba(147,197,253,0.55)' }}>
-            Real-time AI scoring across 6 professional criteria
+          <h2 className="text-2xl font-black text-gradient-aurora">⭐ Teachers' Performance Evaluation</h2>
+          <p className="text-sm mt-0.5" style={{ color: 'rgba(147,197,253,0.6)' }}>
+            Score every teacher, then generate &amp; deliver reports to each teacher's Gmail and the Britishce44 Drive.
+          </p>
+          <p className="text-[11px]" style={{ color: 'rgba(147,197,253,0.4)', fontFamily: 'Tajawal, sans-serif' }} dir="rtl">
+            تقييم أداء المعلمين — درجات لكل معلم ثم توليد التقارير وإرسالها إلى بريد كل معلم وأرشفتها في درايف
           </p>
         </div>
-        <div className="text-xs px-3 py-1.5 rounded-full font-semibold"
-          style={{ background: 'rgba(0, 174, 116,0.12)', color: GOLD, border: `1px solid ${GOLD}30` }}>
-          🤖 AI Analysis: Updated today
+        <button onClick={loadTemplates}
+          className="text-[11px] font-bold px-3 py-2 rounded-xl text-white"
+          style={{ background: 'rgba(37,99,235,0.18)', border: '1px solid rgba(37,99,235,0.3)' }}>↻ Refresh</button>
+      </div>
+
+      {msg && (
+        <div className="rounded-xl px-4 py-2.5 text-xs font-semibold"
+          style={{
+            background: msg.kind === 'ok' ? 'rgba(0,174,116,0.12)' : 'rgba(239,68,68,0.12)',
+            color: msg.kind === 'ok' ? '#34d399' : '#f87171',
+            border: `1px solid ${msg.kind === 'ok' ? 'rgba(0,174,116,0.3)' : 'rgba(239,68,68,0.3)'}`,
+          }}>{msg.text}</div>
+      )}
+
+      {/* Template + sheet selectors */}
+      <div className="rounded-2xl p-4 flex flex-wrap items-end gap-3" style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+        <div className="min-w-48 flex-1">
+          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(147,197,253,0.5)' }}>Evaluation Table</label>
+          <select value={templateId ?? ''} onChange={e => setTemplateId(Number(e.target.value))}
+            className="w-full mt-1 px-3 py-2 rounded-lg text-xs font-semibold text-white outline-none cursor-pointer"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            {templates.map(t => (
+              <option key={t.id} value={t.id} style={{ background: '#150D79' }}>
+                {t.name} · {t.layout === 'weekly' ? 'Weekly (Sat–Thu)' : 'Criteria columns'}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="min-w-48 flex-1">
+          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(147,197,253,0.5)' }}>Sheet</label>
+          <select value={sheetId ?? ''} onChange={e => setSheetId(Number(e.target.value))}
+            className="w-full mt-1 px-3 py-2 rounded-lg text-xs font-semibold text-white outline-none cursor-pointer"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            {sheets.length === 0 && <option value="" style={{ background: '#150D79' }}>No sheets yet</option>}
+            {sheets.map(s => (
+              <option key={s.id} value={s.id} style={{ background: '#150D79' }}>
+                {s.termLabel}{s.weekLabel ? ` · ${s.weekLabel}` : ''} · {s.status}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-end gap-2">
+          {template?.layout === 'weekly' && (
+            <input value={newWeek} onChange={e => setNewWeek(e.target.value)} placeholder="Week label"
+              className="px-3 py-2 rounded-lg text-xs text-white outline-none w-36"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} />
+          )}
+          <button onClick={createSheet} disabled={busy || !template}
+            className="text-[11px] font-bold px-3 py-2 rounded-lg text-white disabled:opacity-40"
+            style={{ background: 'rgba(63,186,235,0.18)', border: '1px solid rgba(63,186,235,0.35)' }}>+ New Sheet</button>
         </div>
       </div>
 
-      <div className="flex gap-4 flex-col lg:flex-row">
-        {/* Teacher list */}
-        <div className="lg:w-56 flex-shrink-0 space-y-2">
-          <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'rgba(147,197,253,0.4)' }}>Select Teacher</p>
-          {TEACHERS.map((t, i) => (
-            <button key={t.id} onClick={() => setSelectedIdx(i)}
-              className="w-full text-left p-3 rounded-xl transition-all flex items-center gap-3"
-              style={selectedIdx === i ? {
-                background: 'linear-gradient(135deg,#2620a8,#1e3fa8)',
-                border: '1px solid rgba(37,99,235,0.50)',
-                boxShadow: '0 4px 16px rgba(37,99,235,0.25)',
-              } : {
-                background: CARD, border: `1px solid ${BORDER}`,
-              }}>
-              <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0"
-                style={{ background: selectedIdx === i ? 'rgba(0, 174, 116,0.20)' : 'rgba(37,99,235,0.15)', color: selectedIdx === i ? GOLD : 'rgba(147,197,253,0.7)' }}>
-                {t.avatar}
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-bold text-white truncate">{t.name.split(' ')[0]}</p>
-                <p className="text-[9px] truncate" style={{ color: 'rgba(147,197,253,0.5)' }}>{t.subject}</p>
-              </div>
-              <div className="ml-auto text-xs font-black flex-shrink-0" style={{ color: scoreColor(t.overall) }}>{t.overall}</div>
-            </button>
-          ))}
+      {loading && <div className="rounded-2xl p-10 text-center text-sm text-gray-500" style={{ background: CARD, border: `1px solid ${BORDER}` }}>Loading…</div>}
+      {!loading && !grid && (
+        <div className="rounded-2xl p-10 text-center text-sm text-gray-500" style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+          Select or create a sheet to begin evaluating.
         </div>
+      )}
 
-        {/* Evaluation panel */}
-        <div className="flex-1 space-y-4">
-          {/* Teacher overview card */}
-          <div className="rounded-2xl p-5 flex items-center gap-6 flex-wrap"
-            style={{ background: CARD, border: `1px solid ${BORDER}` }}>
-            <ScoreGauge score={teacher.overall} />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-lg font-black text-white">{teacher.name}</h3>
-                <span className="text-xs px-2 py-0.5 rounded-full font-bold"
-                  style={{ background: teacher.trend >= 0 ? 'rgba(52,211,153,0.12)' : 'rgba(248,113,113,0.12)', color: teacher.trend >= 0 ? '#34d399' : '#f87171' }}>
-                  {teacher.trend >= 0 ? '↑' : '↓'} {Math.abs(teacher.trend)} pts
-                </span>
-              </div>
-              <p className="text-sm font-medium" style={{ color: 'rgba(147,197,253,0.7)' }}>{teacher.subject} · {teacher.grade}</p>
-              <div className="flex gap-4 mt-3">
-                {[
-                  { label: 'Sessions', value: teacher.sessions, icon: '🎓' },
-                  { label: 'Students', value: teacher.students, icon: '👥' },
-                  { label: 'Rank', value: `#${selectedIdx + 1}`, icon: '🏆' },
-                ].map(s => (
-                  <div key={s.label} className="text-center">
-                    <p className="text-base font-black text-white">{s.icon} {s.value}</p>
-                    <p className="text-[9px]" style={{ color: 'rgba(147,197,253,0.45)' }}>{s.label}</p>
-                  </div>
-                ))}
-              </div>
+      {grid && (
+        <>
+          {/* Sheet meta + status */}
+          <div className="rounded-2xl p-4 flex items-center justify-between flex-wrap gap-3" style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+            <div>
+              <h3 className="font-bold text-white text-sm">{grid.template.name}</h3>
+              <p className="text-[10px] text-gray-400 mt-0.5">
+                {grid.sheet.termLabel}{grid.sheet.weekLabel ? ` · ${grid.sheet.weekLabel}` : ''} · {grid.teachers.length} teachers · {grid.criteria.length} criteria
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[9px] font-bold px-2.5 py-1 rounded-full"
+                style={{ background: STATUS_STYLE[grid.sheet.status].bg, color: STATUS_STYLE[grid.sheet.status].color }}>
+                {STATUS_STYLE[grid.sheet.status].label}
+              </span>
+              {grid.sheet.status !== 'open' && (
+                <button onClick={() => setStatus('open')} disabled={busy}
+                  className="text-[9px] font-bold px-2.5 py-1 rounded-full text-sky-300" style={{ background: 'rgba(63,186,235,0.12)' }}>Reopen</button>
+              )}
+              {grid.sheet.status !== 'locked' && (
+                <button onClick={() => setStatus('locked')} disabled={busy}
+                  className="text-[9px] font-bold px-2.5 py-1 rounded-full text-gray-300" style={{ background: 'rgba(148,163,184,0.12)' }}>Lock</button>
+              )}
             </div>
           </div>
 
-          {/* Tabs */}
-          <div className="flex gap-1 p-1 rounded-xl" style={{ background: 'rgba(11,22,62,0.60)', border: `1px solid ${BORDER}` }}>
-            {(['criteria', 'history', 'ai'] as Tab[]).map(t => (
-              <button key={t} onClick={() => setTab(t)}
-                className="flex-1 py-2 rounded-lg text-xs font-semibold capitalize transition-all"
-                style={tab === t ? {
-                  background: 'linear-gradient(135deg,#2620a8,#2563eb)', color: '#fff',
-                  boxShadow: '0 2px 8px rgba(37,99,235,0.30)',
-                } : { color: 'rgba(147,197,253,0.55)' }}>
-                {t === 'criteria' ? '📊 Criteria' : t === 'history' ? '📅 History' : '🤖 AI Insights'}
-              </button>
+          {/* Editor toolbar */}
+          <div className="rounded-2xl p-3 flex items-center gap-2 flex-wrap" style={{ background: 'rgba(11,22,62,0.55)', border: `1px solid ${BORDER}` }}>
+            <span className="text-[10px] font-bold uppercase tracking-wider mr-1" style={{ color: 'rgba(147,197,253,0.5)' }}>Tools</span>
+            {editable && [1, 2, 3, 4, 5].map(n => (
+              <button key={n} onClick={() => bulkFill(n)}
+                className="w-7 h-7 rounded-lg text-[11px] font-black text-white" style={{ background: cellColor(n, 5), border: '1px solid rgba(255,255,255,0.1)' }}
+                title={`Fill view with ${n}`}>{n}</button>
             ))}
+            {editable && <button onClick={bulkClear} className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg text-gray-300" style={{ background: 'rgba(148,163,184,0.12)' }}>Clear view</button>}
+            <div className="flex-1" />
+            <button onClick={exportCsv} className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg text-sky-300" style={{ background: 'rgba(63,186,235,0.12)' }}>⬇ CSV</button>
+            <button onClick={() => window.print()} className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg text-white/70" style={{ background: 'rgba(255,255,255,0.06)' }}>🖨 Print</button>
+            <button onClick={generateAll} disabled={busy} className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg text-white disabled:opacity-40" style={{ background: 'rgba(167,139,250,0.18)', border: '1px solid rgba(167,139,250,0.35)' }}>✨ Generate All</button>
+            <button onClick={sendAll} disabled={busy} className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg text-white disabled:opacity-40" style={{ background: 'linear-gradient(135deg,#00ae74,#34d399)' }}>📨 Send All</button>
           </div>
 
-          <AnimatePresence mode="wait">
-            <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              {tab === 'criteria' && (
-                <div className="space-y-3">
-                  {CRITERIA.map((c, i) => {
-                    const score = criteriaScores[i]
-                    const color = scoreColor(score)
-                    return (
-                      <div key={c.label} className="rounded-xl p-3.5"
-                        style={{ background: CARD, border: `1px solid ${BORDER}` }}>
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="text-base">{c.icon}</span>
-                            <div>
-                              <p className="text-xs font-bold text-white">{c.label}</p>
-                              <p className="text-[9px]" style={{ color: 'rgba(147,197,253,0.4)', fontFamily: 'Tajawal, sans-serif' }}>{c.labelAr}</p>
-                            </div>
-                          </div>
-                          <span className="text-sm font-black" style={{ color }}>{score}<span className="text-[9px] font-normal text-gray-600">/100</span></span>
-                        </div>
-                        <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                          <motion.div className="h-full rounded-full"
-                            initial={{ width: 0 }} animate={{ width: `${score}%` }} transition={{ duration: 0.7, delay: i * 0.07 }}
-                            style={{ background: `linear-gradient(90deg, ${color}80, ${color})`, boxShadow: `0 0 8px ${color}50` }} />
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
+          {!editable && (
+            <div className="rounded-xl px-4 py-2.5 text-[11px] font-semibold"
+              style={{ background: 'rgba(148,163,184,0.1)', color: '#cbd5e1', border: '1px solid rgba(148,163,184,0.2)' }}>
+              This sheet is {grid.sheet.status}. Scores are read-only — reopen it to edit.
+            </div>
+          )}
 
-              {tab === 'history' && (
-                <div className="rounded-2xl p-5" style={{ background: CARD, border: `1px solid ${BORDER}` }}>
-                  <p className="text-xs font-bold text-white mb-4">Monthly Score Trend — {teacher.name.split(' ')[0]}</p>
-                  <div className="flex items-end gap-2 h-36">
-                    {monthlyData.map((score, i) => (
-                      <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                        <span className="text-[9px] font-bold" style={{ color: scoreColor(score) }}>{score}</span>
-                        <motion.div className="w-full rounded-t-lg"
-                          initial={{ height: 0 }} animate={{ height: `${((score - 60) / 40) * 100}%` }}
-                          transition={{ duration: 0.6, delay: i * 0.08 }}
-                          style={{ background: `linear-gradient(to top, #2620a880, #2563eb)`, maxHeight: '100%', minHeight: '8px' }} />
-                        <span className="text-[8px] text-gray-600">{MONTHS[i]}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-4 flex items-center gap-2 p-3 rounded-xl"
-                    style={{ background: 'rgba(0, 174, 116,0.08)', border: `1px solid ${GOLD}25` }}>
-                    <span className="text-sm">📈</span>
-                    <p className="text-xs" style={{ color: GOLD }}>
-                      Overall improvement of <strong>+{monthlyData[5] - monthlyData[0]} pts</strong> over 6 months
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {tab === 'ai' && (
-                <div className="space-y-3">
-                  <div className="rounded-xl p-4" style={{ background: 'rgba(0, 174, 116,0.07)', border: `1px solid ${GOLD}25` }}>
-                    <p className="text-[10px] font-bold uppercase tracking-wider mb-3" style={{ color: GOLD }}>🤖 AI-Generated Insights</p>
-                    <div className="space-y-2.5">
-                      {AI_INSIGHTS.map((ins, i) => (
-                        <div key={i} className="flex gap-2.5">
-                          <div className="w-1 rounded-full flex-shrink-0 mt-1" style={{ background: i % 2 === 0 ? GOLD : ROYAL, height: '14px' }} />
-                          <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>{ins}</p>
-                        </div>
+          {/* ── COLUMNS layout (Table 1) ── */}
+          {!isWeekly && (
+            <div className="rounded-2xl overflow-hidden" style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+              <div className="overflow-x-auto custom-scroll">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr style={{ background: 'rgba(21,13,121,0.6)' }}>
+                      <th className="sticky left-0 z-10 px-3 py-2.5 text-start text-[10px] font-bold text-white whitespace-nowrap" style={{ background: 'rgba(21,13,121,0.95)' }}>Teacher</th>
+                      {scoreCriteria.map(c => (
+                        <th key={c.id} className="px-2 py-2.5 text-[9px] font-bold text-gray-300" style={{ minWidth: 60 }}>
+                          <div>{lang === 'ar' ? (c.labelAr ?? c.labelEn) : c.labelEn}</div>
+                          <div className="text-[8px] text-gray-500">/{c.maxScore}</div>
+                        </th>
                       ))}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { label: 'Recommend Workshop', icon: '🎓', color: ROYAL },
-                      { label: 'Send Commendation', icon: '🏅', color: GOLD },
-                      { label: 'Schedule Review',   icon: '📅', color: '#34d399' },
-                    ].map(a => (
-                      <button key={a.label} className="rounded-xl p-3 text-center text-xs font-semibold transition-all hover:opacity-90"
-                        style={{ background: `${a.color}15`, border: `1px solid ${a.color}30`, color: a.color }}>
-                        <span className="text-lg block mb-1">{a.icon}</span>{a.label}
-                      </button>
-                    ))}
-                  </div>
+                      <th className="px-3 py-2.5 text-[10px] font-bold text-white whitespace-nowrap">Avg</th>
+                      {textCriteria.map(c => (
+                        <th key={c.id} className="px-2 py-2.5 text-[9px] font-bold text-gray-300" style={{ minWidth: 160 }}>
+                          {lang === 'ar' ? (c.labelAr ?? c.labelEn) : c.labelEn}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {grid.teachers.map((t, ri) => {
+                      const avg = teacherAvgColumns(t.id)
+                      return (
+                        <tr key={t.id} style={{ background: ri % 2 ? 'rgba(255,255,255,0.015)' : 'transparent' }}>
+                          <td className="sticky left-0 z-10 px-3 py-2 text-[11px] font-semibold text-white whitespace-nowrap"
+                            style={{ background: ri % 2 ? 'rgba(28,21,86,0.97)' : 'rgba(24,17,80,0.97)' }}>{t.name}</td>
+                          {scoreCriteria.map(c => {
+                            const v = getCell(t.id, c.id, 0).score
+                            return (
+                              <td key={c.id} className="px-1.5 py-1.5 text-center">
+                                <select value={v ?? ''} disabled={!editable}
+                                  onChange={e => setCell(t.id, c.id, 0, { score: e.target.value === '' ? null : Number(e.target.value) })}
+                                  className="w-12 text-center text-[11px] font-bold rounded-lg py-1.5 outline-none cursor-pointer disabled:cursor-default text-white"
+                                  style={{ background: cellColor(v, c.maxScore), border: '1px solid rgba(255,255,255,0.08)' }}>
+                                  <option value="" style={{ background: '#150D79' }}>–</option>
+                                  {Array.from({ length: c.maxScore }, (_, i) => i + 1).map(n => (
+                                    <option key={n} value={n} style={{ background: '#150D79' }}>{n}</option>
+                                  ))}
+                                </select>
+                              </td>
+                            )
+                          })}
+                          <td className="px-3 py-2 text-center text-[12px] font-black"
+                            style={{ color: avg == null ? '#64748b' : avg >= 4 ? '#34d399' : avg >= 3 ? '#fbbf24' : '#f87171' }}>{avg ?? '–'}</td>
+                          {textCriteria.map(c => (
+                            <td key={c.id} className="px-1.5 py-1.5 align-top">
+                              <textarea value={getCell(t.id, c.id, 0).note ?? ''} disabled={!editable} rows={2}
+                                onChange={e => setCell(t.id, c.id, 0, { note: e.target.value })}
+                                placeholder="…"
+                                className="w-40 text-[10px] rounded-lg px-2 py-1 outline-none text-white resize-y disabled:opacity-60"
+                                dir={isRTL ? 'rtl' : 'ltr'}
+                                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }} />
+                            </td>
+                          ))}
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ── WEEKLY layout (Table 2) ── */}
+          {isWeekly && wkTeacher && (
+            <div className="space-y-3">
+              {/* Teacher selector */}
+              <div className="flex gap-2 flex-wrap">
+                {grid.teachers.map((t, i) => (
+                  <button key={t.id} onClick={() => setTeacherIdx(i)}
+                    className="text-[11px] font-bold px-3 py-1.5 rounded-xl transition"
+                    style={teacherIdx === i
+                      ? { background: 'linear-gradient(135deg,#2620a8,#2563eb)', color: '#fff', boxShadow: '0 2px 8px rgba(37,99,235,0.3)' }
+                      : { background: 'rgba(255,255,255,0.04)', color: 'rgba(147,197,253,0.6)', border: `1px solid ${BORDER}` }}>
+                    {t.name}
+                  </button>
+                ))}
+              </div>
+
+              <div className="rounded-2xl overflow-hidden" style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+                <div className="px-4 py-3 text-xs font-bold text-white border-b" style={{ borderColor: BORDER }}>
+                  {wkTeacher.name} <span className="text-gray-500 font-normal">· weekly performance</span>
                 </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
+                <div className="overflow-x-auto custom-scroll">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr style={{ background: 'rgba(21,13,121,0.6)' }}>
+                        <th className="sticky left-0 z-10 px-3 py-2.5 text-start text-[10px] font-bold text-white whitespace-nowrap" style={{ background: 'rgba(21,13,121,0.95)' }}>Criterion</th>
+                        {grid.days.map(d => (
+                          <th key={d} className="px-2 py-2.5 text-[10px] font-bold text-gray-300 text-center" style={{ minWidth: 56 }}>
+                            {lang === 'ar' ? DAY_LABELS[d]?.ar : DAY_LABELS[d]?.en}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {grid.criteria.map((c, ri) => (
+                        <tr key={c.id} style={{ background: ri % 2 ? 'rgba(255,255,255,0.015)' : 'transparent' }}>
+                          <td className="sticky left-0 z-10 px-3 py-2 text-[11px] font-semibold text-white"
+                            style={{ background: ri % 2 ? 'rgba(28,21,86,0.97)' : 'rgba(24,17,80,0.97)' }}>
+                            {lang === 'ar' ? (c.labelAr ?? c.labelEn) : c.labelEn}
+                            <span className="block text-[8px] text-gray-500 font-normal">/{c.maxScore}</span>
+                          </td>
+                          {grid.days.map(d => {
+                            const v = getCell(wkTeacher.id, c.id, d).score
+                            return (
+                              <td key={d} className="px-1.5 py-1.5 text-center">
+                                <select value={v ?? ''} disabled={!editable}
+                                  onChange={e => setCell(wkTeacher.id, c.id, d, { score: e.target.value === '' ? null : Number(e.target.value) })}
+                                  className="w-12 text-center text-[11px] font-bold rounded-lg py-1.5 outline-none cursor-pointer disabled:cursor-default text-white"
+                                  style={{ background: cellColor(v, c.maxScore), border: '1px solid rgba(255,255,255,0.08)' }}>
+                                  <option value="" style={{ background: '#150D79' }}>–</option>
+                                  {Array.from({ length: c.maxScore }, (_, i) => i + 1).map(n => (
+                                    <option key={n} value={n} style={{ background: '#150D79' }}>{n}</option>
+                                  ))}
+                                </select>
+                              </td>
+                            )
+                          })}
+                        </tr>
+                      ))}
+                      {/* Daily total */}
+                      <tr style={{ background: 'rgba(0,174,116,0.06)' }}>
+                        <td className="sticky left-0 z-10 px-3 py-2 text-[10px] font-black text-emerald-300" style={{ background: 'rgba(20,30,60,0.97)' }}>Daily total</td>
+                        {grid.days.map(d => (
+                          <td key={d} className="px-2 py-2 text-center text-[11px] font-black text-emerald-300">{dayTotal(wkTeacher.id, d) ?? '–'}</td>
+                        ))}
+                      </tr>
+                      {/* Duration per day */}
+                      <tr>
+                        <td className="sticky left-0 z-10 px-3 py-2 text-[10px] font-bold text-sky-300" style={{ background: 'rgba(24,17,80,0.97)' }}>
+                          Duration (min)<span className="block text-[8px] text-gray-500 font-normal" dir="rtl">مدة الحصة</span>
+                        </td>
+                        {grid.days.map(d => (
+                          <td key={d} className="px-1.5 py-1.5 text-center">
+                            <input type="number" min={0} value={dayMeta[wkTeacher.id]?.[d] ?? ''} disabled={!editable}
+                              onChange={e => setMinutes(wkTeacher.id, d, e.target.value === '' ? null : Number(e.target.value))}
+                              className="w-14 text-center text-[11px] font-bold rounded-lg py-1.5 outline-none text-white disabled:opacity-60"
+                              style={{ background: 'rgba(63,186,235,0.1)', border: '1px solid rgba(255,255,255,0.08)' }} />
+                          </td>
+                        ))}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Save / submit footer */}
+          {editable && (
+            <div className="flex items-center justify-end gap-3">
+              {dirty && <span className="text-[10px] text-amber-400">Unsaved changes</span>}
+              <button onClick={save} disabled={busy || !dirty}
+                className="px-4 py-2.5 rounded-xl text-xs font-bold text-white transition disabled:opacity-40"
+                style={{ background: 'rgba(63,186,235,0.18)', border: '1px solid rgba(63,186,235,0.35)' }}>
+                {busy ? 'Saving…' : '💾 Save'}
+              </button>
+              <motion.button whileTap={{ scale: 0.97 }} onClick={submit} disabled={busy}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white transition disabled:opacity-40"
+                style={{ background: 'linear-gradient(135deg,#00ae74,#34d399)' }}>
+                ✓ Submit &amp; Generate Reports
+              </motion.button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   )
 }

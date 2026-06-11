@@ -36,3 +36,14 @@ export function todayISO(): string {
 export function compareISO(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }
+
+// Teaching week for the weekly evaluation table: Saturday .. Thursday (Friday is
+// the weekend). Day numbers follow getUTCDay() (Sat=6, Sun=0 .. Thu=4).
+export const WEEKLY_DAYS: { day: number; en: string; ar: string }[] = [
+  { day: 6, en: "Sat", ar: "السبت" },
+  { day: 0, en: "Sun", ar: "الأحد" },
+  { day: 1, en: "Mon", ar: "الإثنين" },
+  { day: 2, en: "Tue", ar: "الثلاثاء" },
+  { day: 3, en: "Wed", ar: "الأربعاء" },
+  { day: 4, en: "Thu", ar: "الخميس" },
+];

@@ -123,12 +123,39 @@ export function AssessmentAdmin() {
     } catch (e) { flash('err', e instanceof ApiError ? e.message : 'Failed') } finally { setBusy(false) }
   }
 
+  const reloadCrit = async () => {
+    const d = await apiGet<{ criteria: Criterion[] }>('/assessment/criteria?all=1')
+    setCriteria(d.criteria)
+  }
+
   const toggleCrit = async (c: Criterion) => {
     setBusy(true)
     try {
       await apiPatch(`/assessment/criteria/${c.id}`, { active: !c.active })
-      const d = await apiGet<{ criteria: Criterion[] }>('/assessment/criteria?all=1')
-      setCriteria(d.criteria)
+      await reloadCrit()
+    } catch (e) { flash('err', e instanceof ApiError ? e.message : 'Failed') } finally { setBusy(false) }
+  }
+
+  const editCrit = async (c: Criterion) => {
+    const labelEn = prompt('Criterion (English)', c.labelEn)
+    if (labelEn == null) return
+    const labelAr = prompt('Criterion (Arabic)', c.labelAr ?? '') ?? c.labelAr
+    setBusy(true)
+    try { await apiPatch(`/assessment/criteria/${c.id}`, { labelEn, labelAr }); await reloadCrit(); flash('ok', 'Criterion updated.') }
+    catch (e) { flash('err', e instanceof ApiError ? e.message : 'Failed') } finally { setBusy(false) }
+  }
+
+  const moveCrit = async (idx: number, dir: -1 | 1) => {
+    const j = idx + dir
+    if (j < 0 || j >= criteria.length) return
+    const a = criteria[idx], b = criteria[j]
+    setBusy(true)
+    try {
+      await Promise.all([
+        apiPatch(`/assessment/criteria/${a.id}`, { orderIndex: b.orderIndex }),
+        apiPatch(`/assessment/criteria/${b.id}`, { orderIndex: a.orderIndex }),
+      ])
+      await reloadCrit()
     } catch (e) { flash('err', e instanceof ApiError ? e.message : 'Failed') } finally { setBusy(false) }
   }
 
@@ -285,13 +312,19 @@ export function AssessmentAdmin() {
             <span className="text-[9px] text-gray-500">{criteria.filter(c => c.active).length} active · {criteria.length} total</span>
           </div>
           <div className="divide-y" style={{ borderColor: 'rgba(255,255,255,0.04)' }}>
-            {criteria.map(c => (
-              <div key={c.id} className="px-4 py-2.5 flex items-center gap-3">
-                <span className="text-[10px] text-gray-600 w-6">{c.orderIndex + 1}</span>
+            {criteria.map((c, i) => (
+              <div key={c.id} className="px-4 py-2.5 flex items-center gap-2.5">
+                <div className="flex flex-col">
+                  <button onClick={() => moveCrit(i, -1)} disabled={busy || i === 0} className="text-[9px] text-gray-400 disabled:opacity-20 leading-none">▲</button>
+                  <button onClick={() => moveCrit(i, 1)} disabled={busy || i === criteria.length - 1} className="text-[9px] text-gray-400 disabled:opacity-20 leading-none">▼</button>
+                </div>
+                <span className="text-[10px] text-gray-600 w-5">{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-white">{c.labelEn}</p>
                   <p className="text-[10px] text-white/40" style={{ fontFamily: 'Tajawal,sans-serif' }}>{c.labelAr}</p>
                 </div>
+                <button onClick={() => editCrit(c)} disabled={busy}
+                  className="text-[9px] font-bold px-2.5 py-1 rounded-full text-sky-300 disabled:opacity-40" style={{ background: 'rgba(63,186,235,0.12)' }}>Edit</button>
                 <button onClick={() => toggleCrit(c)} disabled={busy}
                   className="text-[9px] font-bold px-2.5 py-1 rounded-full disabled:opacity-40"
                   style={{ background: c.active ? 'rgba(0,174,116,0.15)' : 'rgba(148,163,184,0.12)', color: c.active ? '#34d399' : '#94a3b8' }}>

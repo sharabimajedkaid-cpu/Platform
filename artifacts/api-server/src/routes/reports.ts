@@ -5,7 +5,9 @@ import {
   reports,
   students,
   courses,
+  teachers,
   assessmentSheets,
+  evalSheets,
   type Report,
 } from "@workspace/db";
 import {
@@ -27,7 +29,16 @@ async function scopeReports(
   if (isStaff(user)) return rows;
   if (user.role === "teacher") {
     const ids = await teacherCourseIds(user);
-    return rows.filter((r) => r.audience === "teacher" && ids.includes(r.courseId));
+    return rows.filter(
+      (r) =>
+        (r.kind === "student" &&
+          r.audience === "teacher" &&
+          r.courseId != null &&
+          ids.includes(r.courseId)) ||
+        (r.kind === "teacher_eval" &&
+          r.evalTeacherId != null &&
+          r.evalTeacherId === user.teacherId),
+    );
   }
   if (user.role === "parent" && user.parentId) {
     const kids = await db
@@ -35,7 +46,13 @@ async function scopeReports(
       .from(students)
       .where(eq(students.parentId, user.parentId));
     const kidIds = new Set(kids.map((k) => k.id));
-    return rows.filter((r) => r.audience === "parent" && kidIds.has(r.studentId));
+    return rows.filter(
+      (r) =>
+        r.kind === "student" &&
+        r.audience === "parent" &&
+        r.studentId != null &&
+        kidIds.has(r.studentId),
+    );
   }
   return [];
 }
@@ -43,18 +60,28 @@ async function scopeReports(
 router.get("/v1/reports", requireAuth, async (req, res) => {
   const u = req.user!;
   const sheetId = req.query.sheetId ? Number(req.query.sheetId) : null;
+  const evalSheetId = req.query.evalSheetId
+    ? Number(req.query.evalSheetId)
+    : null;
+  const kind = typeof req.query.kind === "string" ? req.query.kind : null;
   let rows = await db.select().from(reports).orderBy(desc(reports.createdAt));
   if (sheetId) rows = rows.filter((r) => r.sheetId === sheetId);
+  if (evalSheetId) rows = rows.filter((r) => r.evalSheetId === evalSheetId);
+  if (kind) rows = rows.filter((r) => r.kind === kind);
   rows = await scopeReports(u, rows);
 
   const studs = await db.select().from(students);
   const studMap = new Map(studs.map((s) => [s.id, s.name]));
   const crs = await db.select().from(courses);
   const crsMap = new Map(crs.map((c) => [c.id, c.name]));
+  const tch = await db.select().from(teachers);
+  const tchMap = new Map(tch.map((t) => [t.id, t.name]));
   const out = rows.map((r) => ({
     ...r,
-    studentName: studMap.get(r.studentId) ?? null,
-    courseName: crsMap.get(r.courseId) ?? null,
+    studentName: r.studentId != null ? studMap.get(r.studentId) ?? null : null,
+    courseName: r.courseId != null ? crsMap.get(r.courseId) ?? null : null,
+    teacherName:
+      r.evalTeacherId != null ? tchMap.get(r.evalTeacherId) ?? null : null,
   }));
   return res.json({ reports: out });
 });
@@ -135,12 +162,23 @@ router.post(
       .where(eq(reports.id, id))
       .limit(1);
     if (!r) return res.status(404).json({ message: "not found" });
-    const [sheet] = await db
-      .select()
-      .from(assessmentSheets)
-      .where(eq(assessmentSheets.id, r.sheetId))
-      .limit(1);
-    const result = await deliverReport(r, sheet?.termLabel ?? "Term");
+    let termLabel = "Term";
+    if (r.kind === "teacher_eval" && r.evalSheetId != null) {
+      const [es] = await db
+        .select()
+        .from(evalSheets)
+        .where(eq(evalSheets.id, r.evalSheetId))
+        .limit(1);
+      termLabel = es?.termLabel ?? "Term";
+    } else if (r.sheetId != null) {
+      const [sheet] = await db
+        .select()
+        .from(assessmentSheets)
+        .where(eq(assessmentSheets.id, r.sheetId))
+        .limit(1);
+      termLabel = sheet?.termLabel ?? "Term";
+    }
+    const result = await deliverReport(r, termLabel);
     return res.json(result);
   },
 );

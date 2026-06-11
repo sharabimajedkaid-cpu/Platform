@@ -141,6 +141,8 @@ async function ensureDriveFolder(
 }
 
 function subjectFor(r: Report): string {
+  if (r.kind === "teacher_eval")
+    return `Teacher Performance Evaluation — ${r.recipientName || ""}`.trim();
   return r.audience === "parent"
     ? `تقرير أداء الطالب — ${r.recipientName || ""}`.trim()
     : `Student Performance Report — ${r.recipientName || ""}`.trim();
@@ -202,7 +204,11 @@ export async function deliverReport(
         const termId = await ensureDriveFolder(drive, termLabel, rootId);
         const folderId = await ensureDriveFolder(
           drive,
-          r.audience === "parent" ? "Parent Reports" : "Teacher Reports",
+          r.kind === "teacher_eval"
+            ? "Teacher Evaluations"
+            : r.audience === "parent"
+              ? "Parent Reports"
+              : "Teacher Reports",
           termId,
         );
         const created = await drive.files.create({

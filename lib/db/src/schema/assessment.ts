@@ -6,7 +6,9 @@ import {
   timestamp,
   boolean,
   unique,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 // The scored criteria from the reference assessment sheet. Course / Teacher /
 // Student are identity columns on the sheet, not scored criteria, so they are
@@ -81,9 +83,17 @@ export const reports = pgTable(
   "reports",
   {
     id: serial("id").primaryKey(),
-    sheetId: integer("sheet_id").notNull(),
-    studentId: integer("student_id").notNull(),
-    courseId: integer("course_id").notNull(),
+    // 'student' = parent/teacher reports for student assessment sheets.
+    // 'teacher_eval' = teacher performance-evaluation reports.
+    kind: text("kind")
+      .$type<"student" | "teacher_eval">()
+      .notNull()
+      .default("student"),
+    sheetId: integer("sheet_id"),
+    studentId: integer("student_id"),
+    courseId: integer("course_id"),
+    evalSheetId: integer("eval_sheet_id"),
+    evalTeacherId: integer("eval_teacher_id"),
     audience: text("audience").$type<"parent" | "teacher">().notNull(),
     language: text("language").$type<"ar" | "en">().notNull(),
     recipientEmail: text("recipient_email").notNull(),
@@ -115,6 +125,9 @@ export const reports = pgTable(
       t.studentId,
       t.audience,
     ),
+    uniqueIndex("uq_report_eval")
+      .on(t.evalSheetId, t.evalTeacherId)
+      .where(sql`${t.kind} = 'teacher_eval'`),
   ],
 );
 
