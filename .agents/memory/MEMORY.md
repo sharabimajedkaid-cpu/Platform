@@ -3,3 +3,4 @@
 - [Bilingual + voice welcome](britishce44-i18n-voice.md) — i18n engine (LanguageProvider/useI18n/t), Basic-4+ English lock, login voice-clip pool conventions
 - [Britishce44 brand theme](britishce44-theme.md) — logo palette (indigo/sky/green); green primary needs dark-indigo foreground for AA; exclude whiteboard pen palette from sweeps; keep semantic amber/red during recolors.
 - [apiGet unchecked casts hide shape drift](api-response-shape-casts.md) — api.ts casts responses with no runtime check; API/FE shape drift passes typecheck, breaks at runtime.
+- [Prototype auth is intentionally insecure](prototype-auth-security.md) — plaintext demo users + open self-register w/ role; validation gate flags it on every feature task; it's a separate security task, don't bundle.
