@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect, ReactNode } from 'react';
+import { signalingService } from '../../lib/signaling';
+import { webRTCService } from '../../lib/webrtc';
 
 interface RemoteParticipant {
   id: string;
@@ -42,36 +44,83 @@ export function WebRTCProvider({ children }: { children: ReactNode }) {
   const [isCameraOn, setIsCameraOn] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [remoteParticipants] = useState<RemoteParticipant[]>([]);
+  const [remoteParticipants, setRemoteParticipants] = useState<RemoteParticipant[]>([]);
   const [breakouts, setBreakouts] = useState<BreakoutInfo[]>([]);
   const [currentBreakoutId, setCurrentBreakoutId] = useState<string | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
   const breakoutIdRef = useRef(0);
+  const roomIdRef = useRef<number | null>(null);
 
-  const joinClassroom = useCallback(async (_roomId: number, _userId: string, _name: string) => {
+  const joinClassroom = useCallback(async (roomId: number, userId: string, name: string) => {
+    roomIdRef.current = roomId;
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+      const { routerRtpCapabilities } = await signalingService.connect(roomId, userId, name);
+      await webRTCService.init(routerRtpCapabilities);
+      await webRTCService.createSendTransport();
+      await webRTCService.createRecvTransport();
+      const stream = await webRTCService.startLocalMedia(true, true);
       localStreamRef.current = stream;
       setLocalStream(stream);
       setIsCameraOn(true);
       setIsMuted(false);
+      await webRTCService.produceAudio();
+      await webRTCService.produceVideo();
+
+      const cleanupProducer = signalingService.onNewProducer(async (data) => {
+        if (data.participantId === userId) return;
+        const recvTransportId = webRTCService.getRecvTransportId();
+        if (!recvTransportId) return;
+
+        try {
+          const consumerData = await signalingService.consume(recvTransportId, data.producerId, routerRtpCapabilities);
+          const remoteStream = await webRTCService.consumeRemoteStream(data.producerId, consumerData);
+          setRemoteParticipants(prev => {
+            const existing = prev.find(p => p.id === data.participantId);
+            if (existing) {
+              return prev.map(p => p.id === data.participantId ? { ...p, stream: remoteStream } : p);
+            }
+            return [...prev, { id: data.participantId, userId: data.participantId, name: data.participantId, stream: remoteStream }];
+          });
+        } catch {
+          // Ignore remote stream setup failures and keep the session usable.
+        }
+      });
+
+      const cleanupLeft = signalingService.onParticipantLeft((data) => {
+        setRemoteParticipants(prev => prev.filter(p => p.id !== data.participantId));
+      });
+
+      (window as Window & { __classroomSignalCleanup?: () => void }).__classroomSignalCleanup = () => {
+        cleanupProducer();
+        cleanupLeft();
+      };
+
+      setIsConnected(true);
     } catch {
-      // Camera/mic not available (e.g. no device, permission denied) — still show connected
-      localStreamRef.current = null;
-      setLocalStream(null);
-      setIsCameraOn(false);
-      setIsMuted(true);
+      const fallbackStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(() => null);
+      localStreamRef.current = fallbackStream;
+      setLocalStream(fallbackStream);
+      setIsCameraOn(Boolean(fallbackStream));
+      setIsMuted(!fallbackStream);
+      setIsConnected(true);
     }
-    setIsConnected(true);
   }, []);
 
   const leaveClassroom = useCallback(async () => {
+    webRTCService.close();
+    signalingService.disconnect();
+    if (typeof window !== 'undefined') {
+      (window as Window & { __classroomSignalCleanup?: () => void }).__classroomSignalCleanup?.();
+      delete (window as Window & { __classroomSignalCleanup?: () => void }).__classroomSignalCleanup;
+    }
     localStreamRef.current?.getTracks().forEach(t => t.stop());
     screenStreamRef.current?.getTracks().forEach(t => t.stop());
     localStreamRef.current = null;
     screenStreamRef.current = null;
     setLocalStream(null);
+    setRemoteParticipants([]);
     setBreakouts([]);
     setCurrentBreakoutId(null);
     setIsScreenSharing(false);
@@ -144,6 +193,8 @@ export function WebRTCProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     return () => {
+      webRTCService.close();
+      signalingService.disconnect();
       localStreamRef.current?.getTracks().forEach(t => t.stop());
       screenStreamRef.current?.getTracks().forEach(t => t.stop());
     };

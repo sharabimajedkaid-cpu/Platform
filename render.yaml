@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: britishce44-web
+    env: node
+    rootDir: artifacts/britishce44
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @workspace/britishce44 build
+    startCommand: pnpm --filter @workspace/britishce44 render:start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: BASE_PATH
+        value: /
+      - key: VITE_API_URL
+        value: https://YOUR_API_SERVICE.onrender.com
+      - key: VITE_SIGNALING_URL
+        value: https://YOUR_SIGNALING_SERVICE.onrender.com
+
+  - type: web
+    name: britishce44-api
+    env: node
+    rootDir: artifacts/api-server
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server build
+    startCommand: pnpm --filter @workspace/api-server render:start
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production

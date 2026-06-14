@@ -1,7 +1,9 @@
 // Thin fetch wrapper for the Britishce44 API.
 // Attaches the bearer token from localStorage and normalises errors.
 
-const BASE = '/api/v1'
+import { getApiV1BaseUrl } from './runtime-config'
+
+const BASE = getApiV1BaseUrl()
 
 export class ApiError extends Error {
   status: number

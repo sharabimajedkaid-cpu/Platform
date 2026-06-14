@@ -25,9 +25,16 @@ app.use(
     },
   }),
 );
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.get("/health", (_req, res) => {
+  res.status(200).json({ ok: true, service: "api-server" });
+});
 
 app.use("/api", router);
 

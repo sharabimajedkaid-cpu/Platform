@@ -16,6 +16,7 @@ import { TeacherPanel } from './teacher-panel'
 import { PollWidget } from './poll-widget'
 import { BreakoutManager } from './breakout-manager'
 import { ResourceBrowser } from './resource-browser'
+import { loadClassroomSnapshot, saveClassroomSnapshot } from '../../lib/classroom-storage'
 
 type WbLayout = 'whiteboard' | 'resources' | 'grid'
 
@@ -35,9 +36,10 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
   const [handRaised, setHandRaised] = useState(false)
   const [sideTab, setSideTab] = useState<'chat' | 'participants' | null>(null)
   const [joinError, setJoinError] = useState<string | null>(null)
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: '0', sender: 'System', text: '👋 Welcome to the classroom!', timestamp: Date.now() }
-  ])
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    const snapshot = loadClassroomSnapshot(roomId)
+    return snapshot.messages.length > 0 ? snapshot.messages : [{ id: '0', sender: 'System', text: '👋 Welcome to the classroom!', timestamp: Date.now() }]
+  })
   const [showTimer, setShowTimer] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [showMonkey, setShowMonkey] = useState(false)
@@ -48,7 +50,7 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
   const [recordingTime, setRecordingTime] = useState(0)
   const [recordingQuality] = useState('1080p')
   const [isRecordingPaused, setIsRecordingPaused] = useState(false)
-  const [roomLocked, setRoomLocked] = useState(false)
+  const [roomLocked, setRoomLocked] = useState(() => loadClassroomSnapshot(roomId).roomLocked)
   const [showTeacherPanel, setShowTeacherPanel] = useState(false)
   const [showPollCreate, setShowPollCreate] = useState(false)
   const [activePoll, setActivePoll] = useState<any>(null)
@@ -56,7 +58,7 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
   const [arabicAlertBanner, setArabicAlertBanner] = useState<{ student: string; phrase: string } | null>(null)
   const [stripHeight, setStripHeight] = useState(DEFAULT_STRIP_H)
   const [stripCollapsed, setStripCollapsed] = useState(false)
-  const [attendance, setAttendance] = useState<Record<string, boolean>>({})
+  const [attendance, setAttendance] = useState<Record<string, boolean>>(() => loadClassroomSnapshot(roomId).attendance)
   const joinedRef = useRef(false)
   const chatIdCounter = useRef(1)
 
@@ -81,6 +83,18 @@ export function ClassroomInterior({ roomId, onClose, dir = 'ltr' }: ClassroomInt
     joinClassroom(roomId, userId, userName).catch((err: Error) => setJoinError(err.message))
     return () => { leaveClassroom(); joinedRef.current = false }
   }, [user, roomId, userId, userName, joinClassroom, leaveClassroom])
+
+  useEffect(() => {
+    const snapshot = loadClassroomSnapshot(roomId)
+    const fallbackMessage = { id: '0', sender: 'System', text: '👋 Welcome to the classroom!', timestamp: Date.now() }
+    setMessages(snapshot.messages.length > 0 ? snapshot.messages : [fallbackMessage])
+    setAttendance(snapshot.attendance)
+    setRoomLocked(snapshot.roomLocked)
+  }, [roomId])
+
+  useEffect(() => {
+    saveClassroomSnapshot(roomId, { messages, attendance, roomLocked })
+  }, [roomId, messages, attendance, roomLocked])
 
   useEffect(() => {
     if (!arabicAlertBanner) return

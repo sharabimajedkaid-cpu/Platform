@@ -67,10 +67,17 @@ function getDeploymentDomain() {
     return stripProtocol(process.env.EXPO_PUBLIC_DOMAIN);
   }
 
-  console.error(
-    "ERROR: No deployment domain found. Set REPLIT_INTERNAL_APP_DOMAIN, REPLIT_DEV_DOMAIN, or EXPO_PUBLIC_DOMAIN",
-  );
-  process.exit(1);
+  if (process.env.RENDER_EXTERNAL_URL) {
+    return stripProtocol(process.env.RENDER_EXTERNAL_URL);
+  }
+
+  if (process.env.RENDER_URL) {
+    return stripProtocol(process.env.RENDER_URL);
+  }
+
+  const fallbackDomain = process.env.HOSTNAME || "localhost";
+  console.warn(`No deployment domain found; falling back to ${fallbackDomain}`);
+  return fallbackDomain;
 }
 
 function prepareDirectories(timestamp) {

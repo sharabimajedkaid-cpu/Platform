@@ -1,6 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import type { types as mediasoupTypes } from 'mediasoup-client';
 import { offlineQueue } from './offline-queue';
+import { getSignalBaseUrl } from './runtime-config';
 
 type RtpCapabilities = mediasoupTypes.RtpCapabilities;
 type RtpParameters = mediasoupTypes.RtpParameters;
@@ -27,7 +28,7 @@ export class SignalingService {
 
   connect(roomId: number, userId: string, name: string): Promise<{ routerRtpCapabilities: RtpCapabilities; participantId: string }> {
     return new Promise((resolve, reject) => {
-      const url = process.env.NEXT_PUBLIC_SIGNALING_URL || 'http://localhost:3002';
+      const url = getSignalBaseUrl();
       this.socket = io(`${url}/signaling`, {
         transports: ['websocket'],
         forceNew: true,
