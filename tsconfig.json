@@ -14,5 +14,7 @@
     "resolveJsonModule": true,
     "moduleResolution": "node"
   },
-  "exclude": ["node_modules", "dist", ".next"]
+  "jsx": "preserve",
+    "jsxImportSource": "react",
+    "exclude": ["node_modules", "dist", ".next", "frontend"]
 }

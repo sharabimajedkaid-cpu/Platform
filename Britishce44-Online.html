@@ -1,0 +1,2876 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Britishce44-Online · British Center Classroom</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3e0066;
+            --secondary-color: #ffcb69;
+            --gold: #ffcb69;
+            --gold-light: #ffe0a3;
+            --gold-dark: #d4a537;
+            --deep-navy: #3e0066;
+            --royal-blue: #3e0066;
+            --pure-white: #FFFFFF;
+            --soft-gray: #f8f9fa;
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 203, 105, 0.35);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.1);
+            --resize-handle-size: 16px;
+            --room-color-1: #4CAF50;
+            --room-color-2: #2196F3;
+            --room-color-3: #FF9800;
+            --room-color-4: #9C27B0;
+            --room-color-5: #00BCD4;
+            --room-color-6: #E91E63;
+            --room-color-7: #3F51B5;
+            --room-color-8: #FF5722;
+            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-stack);
+        }
+        body {
+            background: var(--soft-gray);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            color: #333;
+        }
+        .header {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--gold);
+            z-index: 100;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .brand-shield {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(145deg, var(--gold), var(--gold-dark));
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand-shield span {
+            color: var(--primary-color);
+            font-weight: 800;
+            font-size: 13px;
+        }
+        .meeting-title h1 {
+            font-size: 17px;
+            font-weight: 600;
+            color: white;
+        }
+        .meeting-title h2 {
+            font-size: 11px;
+            color: var(--gold-light);
+            font-family: 'Cairo', sans-serif;
+        }
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .meeting-duration {
+            background: rgba(255, 203, 105, 0.2);
+            border: 1px solid var(--gold);
+            padding: 6px 18px;
+            border-radius: 30px;
+            color: var(--gold-light);
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .header-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 18px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            position: relative;
+        }
+        .header-btn:hover {
+            background: rgba(255, 203, 105, 0.2);
+            color: var(--gold-light);
+        }
+        .admin-badge {
+            background: var(--gold);
+            color: var(--primary-color);
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 24px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .top-toolbar {
+            height: 52px;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 12px;
+            z-index: 99;
+            border-bottom: 2px solid var(--gold);
+            flex-wrap: wrap;
+            overflow-x: auto;
+        }
+        .toolbar-btn {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .toolbar-btn:hover {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--primary-color);
+        }
+        .toolbar-btn.active {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--primary-color);
+        }
+        .toolbar-btn.breakout-active {
+            background: rgba(76, 175, 80, 0.35);
+            border-color: #4CAF50;
+            color: #81C784;
+            animation: pulse-breakout 2s infinite;
+        }
+        @keyframes pulse-breakout {
+            0%,
+            100% {
+                box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(76, 175, 80, 0.7);
+            }
+        }
+        .app-body {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+        .classroom-stage {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 8px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            overflow: hidden;
+            position: relative;
+        }
+        .participant-tile {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: box-shadow 0.2s;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            min-width: 0;
+            min-height: 0;
+            cursor: grab;
+        }
+        .participant-tile.dragging {
+            opacity: 0.9;
+            box-shadow: var(--shadow-lg);
+            cursor: grabbing;
+            z-index: 50;
+            position: absolute;
+            transition: none;
+        }
+        .participant-tile.teacher {
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 15px rgba(255, 203, 105, 0.3);
+        }
+        .participant-tile.in-breakout-room {
+            border-width: 3px;
+            border-style: solid;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.15);
+        }
+        .participant-tile.in-breakout-room::after {
+            content: attr(data-room-name);
+            position: absolute;
+            top: 4px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 9px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            z-index: 3;
+            font-weight: 600;
+            pointer-events: none;
+        }
+        .tile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 4px;
+            background: linear-gradient(145deg, var(--primary-color), #2b0047);
+            border: 2px solid var(--gold);
+            flex-shrink: 0;
+        }
+        .tile-name {
+            font-weight: 600;
+            font-size: 12px;
+            color: #333;
+            text-align: center;
+            word-break: break-word;
+        }
+        .tile-role {
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+        .tile-mic-indicator {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4CAF50;
+            z-index: 2;
+            animation: mic-live 1.5s infinite;
+        }
+        .tile-mic-indicator.muted {
+            background: #dc2626;
+            animation: none;
+        }
+        @keyframes mic-live {
+            0%,
+            100% {
+                box-shadow: 0 0 4px #4CAF50;
+            }
+            50% {
+                box-shadow: 0 0 12px #4CAF50, 0 0 20px rgba(76, 175, 80, 0.5);
+            }
+        }
+        .tile-controls {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            display: flex;
+            gap: 4px;
+            z-index: 2;
+        }
+        .tile-controls button {
+            background: rgba(0, 0, 0, 0.55);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .tile-controls button:hover {
+            background: var(--gold);
+            color: var(--primary-color);
+        }
+        .raised-hand-icon {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            color: var(--gold);
+            font-size: 18px;
+            display: none;
+            animation: float 2s infinite;
+            z-index: 2;
+        }
+        .participant-tile.raised-hand .raised-hand-icon {
+            display: block;
+        }
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-4px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+        .tile-resize-handle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: var(--resize-handle-size);
+            height: var(--resize-handle-size);
+            cursor: nwse-resize;
+            background: linear-gradient(135deg, transparent 50%, rgba(255, 203, 105, 0.5) 50%);
+            border-radius: 0 0 8px 0;
+            z-index: 10;
+        }
+        .whiteboard-wrapper {
+            grid-column: 2 / 4;
+            grid-row: 2 / 5;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--gold);
+            position: relative;
+            min-width: 100px;
+            min-height: 100px;
+            cursor: default;
+        }
+        .whiteboard-wrapper.dragging-wb {
+            opacity: 0.95;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            z-index: 60;
+            position: absolute;
+            transition: none;
+            cursor: grabbing;
+        }
+        .wb-drag-handle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 24px;
+            cursor: grab;
+            z-index: 55;
+        }
+        .wb-drag-handle:active {
+            cursor: grabbing;
+        }
+        .wb-resize-handle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 24px;
+            height: 24px;
+            cursor: nwse-resize;
+            background: linear-gradient(135deg, transparent 50%, var(--gold) 50%);
+            border-radius: 0 0 12px 0;
+            z-index: 50;
+        }
+        .whiteboard-wrapper .dashboard {
+            width: 100%;
+            height: 100%;
+            background: #ffffffdd;
+            backdrop-filter: blur(2px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .whiteboard-wrapper .top-ai-bar {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.6rem 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--gold);
+            z-index: 10;
+        }
+        .whiteboard-wrapper .ai-assistant {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 1rem;
+            border-radius: 60px;
+        }
+        .whiteboard-wrapper .ai-assistant i {
+            font-size: 1.4rem;
+            color: var(--gold);
+        }
+        .whiteboard-wrapper .activity-buttons {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .whiteboard-wrapper .activity-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            padding: 0.4rem 0.9rem;
+            border-radius: 2rem;
+            color: white;
+            font-weight: 500;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .whiteboard-wrapper .activity-btn:hover {
+            background: var(--gold);
+            color: var(--primary-color);
+        }
+        .whiteboard-wrapper .ai-response {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            max-width: 300px;
+            white-space: nowrap;
+            overflow-x: auto;
+            color: #ddd;
+        }
+        .whiteboard-wrapper .main-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .whiteboard-wrapper .tools-left {
+            width: 70px;
+            min-width: 70px;
+            background: #2c3e44;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.6rem 0;
+            gap: 0.55rem;
+            overflow-y: auto;
+            box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+            z-index: 5;
+        }
+        .whiteboard-wrapper .tool-icon {
+            width: 48px;
+            height: 48px;
+            min-height: 48px;
+            background: #1e2f38;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccdee8;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+            flex-shrink: 0;
+            border: none;
+        }
+        .whiteboard-wrapper .tool-icon.active-tool {
+            background: var(--gold);
+            color: #1e2f2c;
+            box-shadow: 0 0 0 3px #ffe0a3;
+        }
+        .whiteboard-wrapper .color-preview {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #000;
+            border: 2px solid white;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .whiteboard-wrapper .stroke-slider-wrap input[type=range] {
+            width: 55px;
+            accent-color: var(--gold);
+        }
+        .whiteboard-wrapper .utilities-right {
+            width: 90px;
+            background: #2c3e44cc;
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.8rem 0;
+            gap: 0.8rem;
+        }
+        .whiteboard-wrapper .whiteboard-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f4f9ff;
+        }
+        .whiteboard-wrapper .wb-header {
+            background: #dce5ec;
+            padding: 5px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .whiteboard-wrapper .wb-header button {
+            background: var(--primary-color);
+            border: none;
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.65rem;
+        }
+        .whiteboard-wrapper .wb-header button:hover {
+            background: var(--gold);
+            color: var(--primary-color);
+        }
+        .whiteboard-wrapper #whiteboardContainer {
+            flex: 1;
+            background: #fff;
+            position: relative;
+            overflow: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 6px;
+            box-shadow: inset 0 0 0 1px #ccc;
+        }
+        .whiteboard-wrapper .wb-section {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid #ccc;
+        }
+        .whiteboard-wrapper .wb-section.active-section {
+            border-color: var(--gold);
+            box-shadow: 0 0 12px rgba(255, 203, 105, 0.4);
+        }
+        .whiteboard-wrapper .chat-zone {
+            background: #eef2f7;
+            border-top: 3px solid var(--gold);
+            display: flex;
+            flex-direction: column;
+            height: 220px;
+        }
+        .whiteboard-wrapper .chat-messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #fefdf7;
+        }
+        .whiteboard-wrapper .message {
+            background: white;
+            border-radius: 20px;
+            padding: 6px 12px;
+            max-width: 80%;
+            box-shadow: 0 1px 2px #0001;
+            font-size: 0.8rem;
+        }
+        .whiteboard-wrapper .timer-popup {
+            position: absolute;
+            top: 80px;
+            left: 120px;
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary-color), #1a002b);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            color: white;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .whiteboard-wrapper .timer-popup.open {
+            display: flex;
+        }
+        .whiteboard-wrapper .timer-header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            user-select: none;
+        }
+        .whiteboard-wrapper .timer-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+        .whiteboard-wrapper .timer-display {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .whiteboard-wrapper .timer-display svg {
+            transform: rotate(-90deg);
+            width: 140px;
+            height: 140px;
+        }
+        .whiteboard-wrapper .progress-ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.2);
+            stroke-width: 10;
+        }
+        .whiteboard-wrapper .progress-ring {
+            fill: none;
+            stroke: var(--gold);
+            stroke-width: 10;
+            stroke-dasharray: 377;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 0.3s linear;
+        }
+        .whiteboard-wrapper .digital-time {
+            position: absolute;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+        }
+        .whiteboard-wrapper .timer-actions button {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .whiteboard-wrapper .timer-actions button:hover {
+            background: var(--gold);
+            color: var(--primary-color);
+        }
+        .whiteboard-wrapper .timer-settings input,
+        .whiteboard-wrapper .timer-settings select {
+            padding: 4px 8px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 0.7rem;
+        }
+        .whiteboard-wrapper .minimized-timer {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: var(--gold);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 250;
+        }
+        .whiteboard-wrapper .minimized-timer i {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+        }
+        .whiteboard-wrapper .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .whiteboard-wrapper .modal-overlay.open {
+            display: flex;
+        }
+        .whiteboard-wrapper .modal-container {
+            background: #ffffff;
+            border-radius: 2rem;
+            width: 90vw;
+            max-width: 1100px;
+            height: 85vh;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .whiteboard-wrapper .modal-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--gold);
+        }
+        .whiteboard-wrapper .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+        .whiteboard-wrapper .comp-grid {
+            padding: 1rem;
+            overflow-y: auto;
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 0.8rem;
+            background: #f4f7fb;
+        }
+        .whiteboard-wrapper .comp-card {
+            background: white;
+            border-radius: 16px;
+            padding: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: 0.2s;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+        .whiteboard-wrapper .comp-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        .whiteboard-wrapper .game-area {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: #fff;
+        }
+        .whiteboard-wrapper .game-area.active {
+            display: flex;
+        }
+        .whiteboard-wrapper .game-top {
+            background: #fef8e7;
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #ddd;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .whiteboard-wrapper .countdown-bar {
+            width: 200px;
+            height: 12px;
+            background: #ddd;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .whiteboard-wrapper .countdown-fill {
+            height: 100%;
+            width: 100%;
+            background: var(--gold);
+            transition: width 0.2s linear;
+        }
+        .whiteboard-wrapper .monkey-bot {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .whiteboard-wrapper .monkey-face {
+            width: 55px;
+            height: 55px;
+            background: #8B5A2B;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: monkeyIdle 1.5s infinite alternate;
+        }
+        @keyframes monkeyIdle {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-3px);
+            }
+        }
+        .whiteboard-wrapper .monkey-face .mouth.happy {
+            height: 8px;
+            border-radius: 0 0 20px 20px;
+            background: #e34234;
+        }
+        .whiteboard-wrapper .monkey-face .mouth.sad {
+            border-radius: 20px 20px 0 0;
+            background: #e34234;
+        }
+        .whiteboard-wrapper .speech-bubble {
+            background: white;
+            padding: 8px 14px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+            font-size: 0.8rem;
+            max-width: 180px;
+        }
+        .whiteboard-wrapper .question-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .whiteboard-wrapper .question-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .whiteboard-wrapper .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            width: 100%;
+            max-width: 500px;
+        }
+        .whiteboard-wrapper .option-btn {
+            background: #f0f4ff;
+            border: 2px solid #ddd;
+            padding: 0.7rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            text-align: center;
+        }
+        .whiteboard-wrapper .option-btn:hover {
+            background: #e1ecff;
+            border-color: var(--gold);
+        }
+        .whiteboard-wrapper .option-btn.correct {
+            background: #d4edda;
+            border-color: #4cd964;
+        }
+        .whiteboard-wrapper .option-btn.wrong {
+            background: #f8d7da;
+            border-color: #e34234;
+        }
+        .teacher-desktop {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: linear-gradient(160deg, var(--primary-color) 0%, #1a002b 100%);
+            color: white;
+            border-radius: 0 0 12px 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        .teacher-desktop::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 30% 20%, rgba(255, 203, 105, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .desk-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--gold);
+            z-index: 5;
+            flex-shrink: 0;
+        }
+        .desk-top-bar .desk-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--gold-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .restore-wb-btn {
+            background: rgba(255, 203, 105, 0.2);
+            border: 1px solid var(--gold);
+            color: var(--gold-light);
+            padding: 7px 16px;
+            border-radius: 24px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.7rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .restore-wb-btn:hover {
+            background: var(--gold);
+            color: var(--primary-color);
+        }
+        .desk-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 14px 16px 8px;
+            z-index: 5;
+            flex-shrink: 0;
+        }
+        .desk-action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 203, 105, 0.3);
+            border-radius: 12px;
+            padding: 13px 10px;
+            color: #d5dde5;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            font-weight: 500;
+            font-size: 0.68rem;
+            text-align: center;
+            backdrop-filter: blur(4px);
+            position: relative;
+            overflow: hidden;
+            min-height: 80px;
+            justify-content: center;
+        }
+        .desk-action-btn:hover {
+            background: rgba(255, 203, 105, 0.15);
+            border-color: var(--gold);
+            color: var(--gold-light);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        .desk-action-btn.active-desk-btn {
+            background: var(--gold) !important;
+            border-color: var(--gold) !important;
+            color: var(--primary-color) !important;
+        }
+        .desk-content {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            margin: 0 12px 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 2;
+            border: 1px solid rgba(255, 203, 105, 0.25);
+        }
+        .desk-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+            background: #fff;
+        }
+        .desk-status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 7px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(255, 203, 105, 0.3);
+            font-size: 0.65rem;
+            color: #8899aa;
+            z-index: 5;
+            flex-shrink: 0;
+        }
+        .side-panel {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 340px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--gold);
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+            transform: translateX(100%);
+            transition: transform 0.35s;
+            z-index: 150;
+            display: flex;
+            flex-direction: column;
+        }
+        .side-panel.open {
+            transform: translateX(0);
+        }
+        .panel-header {
+            padding: 20px 24px;
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--gold);
+            display: flex;
+            justify-content: space-between;
+        }
+        .panel-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--primary-color);
+        }
+        .panel-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.5);
+        }
+        .controls-bar {
+            height: 72px;
+            background: var(--primary-color);
+            border-top: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 0 20px;
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.25s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 600;
+            gap: 4px;
+            min-width: 72px;
+            backdrop-filter: blur(8px);
+            position: relative;
+        }
+        .control-btn i {
+            font-size: 20px;
+        }
+        .control-btn:hover {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--primary-color);
+        }
+        .control-btn.active {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--primary-color);
+        }
+        .control-btn.danger {
+            color: #ff8a8a;
+        }
+        .hand-queue-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--gold);
+            color: var(--primary-color);
+            font-size: 10px;
+            font-weight: bold;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
+        }
+        .emoji-float {
+            position: fixed;
+            font-size: 2rem;
+            pointer-events: none;
+            animation: emojiPop 1s ease-out forwards;
+            z-index: 200;
+        }
+        @keyframes emojiPop {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-80px) scale(1.5);
+                opacity: 0;
+            }
+        }
+        .together-mode-active .classroom-stage {
+            background: radial-gradient(ellipse at center, #2e004b 0%, #1a002b 100%) !important;
+        }
+        .together-mode-active .participant-tile {
+            border-radius: 50% !important;
+            transition: all 0.5s ease;
+        }
+        .together-mode-active .whiteboard-wrapper {
+            border-radius: 50% !important;
+            transition: all 0.5s ease;
+        }
+        .polls-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            z-index: 800;
+            width: 400px;
+            max-width: 90vw;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .polls-overlay.open {
+            display: flex;
+        }
+        .polls-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .polls-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .poll-option {
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .poll-option:hover {
+            border-color: var(--gold);
+            background: #fffdf5;
+        }
+        .poll-option.selected {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+        }
+        .poll-bar-wrap {
+            flex: 1;
+            height: 24px;
+            background: #eee;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        .poll-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #81C784);
+            border-radius: 12px;
+            transition: width 0.5s ease;
+        }
+        .breakout-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 900;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeInOverlay 0.3s ease;
+        }
+        .breakout-overlay.open {
+            display: flex;
+        }
+        @keyframes fadeInOverlay {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .breakout-modal {
+            background: linear-gradient(160deg, var(--primary-color) 0%, #1a002b 100%);
+            border-radius: 20px;
+            width: 95vw;
+            max-width: 1200px;
+            height: 88vh;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--gold);
+            color: #e0e0e0;
+            animation: slideUpModal 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slideUpModal {
+            from {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .breakout-modal-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--gold);
+            flex-shrink: 0;
+        }
+        .breakout-modal-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .breakout-close-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ccc;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .breakout-close-btn:hover {
+            background: rgba(220, 50, 50, 0.5);
+            color: #fff;
+        }
+        .breakout-modal-body {
+            flex: 1;
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            overflow: hidden;
+        }
+        .breakout-students-panel {
+            width: 260px;
+            min-width: 260px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .breakout-students-panel h4 {
+            color: #aaa;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .breakout-student-chip {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 12px;
+            border-radius: 12px;
+            margin-bottom: 6px;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.2s;
+            font-size: 0.85rem;
+            user-select: none;
+        }
+        .breakout-student-chip:hover {
+            background: rgba(255, 203, 105, 0.15);
+            border-color: var(--gold);
+        }
+        .breakout-student-chip .chip-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .breakout-rooms-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            overflow-y: auto;
+            align-content: start;
+        }
+        .breakout-room-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 200px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .breakout-room-card.room-active {
+            border-color: var(--room-highlight, #4CAF50);
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
+        }
+        .breakout-room-card .room-name-input {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            width: 130px;
+        }
+        .breakout-room-card .room-name-input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        .breakout-room-card .room-timer-display {
+            font-size: 0.7rem;
+            color: #aaa;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .breakout-room-card .room-timer-display.warning {
+            color: #ff9800;
+            animation: blink-warning 0.6s infinite;
+        }
+        .breakout-room-card .room-timer-display.expired {
+            color: #f44336;
+        }
+        @keyframes blink-warning {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
+        }
+        .breakout-room-card .room-members {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-height: 60px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 8px;
+            overflow-y: auto;
+        }
+        .breakout-room-card .room-member-mini {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .breakout-room-card .room-member-mini .mini-mic {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4CAF50;
+            animation: mic-live 1.5s infinite;
+            flex-shrink: 0;
+        }
+        .breakout-room-card .room-card-actions button {
+            flex: 1;
+            min-width: 60px;
+            padding: 7px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+            color: #ddd;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 600;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        .breakout-room-card .room-card-actions button:hover {
+            background: rgba(255, 203, 105, 0.2);
+            border-color: var(--gold);
+            color: var(--gold-light);
+        }
+        .breakout-room-card .room-card-actions button.join-btn {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: rgba(76, 175, 80, 0.5);
+            color: #81C784;
+        }
+        .breakout-room-card .room-card-actions button.join-btn:hover {
+            background: #4CAF50;
+            color: #fff;
+        }
+        .breakout-modal-footer {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-top: 1px solid var(--gold);
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+        .breakout-footer-btn {
+            padding: 10px 20px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+            color: #ddd;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .breakout-footer-btn:hover {
+            background: rgba(255, 203, 105, 0.2);
+            border-color: var(--gold);
+            color: var(--gold-light);
+        }
+        .breakout-footer-btn.primary-action {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        .breakout-footer-btn.primary-action:hover {
+            box-shadow: 0 4px 20px rgba(255, 203, 105, 0.4);
+        }
+        .breakout-footer-btn.danger-action {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: rgba(244, 67, 54, 0.5);
+            color: #ffcdd2;
+        }
+        .monitoring-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            z-index: 950;
+            display: none;
+            flex-direction: column;
+            animation: fadeInOverlay 0.35s ease;
+        }
+        .monitoring-overlay.open {
+            display: flex;
+        }
+        .monitoring-header {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--gold);
+            flex-shrink: 0;
+        }
+        .monitoring-header h2 {
+            color: var(--gold-light);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .monitoring-header button {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            color: #ddd;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .monitoring-header button:hover {
+            background: rgba(255, 203, 105, 0.2);
+            border-color: var(--gold);
+            color: var(--gold-light);
+        }
+        .monitoring-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 16px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .monitoring-room-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        .monitoring-room-panel.teacher-listening {
+            border-color: var(--gold);
+            box-shadow: 0 0 24px rgba(255, 203, 105, 0.35);
+            background: rgba(255, 203, 105, 0.06);
+        }
+        .monitoring-room-panel .mon-room-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .monitoring-room-panel .listen-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--gold);
+            background: rgba(255, 203, 105, 0.15);
+            color: var(--gold-light);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            transition: 0.2s;
+            align-self: flex-start;
+        }
+        .monitoring-room-panel .listen-btn:hover {
+            background: var(--gold);
+            color: var(--primary-color);
+        }
+        .monitoring-room-panel .listen-btn.listening-active {
+            background: var(--gold);
+            color: var(--primary-color);
+        }
+        .breakout-toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-color);
+            border: 1px solid var(--gold);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            z-index: 2000;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: toastIn 0.4s ease, toastOut 0.4s ease 2.5s forwards;
+            pointer-events: none;
+        }
+        @keyframes toastIn {
+            from {
+                transform: translateX(-50%) translateY(-60px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-30px);
+            }
+        }
+        .laser-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ff0000, #ff000088, transparent);
+            pointer-events: none;
+            z-index: 100;
+            animation: laserPulse 0.5s infinite alternate;
+            box-shadow: 0 0 20px #ff0000, 0 0 40px #ff000066;
+        }
+        @keyframes laserPulse {
+            from {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+            to {
+                transform: scale(1.4);
+                opacity: 0.5;
+            }
+        }
+        footer.footer-bar {
+            background: var(--primary-color);
+            color: #ccc;
+            padding: 8px 20px;
+            text-align: center;
+            font-size: 0.75rem;
+            border-top: 2px solid var(--gold);
+            z-index: 50;
+        }
+        footer.footer-bar span {
+            color: var(--gold);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <div class="brand-shield"><span>B|C</span></div>
+            <div class="meeting-title"><h1>British Center Classroom</h1><h2>الفصل التفاعلي المتكامل</h2></div>
+        </div>
+        <div class="header-center"><div class="meeting-duration" id="meetingTimer"><i class="far fa-clock"></i> 30:13</div></div>
+        <div class="header-right">
+            <button class="header-btn" id="recordBtn"><i class="fas fa-record-vinyl"></i></button>
+            <button class="header-btn" id="toggleSidebarBtn"><i class="fas fa-comment-alt"></i></button>
+            <div class="admin-badge"><i class="fas fa-user-shield"></i> Admin</div>
+        </div>
+    </header>
+    <div class="top-toolbar">
+        <button class="toolbar-btn" data-panel="meeting-settings"><i class="fas fa-cog"></i> Settings</button>
+        <button class="toolbar-btn" data-panel="app-settings"><i class="fas fa-sliders-h"></i> Background</button>
+        <button class="toolbar-btn" id="shareScreenBtn"><i class="fas fa-desktop"></i> Share Screen</button>
+        <button class="toolbar-btn" id="breakoutRoomsBtn"><i class="fas fa-door-open"></i> Breakout Rooms</button>
+        <button class="toolbar-btn" id="bringRoomsToClassBtn" style="display:none;"><i class="fas fa-eye"></i> Monitor Rooms</button>
+        <button class="toolbar-btn" id="togetherModeBtn"><i class="fas fa-users-viewfinder"></i> Together Mode</button>
+        <button class="toolbar-btn" id="minimizeWhiteboardBtn"><i class="fas fa-window-minimize"></i> Minimize WB</button>
+        <button class="toolbar-btn" id="resetLayoutBtn"><i class="fas fa-undo-alt"></i> Reset Layout</button>
+    </div>
+    <div class="app-body" id="appBody">
+        <div class="classroom-stage" id="classroomStage"></div>
+        <div class="side-panel" id="sidePanel">
+            <div class="panel-header"><span id="panelTitle">Chat</span><button class="panel-close" id="closeSidePanel"><i class="fas fa-times"></i></button></div>
+            <div class="panel-content" id="panelContent"></div>
+        </div>
+    </div>
+    <footer class="controls-bar">
+        <button class="control-btn" id="muteMicBtn"><i class="fas fa-microphone"></i><span>Mute</span></button>
+        <button class="control-btn active" id="cameraBtn"><i class="fas fa-video"></i><span>Camera</span></button>
+        <button class="control-btn" id="raiseHandBtn"><i class="fas fa-hand-paper"></i><span>Raise Hand</span><span class="hand-queue-badge" id="handQueueCount">0</span></button>
+        <button class="control-btn" id="reactBtn"><i class="fas fa-smile"></i><span>React</span></button>
+        <button class="control-btn" id="pollsBtn"><i class="fas fa-poll"></i><span>Polls</span></button>
+        <button class="control-btn" id="moreBtn"><i class="fas fa-ellipsis-v"></i><span>More</span></button>
+        <button class="control-btn danger" id="leaveBtn"><i class="fas fa-phone-slash"></i><span>Leave</span></button>
+    </footer>
+
+    <div class="polls-overlay" id="pollsOverlay">
+        <div class="polls-header"><span><i class="fas fa-poll"></i> Live Poll</span><button id="closePollsBtn" style="background:none;border:none;color:white;font-size:1.2rem;cursor:pointer;">&times;</button></div>
+        <div class="polls-body" id="pollsBody"></div>
+    </div>
+
+    <div class="breakout-overlay" id="breakoutOverlay">
+        <div class="breakout-modal" id="breakoutModal">
+            <div class="breakout-modal-header"><h2><i class="fas fa-door-open"></i> Breakout Rooms Management</h2><button class="breakout-close-btn" id="closeBreakoutModal"><i class="fas fa-times"></i></button></div>
+            <div class="breakout-modal-body"><div class="breakout-students-panel" id="breakoutStudentsPanel"><h4><i class="fas fa-user-graduate"></i> Unassigned Students</h4><div id="unassignedStudentsList"></div></div><div class="breakout-rooms-grid" id="breakoutRoomsGrid"></div></div>
+            <div class="breakout-modal-footer"><button class="breakout-footer-btn" id="addRoomBtn"><i class="fas fa-plus-circle"></i> Create Room</button><div class="breakout-global-timer"><i class="fas fa-clock"></i> Global Timer (min):<input type="number" id="globalTimerMinutes" value="10" min="1" max="60"><button class="breakout-footer-btn" id="applyGlobalTimerBtn">Apply</button></div><button class="breakout-footer-btn primary-action" id="moveAllToRoomsBtn"><i class="fas fa-arrow-right"></i> Move All to Rooms</button><button class="breakout-footer-btn danger-action" id="closeAllRoomsBtn"><i class="fas fa-door-closed"></i> Return All</button></div>
+        </div>
+    </div>
+
+    <div class="monitoring-overlay" id="monitoringOverlay">
+        <div class="monitoring-header"><h2><i class="fas fa-eye"></i> Teacher Monitoring · All Breakout Rooms</h2><div class="monitoring-controls"><button class="teacher-mute-btn" id="teacherMasterMuteBtn"><i class="fas fa-microphone"></i> My Mic: <span id="teacherMicStatus">Live</span></button><button id="stopMonitoringBtn"><i class="fas fa-times"></i> Close</button></div></div>
+        <div class="monitoring-grid" id="monitoringGrid"></div>
+        <div class="monitoring-footer"><span class="info-text"><i class="fas fa-info-circle"></i> Students hear each other within their room. Click a room to listen in.</span><button class="breakout-footer-btn" id="returnFromMonitoringBtn"><i class="fas fa-arrow-left"></i> Back to Classroom</button></div>
+    </div>
+
+    <footer class="footer-bar">
+        <i class="fas fa-graduation-cap"></i> The First <span>British</span> Center · Interactive Classroom
+    </footer>
+
+    <script>
+        (function() {
+            const participants = [
+                { id: 'teacher', name: 'Prof. Anderson', role: 'Teacher', bg: '#3e0066', textColor: '#fff',
+                    muted: false, raisedHand: false, isTeacher: true, micActive: true, cameraOn: true },
+                { id: 's1', name: 'Alice Chen', role: 'Student', bg: '#6A0DAD', muted: false, raisedHand: false,
+                    micActive: true, cameraOn: true },
+                { id: 's2', name: 'Bob Smith', role: 'Student', bg: '#008080', muted: false, raisedHand: false,
+                    micActive: true, cameraOn: true },
+                { id: 's3', name: 'Clara Müller', role: 'Student', bg: '#800000', muted: false, raisedHand: false,
+                    micActive: true, cameraOn: true },
+                { id: 's4', name: 'David Park', role: 'Student', bg: '#1E3A8A', muted: false, raisedHand: false,
+                    micActive: true, cameraOn: true },
+                { id: 's5', name: 'Elena Rossi', role: 'Student', bg: '#2E4057', muted: false, raisedHand: false,
+                    micActive: true, cameraOn: true },
+                { id: 's6', name: 'Fatima Al-Rashid', role: 'Student', bg: '#4A235A', muted: false, raisedHand: false,
+                    micActive: true, cameraOn: true },
+                { id: 's7', name: 'George Turner', role: 'Student', bg: '#0E6251', muted: false, raisedHand: false,
+                    micActive: true, cameraOn: true },
+                { id: 's8', name: 'Hannah Lee', role: 'Student', bg: '#7D3C98', muted: false, raisedHand: false,
+                    micActive: true, cameraOn: true }
+            ];
+
+            const roomColors = ['var(--room-color-1)', 'var(--room-color-2)', 'var(--room-color-3)', 'var(--room-color-4)',
+                'var(--room-color-5)', 'var(--room-color-6)', 'var(--room-color-7)', 'var(--room-color-8)'
+            ];
+            const roomColorHex = ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#00BCD4', '#E91E63', '#3F51B5', '#FF5722'];
+
+            let breakoutState = {
+                rooms: [],
+                studentsInRooms: {},
+                teacherCurrentRoom: null,
+                teacherMonitoring: false,
+                teacherListeningToRoom: null,
+                teacherMicMutedToRooms: false,
+                roomsActive: false
+            };
+
+            function getRoomById(roomId) { return breakoutState.rooms.find(r => r.id === roomId); }
+
+            function getStudentRoom(studentId) { const rid = breakoutState.studentsInRooms[studentId]; return rid ?
+                    getRoomById(rid) : null; }
+
+            function getUnassignedStudents() { return participants.filter(p => !p.isTeacher && !breakoutState
+                    .studentsInRooms[p.id]); }
+
+            let meetingActive = true,
+                isMuted = false,
+                isCameraOn = true,
+                myHandRaised = false,
+                whiteboardMinimized = false,
+                handRaiseQueue = 0,
+                isRecording = false,
+                togetherModeActive = false,
+                totalSeconds = 30 * 60 + 13,
+                activeCanvas = null,
+                activeTool = "select",
+                currentColor = "#000",
+                strokeWidth = 3,
+                laserActive = false,
+                participationEnabled = true;
+
+            let audioCtx = null;
+
+            function getAudioCtx() { if (!audioCtx) audioCtx = new(window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
+
+            function playAlarm(type = 'beep') {
+                try {
+                    const ctx = getAudioCtx();
+                    const osc = ctx.createOscillator(),
+                        gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    gain.gain.value = 0.3;
+                    if (type === 'beep') { osc.frequency.value = 800;
+                        osc.type = 'square';
+                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3); } else if (type ===
+                        'melody') { osc.frequency.value = 523;
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(659, ctx.currentTime + 0.15);
+                        osc.frequency.setValueAtTime(784, ctx.currentTime + 0.3);
+                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5); } else if (type ===
+                        'alarm') { osc.frequency.value = 440;
+                        osc.type = 'sawtooth';
+                        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                        gain.gain.setValueAtTime(0.1, ctx.currentTime + 0.1);
+                        gain.gain.setValueAtTime(0.3, ctx.currentTime + 0.2);
+                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6); } else { osc.frequency
+                            .value = 988;
+                        osc.type = 'sine';
+                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8); }
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 1);
+                } catch (e) {}
+            }
+
+            function showToast(message, icon = 'info-circle') {
+                const existing = document.querySelector('.breakout-toast');
+                if (existing) existing.remove();
+                const toast = document.createElement('div');
+                toast.className = 'breakout-toast';
+                toast.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+
+            function spawnEmoji(emoji) {
+                const el = document.createElement('div');
+                el.className = 'emoji-float';
+                el.textContent = emoji;
+                el.style.left = (30 + Math.random() * 40) + '%';
+                el.style.top = (40 + Math.random() * 30) + '%';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 1000);
+            }
+
+            function makeDraggable(element, options = {}) {
+                const dragHandle = options.dragHandle || element;
+                let startX, startY, initialLeft, initialTop,
+                    dragging = false;
+                const stage = document.getElementById('classroomStage');
+
+                function onMouseDown(e) {
+                    if (e.target.closest('button') || e.target.closest('input') || e.target.closest('select') || e.target.closest('textarea') || e.target.closest('.tile-resize-handle') || e.target.closest(
+                            '.wb-resize-handle') || (e.target.closest('.wb-drag-handle') === null && options
+                            .handleClass)) return;
+                    if (options.excludeSelector && e.target.closest(options.excludeSelector)) return;
+                    e.preventDefault();
+                    dragging = true;
+                    const rect = element.getBoundingClientRect();
+                    const stageRect = stage.getBoundingClientRect();
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    if (!element.classList.contains('dragging') && !element.classList.contains('dragging-wb')) {
+                        initialLeft = rect.left - stageRect.left;
+                        initialTop = rect.top - stageRect.top;
+                        element.style.position = 'absolute';
+                        element.style.left = initialLeft + 'px';
+                        element.style.top = initialTop + 'px';
+                        element.style.width = rect.width + 'px';
+                        element.style.height = rect.height + 'px';
+                        element.style.gridColumn = 'auto';
+                        element.style.gridRow = 'auto';
+                        element.classList.add('dragging');
+                    } else { initialLeft = parseFloat(element.style.left) || 0;
+                        initialTop = parseFloat(element.style.top) || 0; }
+                    document.addEventListener('mousemove', onMouseMove);
+                    document.addEventListener('mouseup', onMouseUp);
+                }
+
+                function onMouseMove(e) { if (!dragging) return;
+                    element.style.left = (initialLeft + e.clientX - startX) + 'px';
+                    element.style.top = (initialTop + e.clientY - startY) + 'px'; }
+
+                function onMouseUp() { dragging = false;
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp); }
+                dragHandle.addEventListener('mousedown', onMouseDown);
+            }
+
+            function makeResizable(element, options = {}) {
+                const minWidth = options.minWidth || 80,
+                    minHeight = options.minHeight || 80;
+                const handle = document.createElement('div');
+                handle.className = options.handleClass || 'tile-resize-handle';
+                element.appendChild(handle);
+                let startX, startY, startWidth, startHeight;
+
+                function initDrag(e) { e.preventDefault();
+                    e.stopPropagation();
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    startWidth = parseInt(getComputedStyle(element).width, 10);
+                    startHeight = parseInt(getComputedStyle(element).height, 10);
+                    document.addEventListener('mousemove', doDrag);
+                    document.addEventListener('mouseup', stopDrag); }
+
+                function doDrag(e) { const nw = startWidth + e.clientX - startX,
+                        nh = startHeight + e.clientY - startY; if (nw >= minWidth) element.style.width = nw + 'px'; if (
+                        nh >= minHeight) element.style.height = nh + 'px'; }
+
+                function stopDrag() { document.removeEventListener('mousemove', doDrag);
+                    document.removeEventListener('mouseup', stopDrag); }
+                handle.addEventListener('mousedown', initDrag);
+            }
+
+            function resetAllLayout() {
+                if (whiteboardMinimized) toggleWB();
+                document.querySelectorAll('.participant-tile, .whiteboard-wrapper').forEach(el => {
+                    el.style.position = '';
+                    el.style.left = '';
+                    el.style.top = '';
+                    el.style.width = '';
+                    el.style.height = '';
+                    el.style.gridColumn = '';
+                    el.style.gridRow = '';
+                    el.classList.remove('dragging', 'dragging-wb');
+                });
+                const stage = document.getElementById('classroomStage');
+                const teacherTile = stage.querySelector('.participant-tile.teacher');
+                if (teacherTile) { teacherTile.style.gridRow = '1 / 2';
+                    teacherTile.style.gridColumn = '1 / 2'; }
+                const studentPositions = [{ row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 }, { row: 2,
+                    col: 1 }, { row: 2, col: 4 }, { row: 3, col: 1 }, { row: 3, col: 4 }, { row: 4, col: 1 }
+                ];
+                const studentTiles = stage.querySelectorAll('.participant-tile:not(.teacher)');
+                studentTiles.forEach((tile, index) => { if (index < studentPositions.length) { const pos =
+                        studentPositions[index];
+                        tile.style.gridRow = `${pos.row} / span 1`;
+                        tile.style.gridColumn = `${pos.col} / span 1`; } });
+                const wb = document.getElementById('whiteboardWrapper');
+                if (wb) { wb.style.gridColumn = '2 / 4';
+                    wb.style.gridRow = '2 / 5'; }
+                showToast('Layout reset', 'undo-alt');
+            }
+
+            function createTile(p) {
+                const tile = document.createElement('div');
+                tile.className = 'participant-tile';
+                tile.dataset.id = p.id;
+                if (p.isTeacher) tile.classList.add('teacher');
+                if (p.raisedHand) tile.classList.add('raised-hand');
+                const room = getStudentRoom(p.id);
+                if (room && breakoutState.roomsActive) {
+                    tile.classList.add('in-breakout-room');
+                    tile.style.borderColor = room.colorHex;
+                    tile.dataset.roomName = room.name;
+                }
+                tile.innerHTML = `
+                    <div class="tile-avatar" style="background:${p.bg};${p.textColor?'color:'+p.textColor+';':''}">${p.name.charAt(0)}${p.name.split(' ')[1]?.charAt(0)||''}</div>
+                    <div class="tile-mic-indicator ${p.muted?'muted':''}"></div>
+                    <div class="tile-name">${p.name}${p.muted?' <i class="fas fa-microphone-slash" style="color:#dc2626;font-size:8px;"></i>':''}</div>
+                    <div class="tile-role">${p.role}${room&&breakoutState.roomsActive?' · '+room.name:''}</div>
+                    <div class="raised-hand-icon"><i class="fas fa-hand-paper"></i></div>
+                    <div class="tile-controls"><button class="tile-mute-btn"><i class="fas ${p.muted?'fa-microphone-slash':'fa-microphone'}"></i></button></div>`;
+                tile.querySelector('.tile-mute-btn').addEventListener('click', (e) => { e.stopPropagation();
+                    p.muted = !p.muted;
+                    p.micActive = !p.muted;
+                    updateAllTiles(); });
+                tile.addEventListener('click', (e) => { if (p.isTeacher) return; if (e.target.closest(
+                            '.tile-controls') || e.target.closest('.tile-resize-handle')) return;
+                    p.raisedHand = !p.raisedHand;
+                    updateAllTiles();
+                    updateHandQueue(); });
+                return tile;
+            }
+
+            function updateAllTiles() {
+                document.querySelectorAll('.participant-tile').forEach(tile => {
+                    const id = tile.dataset.id,
+                        p = participants.find(pt => pt.id === id);
+                    if (!p) return;
+                    tile.classList.toggle('raised-hand', p.raisedHand);
+                    const room = getStudentRoom(p.id);
+                    tile.classList.toggle('in-breakout-room', !!(room && breakoutState.roomsActive));
+                    if (room && breakoutState.roomsActive) { tile.style.borderColor = room.colorHex;
+                        tile.dataset.roomName = room.name; } else { tile.style.borderColor = '';
+                        tile.dataset.roomName = ''; }
+                    const mi = tile.querySelector('.tile-mic-indicator');
+                    if (mi) mi.className = 'tile-mic-indicator ' + (p.muted ? 'muted' : '');
+                    const tn = tile.querySelector('.tile-name');
+                    if (tn) tn.innerHTML =
+                        `${p.name}${p.muted?' <i class="fas fa-microphone-slash" style="color:#dc2626;font-size:8px;"></i>':''}`;
+                    const mb = tile.querySelector('.tile-mute-btn i');
+                    if (mb) mb.className = `fas ${p.muted?'fa-microphone-slash':'fa-microphone'}`;
+                    const roleEl = tile.querySelector('.tile-role');
+                    if (roleEl) roleEl.textContent = p.role + (room && breakoutState.roomsActive ? ' · ' + room
+                        .name : '');
+                });
+            }
+
+            function updateHandQueue() { handRaiseQueue = participants.filter(p => p.raisedHand).length; const badge =
+                    document.getElementById('handQueueCount');
+                badge.textContent = handRaiseQueue;
+                badge.style.display = handRaiseQueue > 0 ? 'flex' : 'none'; }
+
+            function buildClassroom() {
+                const stage = document.getElementById('classroomStage');
+                stage.innerHTML = '';
+                const students = participants.filter(p => !p.isTeacher);
+                const studentPositions = [{ row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 }, { row: 2,
+                    col: 1 }, { row: 2, col: 4 }, { row: 3, col: 1 }, { row: 3, col: 4 }, { row: 4, col: 1 }
+                ];
+                const teacher = participants.find(p => p.isTeacher);
+                const teacherTile = createTile(teacher);
+                teacherTile.style.gridRow = '1 / 2';
+                teacherTile.style.gridColumn = '1 / 2';
+                stage.appendChild(teacherTile);
+                makeResizable(teacherTile, { handleClass: 'tile-resize-handle', minWidth: 100, minHeight: 100 });
+                makeDraggable(teacherTile, { excludeSelector: '.tile-resize-handle, .tile-controls, button, input, select' });
+                students.forEach((student, index) => { if (index < studentPositions.length) { const pos =
+                        studentPositions[index]; const tile = createTile(student);
+                        tile.style.gridRow = `${pos.row} / span 1`;
+                        tile.style.gridColumn = `${pos.col} / span 1`;
+                        stage.appendChild(tile);
+                        makeResizable(tile, { handleClass: 'tile-resize-handle', minWidth: 100,
+                            minHeight: 100 });
+                        makeDraggable(tile, { excludeSelector: '.tile-resize-handle, .tile-controls, button, input, select' }); } });
+                const wbWrapper = document.createElement('div');
+                wbWrapper.className = 'whiteboard-wrapper';
+                wbWrapper.id = 'whiteboardWrapper';
+                wbWrapper.innerHTML = `
+                    <div class="wb-drag-handle" title="Drag to move whiteboard"></div>
+                    <div class="dashboard" id="integratedDashboard">
+                        <div class="top-ai-bar"><div class="ai-assistant"><i class="fas fa-robot"></i><span>AI Mastermind</span></div><div class="activity-buttons"><button class="activity-btn" id="aiGameBtn"><i class="fas fa-gamepad"></i> Competitions</button><button class="activity-btn" id="aiQuizBtn"><i class="fas fa-puzzle-piece"></i> Activity</button><button class="activity-btn" id="aiBrainstormBtn"><i class="fas fa-lightbulb"></i> Brainstorm</button><button class="activity-btn" id="aiTimerBtn"><i class="fas fa-clock"></i> Timer</button></div><div class="ai-response" id="aiFeedback">✨ Ready — open timer or competitions!</div></div>
+                        <div class="main-layout"><div class="tools-left"><button class="tool-icon active-tool" data-tool="select"><i class="fas fa-arrow-pointer"></i></button><button class="tool-icon" data-tool="hand"><i class="fas fa-hand"></i></button><button class="tool-icon" data-tool="pencil"><i class="fas fa-pencil-alt"></i></button><button class="tool-icon" data-tool="highlighter"><i class="fas fa-highlighter"></i></button><button class="tool-icon" data-tool="eraser"><i class="fas fa-eraser"></i></button><button class="tool-icon" data-tool="rect"><i class="fas fa-square"></i></button><button class="tool-icon" data-tool="circle"><i class="fas fa-circle"></i></button><button class="tool-icon" data-tool="arrow"><i class="fas fa-arrow-right"></i></button><button class="tool-icon" data-tool="text"><i class="fas fa-font"></i></button><button class="tool-icon" data-tool="sticky"><i class="fas fa-sticky-note"></i></button><button class="tool-icon" data-tool="laser" id="laserToolBtn"><i class="fas fa-circle-dot"></i></button><div class="color-preview" id="colorPreview"></div><input type="color" id="strokeColorInput" style="width:0;height:0;opacity:0;position:absolute;"><div class="stroke-slider-wrap"><label style="color:#ccd;font-size:9px;">Size</label><input type="range" id="strokeWidthSlider" min="1" max="30" value="3"></div><button class="tool-icon" id="undoBtn"><i class="fas fa-undo-alt"></i></button><button class="tool-icon" id="redoBtn"><i class="fas fa-redo-alt"></i></button><button class="tool-icon" id="clearCanvasBtn"><i class="fas fa-trash-alt"></i></button><button class="tool-icon" id="exportBtn"><i class="fas fa-download"></i></button></div><div class="whiteboard-area"><div class="wb-header"><span><i class="fas fa-chalkboard"></i> <span id="wbModeLabel">Unified Board</span></span><div><button id="splitWhiteboardBtn">Split</button><button id="resetWhiteboardBtn">Reset</button></div></div><div id="whiteboardContainer"></div></div><div class="utilities-right"><button class="tool-icon" id="toggleParticipationBtn"><i class="fas fa-user-check"></i></button><button class="tool-icon" id="divideChatBtn"><i class="fas fa-comments"></i></button><select id="studentSelect" style="background:#1f2f38;color:white;border-radius:20px;padding:4px;border:1px solid #555;font-size:10px;">${participants.filter(p=>!p.isTeacher).map(p=>`<option>${p.name}</option>`).join('')}</select><button class="tool-icon" id="assignStudentToSectionBtn"><i class="fas fa-user-graduate"></i></button></div></div>
+                        <div class="chat-zone" id="chatZone"><div class="chat-header" style="display:flex;justify-content:space-between;padding:5px 12px;background:#dce5ec;font-size:0.7rem;font-weight:bold;"><span><i class="fas fa-comment-dots"></i> Chat</span><span id="chatStatus">✅ Participation: ON</span></div><div id="chatMessagesContainer" class="chat-messages-area"></div><div class="chat-input-area" style="display:flex;gap:6px;padding:6px;"><input id="chatInput" placeholder="Message..." style="flex:1;border-radius:20px;border:1px solid #ccc;padding:6px 12px;"><button id="sendChatBtn" style="background:var(--primary-color);color:white;border:none;padding:6px 14px;border-radius:20px;cursor:pointer;">Send</button></div></div>
+                        <div class="timer-popup" id="timerPopup"><div class="timer-header" id="timerDragHandle"><span>⏱️ Timer</span><div class="timer-controls"><button id="timerMinimizeBtn"><i class="fas fa-minus"></i></button><button id="timerCloseBtn"><i class="fas fa-times"></i></button></div></div><div class="timer-body"><div class="timer-display"><svg viewBox="0 0 120 120"><circle class="progress-ring-bg" cx="60" cy="60" r="54"></circle><circle class="progress-ring" id="timerProgressRing" cx="60" cy="60" r="54" stroke-dasharray="339.29" stroke-dashoffset="0"></circle></svg><div class="digital-time" id="timerDigitalDisplay">05:00</div></div><div class="timer-actions"><button id="timerStartBtn"><i class="fas fa-play"></i></button><button id="timerPauseBtn"><i class="fas fa-pause"></i></button><button id="timerResetBtn"><i class="fas fa-redo"></i></button></div><div class="timer-settings"><label>⏲️ Minutes: <input type="number" id="timerMinutesInput" value="5" min="1" max="60"></label><label>🔔 Alarm: <select id="alarmSoundSelect"><option value="beep">Beep</option><option value="melody">Melody</option><option value="alarm">Classic Alarm</option><option value="chime">Chime</option></select></label></div></div></div>
+                        <div class="minimized-timer" id="minimizedTimerIcon"><i class="fas fa-clock"></i></div>
+                        <div class="modal-overlay" id="compModal"><div class="modal-container"><div class="modal-header"><h2><i class="fas fa-trophy"></i> 100 Interactive Competitions</h2><button class="modal-close" id="closeCompModal">&times;</button></div><div id="compGrid" class="comp-grid"></div><div id="gameArea" class="game-area"><div class="game-top"><button class="back-to-grid" id="backToGridBtn"><i class="fas fa-arrow-left"></i> All Games</button><div class="countdown-bar"><div class="countdown-fill" id="countdownFill"></div></div><div class="monkey-bot" id="monkeyBot"><div class="monkey-face" id="monkeyFace"><div class="ear left"></div><div class="ear right"></div><div class="eye left"><div class="pupil"></div></div><div class="eye right"><div class="pupil"></div></div><div class="mouth" id="monkeyMouth"></div></div><div class="speech-bubble" id="monkeySpeech">Let's play!</div></div><div class="score-board" id="scoreBoard">Score: 0</div></div><div class="question-panel" id="questionPanel"></div></div></div></div>
+                    </div>
+                    <div class="teacher-desktop" id="teacherDesktop"><div class="desk-top-bar"><div class="desk-title"><i class="fas fa-th-large"></i> Teacher Desktop</div><button class="restore-wb-btn" id="restoreWhiteboardBtn"><i class="fas fa-expand"></i> Restore Whiteboard</button></div><div class="desk-buttons-grid" id="deskButtonsGrid"><button class="desk-action-btn" data-desk-mode="explorer"><div class="btn-icon-wrap"><i class="fab fa-microsoft"></i></div><span class="btn-label">Microsoft<br>Explorer</span></button><button class="desk-action-btn" data-desk-mode="upload"><div class="btn-icon-wrap"><i class="fas fa-folder-open"></i></div><span class="btn-label">Upload from<br>PC</span></button><button class="desk-action-btn" data-desk-mode="platform"><div class="btn-icon-wrap"><i class="fas fa-th-large"></i></div><span class="btn-label">Explore the<br>Platform</span></button><button class="desk-action-btn" data-desk-mode="quizzes"><div class="btn-icon-wrap"><i class="fas fa-puzzle-piece"></i></div><span class="btn-label">Quizzes<br>Section</span></button><button class="desk-action-btn" data-desk-mode="wordwall"><div class="btn-icon-wrap"><i class="fas fa-gamepad"></i></div><span class="btn-label">Wordwall<br>Worksheet</span></button><button class="desk-action-btn" data-desk-mode="youtube"><div class="btn-icon-wrap"><i class="fab fa-youtube"></i></div><span class="btn-label">YouTube<br>Videos</span></button><button class="desk-action-btn" data-desk-mode="elllo"><div class="btn-icon-wrap"><i class="fas fa-headphones"></i></div><span class="btn-label">Elllo<br>Website</span></button><button class="desk-action-btn" data-desk-mode="whatsapp"><div class="btn-icon-wrap"><i class="fab fa-whatsapp"></i></div><span class="btn-label">WhatsApp<br>Web</span></button></div><div class="desk-content" id="deskContent"><div class="file-preview" id="deskFilePreview"><span style="opacity:0.5;color:#8899aa;"><i class="fas fa-hand-pointer" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>Select a button above</span></div></div><div class="desk-status-bar" id="deskStatusBar"><span id="deskStatusText">Ready</span></div></div>`;
+                stage.appendChild(wbWrapper);
+                makeResizable(wbWrapper, { handleClass: 'wb-resize-handle', minWidth: 200, minHeight: 200 });
+                makeDraggable(wbWrapper, { dragHandle: wbWrapper.querySelector('.wb-drag-handle'),
+                    excludeSelector: '.wb-resize-handle' });
+                initNewWhiteboard();
+                initDesktopModes();
+                initCompetitions();
+                document.getElementById('minimizeWhiteboardBtn').addEventListener('click', toggleWB);
+                document.getElementById('restoreWhiteboardBtn').addEventListener('click', toggleWB);
+                document.getElementById('resetLayoutBtn').addEventListener('click', resetAllLayout);
+            }
+
+            function toggleWB() {
+                whiteboardMinimized = !whiteboardMinimized;
+                const dashboard = document.getElementById('integratedDashboard');
+                const desktop = document.getElementById('teacherDesktop');
+                const btn = document.getElementById('minimizeWhiteboardBtn');
+                if (dashboard && desktop) {
+                    dashboard.style.display = whiteboardMinimized ? 'none' : '';
+                    desktop.style.display = whiteboardMinimized ? 'flex' : 'none';
+                }
+                if (btn) {
+                    btn.classList.toggle('active', whiteboardMinimized);
+                    btn.innerHTML = whiteboardMinimized ?
+                        '<i class="fas fa-expand"></i> Restore WB' :
+                        '<i class="fas fa-window-minimize"></i> Minimize WB';
+                }
+            }
+
+            function initNewWhiteboard() {
+                const undoStacks = new Map();
+
+                function getUndoStack(c) { if (!undoStacks.has(c)) undoStacks.set(c, { undo: [], redo: [],
+                        maxSteps: 50, locked: false }); return undoStacks.get(c); }
+
+                function pushUndoState(c) { let s = getUndoStack(c); if (s.locked) return;
+                    s.undo.push(JSON.stringify(c.toJSON())); if (s.undo.length > s.maxSteps) s.undo.shift();
+                    s.redo = []; }
+
+                function undo(c) { let s = getUndoStack(c); if (!s.undo.length) return;
+                    s.locked = true;
+                    s.redo.push(JSON.stringify(c.toJSON()));
+                    c.loadFromJSON(JSON.parse(s.undo.pop()), () => { c.renderAll();
+                        s.locked = false; }); }
+
+                function redo(c) { let s = getUndoStack(c); if (!s.redo.length) return;
+                    s.locked = true;
+                    s.undo.push(JSON.stringify(c.toJSON()));
+                    c.loadFromJSON(JSON.parse(s.redo.pop()), () => { c.renderAll();
+                        s.locked = false; }); }
+
+                function createFabricCanvas(el, w, h) {
+                    let fc = new fabric.Canvas(el, { width: w, height: h, backgroundColor: '#fff', selection: true });
+                    fc.setWidth(w);
+                    fc.setHeight(h);
+                    fc.on('object:added', () => pushUndoState(fc));
+                    fc.on('object:modified', () => pushUndoState(fc));
+                    fc.on('object:removed', () => pushUndoState(fc));
+                    pushUndoState(fc);
+                    return fc;
+                }
+
+                function initDefaultWhiteboard() {
+                    let container = document.getElementById("whiteboardContainer");
+                    if (!container) return;
+                    container.innerHTML = "";
+                    container.style.display = "flex";
+                    let wrapper = document.createElement("div");
+                    wrapper.className = "wb-section active-section";
+                    wrapper.style.width = "100%";
+                    wrapper.style.height = "100%";
+                    let canvasEl = document.createElement("canvas");
+                    wrapper.appendChild(canvasEl);
+                    container.appendChild(wrapper);
+                    activeCanvas = createFabricCanvas(canvasEl, Math.max(container.clientWidth - 20, 300), Math.max(
+                        container.clientHeight - 20, 200));
+                    attachFabricTools(activeCanvas);
+                }
+
+                function attachFabricTools(canvasObj) {
+                    if (!canvasObj) return;
+                    canvasObj.off();
+                    canvasObj.isDrawingMode = false;
+                    canvasObj.selection = (activeTool === 'select');
+                    if (activeTool === 'laser') { laserActive = true;
+                        canvasObj.defaultCursor = 'crosshair'; } else { laserActive = false;
+                        canvasObj.defaultCursor = 'default'; }
+                    if (activeTool === 'pencil') { canvasObj.isDrawingMode = true;
+                        canvasObj.freeDrawingBrush.color = currentColor;
+                        canvasObj.freeDrawingBrush.width = strokeWidth; }
+                    if (activeTool === 'highlighter') { canvasObj.isDrawingMode = true;
+                        canvasObj.freeDrawingBrush.color = currentColor + '44';
+                        canvasObj.freeDrawingBrush.width = strokeWidth * 3; }
+                    if (activeTool === 'eraser') { canvasObj.isDrawingMode = true;
+                        canvasObj.freeDrawingBrush.color = '#ffffff';
+                        canvasObj.freeDrawingBrush.width = strokeWidth * 2; }
+                    if (['rect', 'circle', 'arrow', 'text', 'sticky'].includes(activeTool)) {
+                        canvasObj.isDrawingMode = false;
+                        canvasObj.selection = false;
+                        canvasObj.off('mouse:down');
+                        canvasObj.on('mouse:down', function(o) {
+                            const px = o.pointer?.x || 50,
+                                py = o.pointer?.y || 50;
+                            if (activeTool === 'rect') { canvasObj.add(new fabric.Rect({ left: px, top: py,
+                                    width: 100, height: 80, fill: 'transparent', stroke: currentColor,
+                                    strokeWidth: strokeWidth, rx: 8, ry: 8 })); }
+                            if (activeTool === 'circle') { canvasObj.add(new fabric.Circle({ left: px, top: py,
+                                    radius: 40, fill: 'transparent', stroke: currentColor,
+                                    strokeWidth: strokeWidth })); }
+                            if (activeTool === 'arrow') { const line = new fabric.Line([px, py, px + 100, py
+                                ], { stroke: currentColor, strokeWidth: strokeWidth }); const tri =
+                                    new fabric.Triangle({ left: px + 92, top: py - 8, width: 16,
+                                        height: 16, fill: currentColor, angle: 90 });
+                                canvasObj.add(new fabric.Group([line, tri])); }
+                            if (activeTool === 'text') { canvasObj.add(new fabric.IText('Type here', {
+                                    left: px, top: py, fontSize: 20, fill: currentColor,
+                                    fontFamily: 'Inter' })); }
+                            if (activeTool === 'sticky') { const sticky = new fabric.Rect({ left: px, top: py,
+                                    width: 140, height: 100, fill: '#fffde7', stroke: '#ffcb69',
+                                    strokeWidth: 2, rx: 4, ry: 4, shadow: new fabric.Shadow({
+                                        color: 'rgba(0,0,0,0.2)', blur: 8, offsetX: 2,
+                                        offsetY: 2 }) }); const stickyText = new fabric.IText(
+                                    'Note...', { left: px + 8, top: py + 8, fontSize: 14,
+                                        fill: '#333', fontFamily: 'Inter', editable: true });
+                                canvasObj.add(new fabric.Group([sticky, stickyText])); }
+                            canvasObj.renderAll();
+                        });
+                    }
+                }
+
+                function setActiveTool(tool) {
+                    activeTool = tool;
+                    document.querySelectorAll('.whiteboard-wrapper .tool-icon[data-tool]').forEach(btn => btn
+                        .classList.toggle('active-tool', btn.dataset.tool === tool));
+                    if (activeCanvas) attachFabricTools(activeCanvas);
+                    if (tool === 'laser' && activeCanvas) {
+                        activeCanvas.on('mouse:move', function(o) {
+                            document.querySelectorAll('.laser-dot').forEach(d => d.remove());
+                            if (o.pointer && laserActive) {
+                                const dot = document.createElement('div');
+                                dot.className = 'laser-dot';
+                                dot.style.left = o.pointer.x + 'px';
+                                dot.style.top = o.pointer.y + 'px';
+                                activeCanvas.wrapperEl.appendChild(dot);
+                                setTimeout(() => dot.remove(), 600);
+                            }
+                        });
+                    }
+                }
+
+                const timerPopup = document.getElementById('timerPopup');
+                let timerInterval = null,
+                    timerRemaining = 300,
+                    timerTotalSeconds = 300,
+                    timerRunning = false;
+
+                function updateTimerDisplay() { const m = Math.floor(timerRemaining / 60),
+                        s = timerRemaining % 60;
+                    document.getElementById('timerDigitalDisplay').textContent =
+                        `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                    document.getElementById('timerProgressRing').style.strokeDashoffset = 339.29 * (1 - (
+                        timerRemaining / timerTotalSeconds)); }
+
+                function startTimer() { if (timerRunning) return;
+                    timerRunning = true;
+                    timerInterval = setInterval(() => { if (timerRemaining <= 0) { clearInterval(
+                            timerInterval);
+                            timerRunning = false;
+                            playAlarm(document.getElementById('alarmSoundSelect').value);
+                            showToast('⏰ Time\'s up!', 'clock'); return; }
+                        timerRemaining--;
+                        updateTimerDisplay(); }, 1000); }
+
+                function toggleTimerPopup() { if (!timerPopup) return; if (timerPopup.classList.contains('open')) {
+                        timerPopup.classList.remove('open');
+                        document.getElementById('minimizedTimerIcon').style.display = 'flex'; } else {
+                        timerPopup.classList.add('open');
+                        document.getElementById('minimizedTimerIcon').style.display = 'none'; } }
+
+                document.getElementById('aiTimerBtn').addEventListener('click', toggleTimerPopup);
+                document.getElementById('minimizedTimerIcon').addEventListener('click', toggleTimerPopup);
+                document.getElementById('timerStartBtn').addEventListener('click', startTimer);
+                document.getElementById('timerPauseBtn').addEventListener('click', () => { clearInterval(
+                    timerInterval);
+                    timerRunning = false; });
+                document.getElementById('timerResetBtn').addEventListener('click', () => { clearInterval(
+                        timerInterval);
+                    timerRunning = false;
+                    timerRemaining = parseInt(document.getElementById('timerMinutesInput').value) * 60;
+                    timerTotalSeconds = timerRemaining;
+                    updateTimerDisplay(); });
+                document.getElementById('timerMinutesInput').addEventListener('change', function() { timerRemaining =
+                        parseInt(this.value) * 60;
+                    timerTotalSeconds = timerRemaining;
+                    updateTimerDisplay(); });
+                document.getElementById('timerCloseBtn').addEventListener('click', () => { timerPopup.classList
+                    .remove('open');
+                    document.getElementById('minimizedTimerIcon').style.display = 'flex'; });
+                document.getElementById('timerMinimizeBtn').addEventListener('click', () => { timerPopup.classList
+                    .remove('open');
+                    document.getElementById('minimizedTimerIcon').style.display = 'flex'; });
+
+                document.querySelectorAll('.whiteboard-wrapper .tool-icon[data-tool]').forEach(btn => btn
+                    .addEventListener('click', () => setActiveTool(btn.dataset.tool)));
+                document.getElementById('strokeColorInput').addEventListener('change', e => { currentColor = e.target
+                        .value;
+                    document.getElementById('colorPreview').style.background = currentColor; if (activeCanvas)
+                        attachFabricTools(activeCanvas); });
+                document.getElementById('colorPreview').addEventListener('click', () => document.getElementById(
+                    'strokeColorInput').click());
+                document.getElementById('strokeWidthSlider').addEventListener('input', e => { strokeWidth = parseInt(e
+                        .target.value); if (activeCanvas) attachFabricTools(activeCanvas); });
+                document.getElementById('clearCanvasBtn').addEventListener('click', () => { if (activeCanvas) {
+                        activeCanvas.clear();
+                        activeCanvas.renderAll(); } });
+                document.getElementById('undoBtn').addEventListener('click', () => undo(activeCanvas));
+                document.getElementById('redoBtn').addEventListener('click', () => redo(activeCanvas));
+                document.getElementById('exportBtn').addEventListener('click', () => { if (activeCanvas) { const
+                        dataURL = activeCanvas.toDataURL({ format: 'png', quality: 1 }); const link = document
+                        .createElement('a');
+                        link.download = 'whiteboard-export.png';
+                        link.href = dataURL;
+                        link.click();
+                        showToast('Whiteboard exported!', 'check-circle'); } });
+                document.getElementById('splitWhiteboardBtn').addEventListener('click', () => { const container =
+                        document.getElementById('whiteboardContainer'); if (!container) return; const current =
+                        container.querySelectorAll('.wb-section'); if (current.length >= 4) { container.innerHTML =
+                            '';
+                        initDefaultWhiteboard();
+                        document.getElementById('wbModeLabel').textContent = 'Unified Board'; return; }
+                    container.innerHTML = ''; const count = current.length + 1;
+                    document.getElementById('wbModeLabel').textContent =
+                        `Split Board (${count} sections)`; for (let i = 0; i < count; i++) { const wrapper =
+                            document.createElement('div');
+                        wrapper.className = 'wb-section';
+                        wrapper.style.width = `calc(${100/count}% - 6px)`;
+                        wrapper.style.height = '100%'; const canvasEl = document.createElement(
+                            'canvas');
+                        wrapper.appendChild(canvasEl);
+                        container.appendChild(wrapper);
+                        const fc = createFabricCanvas(canvasEl, 250, 200); if (i === 0) { activeCanvas =
+                            fc;
+                            wrapper.classList.add('active-section'); } } });
+                document.getElementById('resetWhiteboardBtn').addEventListener('click', initDefaultWhiteboard);
+                document.getElementById('toggleParticipationBtn').addEventListener('click', () => { participationEnabled =
+                        !participationEnabled;
+                    document.getElementById('chatStatus').textContent = participationEnabled ?
+                        '✅ Participation: ON' : '⛔ Participation: OFF'; });
+                document.getElementById('assignStudentToSectionBtn').addEventListener('click', () => { const sel =
+                        document.getElementById('studentSelect');
+                    showToast(`Assigned "${sel.value}" to active section`, 'user-check'); });
+                document.getElementById('sendChatBtn').addEventListener('click', sendChatMessage);
+                document.getElementById('chatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter')
+                    sendChatMessage(); });
+
+                function sendChatMessage() {
+                    const input = document.getElementById('chatInput');
+                    if (input && input.value.trim()) {
+                        const msg = document.createElement('div');
+                        msg.className = 'message student';
+                        msg.textContent = input.value;
+                        document.getElementById('chatMessagesContainer').appendChild(msg);
+                        document.getElementById('chatMessagesContainer').scrollTop = document.getElementById(
+                            'chatMessagesContainer').scrollHeight;
+                        input.value = '';
+                    }
+                }
+                initDefaultWhiteboard();
+                updateTimerDisplay();
+            }
+
+            function initDesktopModes() {
+                const deskContent = document.getElementById('deskContent'),
+                    deskStatusText = document.getElementById('deskStatusText');
+
+                function setActiveDeskButton(mode) { document.querySelectorAll('.desk-action-btn').forEach(b => b
+                        .classList.remove('active-desk-btn')); const btn = document.querySelector(
+                        `.desk-action-btn[data-desk-mode="${mode}"]`); if (btn) btn.classList.add(
+                        'active-desk-btn'); }
+
+                function clearDeskContent() { if (deskContent) deskContent.innerHTML =
+                    '<div class="file-preview" id="deskFilePreview"></div>'; }
+
+                function showIframe(url, label) { clearDeskContent(); if (deskContent) deskContent.innerHTML =
+                        `<iframe src="${url}" allow="camera;microphone;fullscreen;autoplay" sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-modals allow-presentation"></iframe>`; if (
+                        deskStatusText) deskStatusText.textContent = label; }
+
+                function switchDeskMode(mode) { setActiveDeskButton(mode);
+                    clearDeskContent(); if (mode === 'explorer') showIframe('https://www.bing.com',
+                        'Microsoft Explorer'); else if (mode === 'upload') { const input = document.createElement(
+                            'input');
+                        input.type = 'file';
+                        input.accept = '*/*';
+                        input.onchange = e => { if (e.target.files[0] && deskContent) { const url = URL.createObjectURL(
+                                    e.target.files[0]);
+                                deskContent.innerHTML =
+                                    `<iframe src="${url}" style="width:100%;height:100%;border:none;"></iframe>`; } };
+                        input.click(); } else if (mode === 'platform' && deskContent) deskContent.innerHTML =
+                        '<div style="text-align:center;color:#d5dde5;"><i class="fas fa-th-large" style="font-size:3rem;color:var(--gold);"></i><h3>Platform Hub</h3></div>';
+                    else if (mode === 'quizzes' && deskContent) deskContent.innerHTML =
+                        '<div style="text-align:center;"><button onclick="document.getElementById(\'aiGameBtn\').click();" style="background:var(--gold);padding:10px 24px;border-radius:24px;cursor:pointer;">Open Competitions</button></div>';
+                    else if (mode === 'wordwall') showIframe('https://wordwall.net/', 'Wordwall');
+                    else if (mode === 'youtube') showIframe(
+                        'https://www.youtube.com/embed?listType=search&list=english+learning', 'YouTube');
+                    else if (mode === 'elllo') showIframe('https://www.elllo.org/', 'Elllo');
+                    else if (mode === 'whatsapp' && deskContent) deskContent.innerHTML =
+                        '<div style="text-align:center;"><button onclick="window.open(\'https://web.whatsapp.com\',\'_blank\')" style="background:#25D366;padding:10px 24px;border-radius:24px;cursor:pointer;">Open WhatsApp Web</button></div>';
+                }
+                document.querySelectorAll('.desk-action-btn').forEach(btn => btn.addEventListener('click', () =>
+                    switchDeskMode(btn.dataset.deskMode)));
+                setActiveDeskButton('explorer');
+            }
+
+            const competitionsData = [];
+            const categories = ['Vocabulary', 'Grammar', 'Speaking', 'Listening', 'Reading', 'Writing', 'Culture',
+                'Idioms', 'Pronunciation', 'Trivia'
+            ];
+            const icons = ['📝', '🔤', '🗣️', '👂', '📖', '✍️', '🌍', '💬', '🔊', '❓'];
+
+            function generateCompetitions() {
+                for (let i = 0; i < 100; i++) {
+                    const cat = categories[i % 10];
+                    competitionsData.push({
+                        id: i,
+                        title: `${cat} Challenge #${Math.floor(i/10)+1}`,
+                        category: cat,
+                        icon: icons[i % 10],
+                        questions: [
+                            { q: `What is the ${cat.toLowerCase()} term for "${['adventure','harmony','curious','brilliant','elegant'][i%5]}"?`,
+                                options: ['Option A', 'Option B', 'Option C', 'Option D'],
+                                correct: i % 4 },
+                            { q: `Choose the best ${cat.toLowerCase()} example:`,
+                                options: ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'], correct: (i + 1) %
+                                4 },
+                            { q: `True or False: This ${cat.toLowerCase()} fact is correct.`,
+                                options: ['True', 'False', 'Not sure', 'Maybe'], correct: i % 2 }
+                        ]
+                    });
+                }
+            }
+            generateCompetitions();
+
+            function initCompetitions() {
+                const compGrid = document.getElementById('compGrid'),
+                    gameArea = document.getElementById('gameArea'),
+                    compModal = document.getElementById('compModal'),
+                    questionPanel = document.getElementById('questionPanel'),
+                    scoreBoard = document.getElementById('scoreBoard'),
+                    countdownFill = document.getElementById('countdownFill'),
+                    monkeySpeech = document.getElementById('monkeySpeech'),
+                    monkeyMouth = document.getElementById('monkeyMouth');
+                if (!compGrid) return;
+                let currentGame = null,
+                    currentQIndex = 0,
+                    gameScore = 0,
+                    countdownInterval = null,
+                    countdownSeconds = 30;
+
+                function renderGrid() {
+                    gameArea.classList.remove('active');
+                    compGrid.style.display = 'grid';
+                    compGrid.innerHTML = '';
+                    competitionsData.forEach(comp => {
+                        const card = document.createElement('div');
+                        card.className = 'comp-card';
+                        card.innerHTML =
+                            `<div class="comp-icon">${comp.icon}</div><div class="comp-title">${comp.title}</div><div class="comp-cat">${comp.category}</div>`;
+                        card.addEventListener('click', () => startGame(comp));
+                        compGrid.appendChild(card);
+                    });
+                }
+
+                function startGame(comp) {
+                    currentGame = comp;
+                    currentQIndex = 0;
+                    gameScore = 0;
+                    scoreBoard.textContent = 'Score: 0';
+                    compGrid.style.display = 'none';
+                    gameArea.classList.add('active');
+                    monkeySpeech.textContent = ['Let\'s go!', 'You got this!', 'Think fast!', 'Ooh ooh ah ah!',
+                        'Banana bonus!', 'Great answer!'
+                    ][Math.floor(Math.random() * 6)];
+                    monkeyMouth.className = 'mouth happy';
+                    showQuestion();
+                    startCountdown();
+                }
+
+                function showQuestion() { if (!currentGame || currentQIndex >= currentGame.questions.length) { endGame
+                    (); return; } const q = currentGame.questions[currentQIndex];
+                    questionPanel.innerHTML = `
+                        <div class="question-text">${q.q}</div>
+                        <div class="options-grid">${q.options.map((opt,i)=>`<button class="option-btn" data-idx="${i}">${opt}</button>`).join('')}</div>`;
+                    questionPanel.querySelectorAll('.option-btn').forEach(btn => { btn.addEventListener('click',
+                        function() { const idx = parseInt(this.dataset.idx),
+                                q = currentGame.questions[currentQIndex];
+                            questionPanel.querySelectorAll('.option-btn').forEach(b => b.disabled =
+                                true); if (idx === q.correct) { this.classList.add('correct');
+                                gameScore += 10;
+                                scoreBoard.textContent = 'Score: ' + gameScore;
+                                monkeySpeech.textContent = 'Correct!';
+                                monkeyMouth.className = 'mouth happy'; } else { this.classList.add(
+                                    'wrong');
+                                monkeySpeech.textContent = 'Try again!';
+                                monkeyMouth.className = 'mouth sad';
+                                questionPanel.querySelectorAll('.option-btn').forEach(b => { if (
+                                        parseInt(b.dataset.idx) === q.correct) b.classList
+                                        .add('correct'); }); }
+                            clearInterval(countdownInterval);
+                            setTimeout(() => { currentQIndex++;
+                                showQuestion();
+                                startCountdown(); }, 1500); }); }); }
+
+                function startCountdown() { countdownSeconds = 30;
+                    countdownFill.style.width = '100%';
+                    clearInterval(countdownInterval);
+                    countdownInterval = setInterval(() => { countdownSeconds--;
+                        countdownFill.style.width = (countdownSeconds / 30 * 100) + '%'; if (countdownSeconds <=
+                            10) countdownFill.style.background = '#e34234'; else countdownFill.style
+                            .background = 'var(--gold)'; if (countdownSeconds <= 0) { clearInterval(
+                                countdownInterval);
+                            currentQIndex++;
+                            showQuestion();
+                            startCountdown(); } }, 1000); }
+
+                function endGame() { clearInterval(countdownInterval);
+                    gameArea.classList.remove('active');
+                    compGrid.style.display = 'grid';
+                    monkeySpeech.textContent = 'Game Over! Score: ' + gameScore;
+                    showToast(`Competition complete! Score: ${gameScore}`, 'trophy'); }
+                document.getElementById('aiGameBtn').addEventListener('click', () => { compModal.classList.add(
+                        'open');
+                    renderGrid(); });
+                document.getElementById('closeCompModal').addEventListener('click', () => { compModal.classList
+                    .remove('open');
+                    clearInterval(countdownInterval); });
+                document.getElementById('backToGridBtn').addEventListener('click', () => { clearInterval(
+                        countdownInterval);
+                    gameArea.classList.remove('active');
+                    compGrid.style.display = 'grid'; });
+                document.getElementById('aiQuizBtn').addEventListener('click', () => { const q =
+                    competitionsData[Math.floor(Math.random() * 100)];
+                    compModal.classList.add('open');
+                    renderGrid();
+                    setTimeout(() => startGame(q), 400); });
+                document.getElementById('aiBrainstormBtn').addEventListener('click', () => showToast(
+                    'Use the sticky note tool on the whiteboard!', 'lightbulb'));
+                renderGrid();
+            }
+
+            function renderBreakoutModal() {
+                const unassignedList = document.getElementById('unassignedStudentsList'),
+                    roomsGrid = document.getElementById('breakoutRoomsGrid');
+                if (!unassignedList || !roomsGrid) return;
+                const unassigned = getUnassignedStudents();
+                unassignedList.innerHTML = '';
+                if (unassigned.length === 0 && breakoutState.rooms.length > 0 && Object.keys(breakoutState
+                        .studentsInRooms).length > 0) unassignedList.innerHTML =
+                    '<div style="color:#888;font-size:0.75rem;text-align:center;padding:20px;">All assigned ✅</div>';
+                else if (unassigned.length === 0 && breakoutState.rooms.length === 0) unassignedList.innerHTML =
+                    '<div style="color:#888;font-size:0.75rem;text-align:center;padding:20px;">Create a room first</div>';
+                else unassigned.forEach(student => {
+                    const chip = document.createElement('div');
+                    chip.className = 'breakout-student-chip';
+                    chip.draggable = true;
+                    chip.dataset.studentId = student.id;
+                    chip.innerHTML =
+                        `<div class="chip-avatar" style="background:${student.bg};">${student.name.charAt(0)}${student.name.split(' ')[1]?.charAt(0)||''}</div><span>${student.name}</span>`;
+                    chip.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain',
+                    student.id);
+                        chip.style.opacity = '0.5'; });
+                    chip.addEventListener('dragend', () => chip.style.opacity = '1');
+                    unassignedList.appendChild(chip);
+                });
+                roomsGrid.innerHTML = '';
+                breakoutState.rooms.forEach((room) => {
+                    const card = document.createElement('div');
+                    card.className = 'breakout-room-card';
+                    if (breakoutState.roomsActive) card.classList.add('room-active');
+                    card.style.setProperty('--room-highlight', room.colorHex);
+                    card.dataset.roomId = room.id;
+                    card.addEventListener('dragover', e => { e.preventDefault();
+                        card.style.borderColor = room.colorHex;
+                        card.style.boxShadow = `0 0 20px ${room.colorHex}44`; });
+                    card.addEventListener('dragleave', () => { card.style.borderColor = '';
+                        card.style.boxShadow = ''; });
+                    card.addEventListener('drop', e => { e.preventDefault();
+                        card.style.borderColor = '';
+                        card.style.boxShadow = ''; const sid = e.dataTransfer.getData('text/plain'); if (
+                            sid && !breakoutState.studentsInRooms[sid]) { assignStudentToRoom(sid,
+                                room.id);
+                            renderBreakoutModal();
+                            updateAllTiles(); } });
+                    const tdClass = room.timerRunning && room.timerRemaining !== null && room.timerRemaining <=
+                        60 ? 'warning' : (room.timerRemaining === 0 ? 'expired' : '');
+                    const tLabel = room.timerRunning && room.timerRemaining !== null ?
+                        `${Math.floor(room.timerRemaining/60)}:${String(room.timerRemaining%60).padStart(2,'0')}` :
+                        `${room.timerMinutes}:00`;
+                    card.innerHTML = `
+                        <div class="room-card-header"><input class="room-name-input" value="${room.name}" data-room-id="${room.id}"><span class="room-timer-display ${tdClass}" data-room-id="${room.id}"><i class="fas fa-clock"></i> ${tLabel}</span></div>
+                        <div class="room-members">${room.members.length===0?'<span style="color:#666;font-size:0.7rem;padding:8px;">Drag students here</span>':room.members.map(mid=>{const p=participants.find(pt=>pt.id===mid);return p?`<div class="room-member-mini"><div class="mini-mic"></div>${p.name}</div>`:'';}).join('')}</div>
+                        <div class="room-card-actions"><button class="join-btn" data-action="join" data-room-id="${room.id}"><i class="fas fa-sign-in-alt"></i> Join</button><button data-action="timer" data-room-id="${room.id}"><i class="fas fa-clock"></i> Timer</button><button class="delete-room-btn" data-action="delete" data-room-id="${room.id}"><i class="fas fa-trash"></i></button></div>`;
+                    roomsGrid.appendChild(card);
+                });
+                if (breakoutState.rooms.length === 0) roomsGrid.innerHTML =
+                    '<div style="grid-column:1/-1;text-align:center;color:#888;padding:40px;"><i class="fas fa-door-open" style="font-size:3rem;opacity:0.3;"></i><p>No rooms yet. Click "Create Room".</p></div>';
+                document.querySelectorAll('.room-name-input').forEach(inp => inp.addEventListener('input', e => { const
+                    r = getRoomById(e.target.dataset.roomId); if (r) r.name = e.target.value; }));
+                document.querySelectorAll('.breakout-room-card .room-card-actions button').forEach(btn => btn
+                    .addEventListener('click', function(e) { e.stopPropagation(); const a = this.dataset
+                        .action,
+                        rid = this.dataset.roomId; if (a === 'join') toggleTeacherJoinRoom(rid); if (a ===
+                        'timer') promptRoomTimer(rid); if (a === 'delete') deleteRoom(rid); }));
+                updateBreakoutToolbarButton();
+            }
+
+            function assignStudentToRoom(sid, rid) { const r = getRoomById(rid); if (!r) return; if (breakoutState
+                    .studentsInRooms[sid]) { const pr = getRoomById(breakoutState.studentsInRooms[sid]); if (pr) pr
+                    .members = pr.members.filter(m => m !== sid); }
+                breakoutState.studentsInRooms[sid] = rid; if (!r.members.includes(sid)) r.members.push(sid); }
+
+            function createRoom(name = null) { if (breakoutState.rooms.length >= 8) { showToast(
+                    'Maximum 8 rooms allowed', 'exclamation-triangle'); return; } const idx = breakoutState.rooms
+                    .length;
+                breakoutState.rooms.push({ id: 'room_' + Date.now(), name: name || `Room ${idx+1}`, color: roomColors[
+                        idx % roomColors.length], colorHex: roomColorHex[idx % roomColorHex.length],
+                    members: [], timerMinutes: 10, timerRemaining: null, timerInterval: null,
+                    timerRunning: false });
+                renderBreakoutModal();
+                showToast('Room created', 'check-circle'); }
+
+            function deleteRoom(rid) { const r = getRoomById(rid); if (!r) return;
+                r.members.forEach(mid => delete breakoutState.studentsInRooms[mid]); if (r.timerInterval) clearInterval(
+                    r.timerInterval);
+                breakoutState.rooms = breakoutState.rooms.filter(rr => rr.id !== rid); if (breakoutState
+                    .teacherCurrentRoom === rid) breakoutState.teacherCurrentRoom = null;
+                renderBreakoutModal();
+                updateAllTiles();
+                showToast('Room deleted', 'info-circle'); }
+
+            function toggleTeacherJoinRoom(rid) { if (breakoutState.teacherCurrentRoom === rid) { breakoutState
+                    .teacherCurrentRoom = null;
+                    showToast('Teacher left room', 'sign-out-alt'); } else { if (breakoutState.teacherCurrentRoom)
+                    showToast('Left previous room', 'sign-out-alt');
+                    breakoutState.teacherCurrentRoom = rid;
+                    showToast('Teacher joined room', 'sign-in-alt'); }
+                renderBreakoutModal();
+                updateAllTiles(); }
+
+            function promptRoomTimer(rid) { const r = getRoomById(rid); if (!r) return; const mins = prompt(
+                    `Set timer (min) for "${r.name}":`, r.timerMinutes); if (mins && !isNaN(mins) && parseInt(mins) >
+                    0) { r.timerMinutes = parseInt(mins);
+                    r.timerRemaining = parseInt(mins) * 60;
+                    r.timerRunning = false; if (r.timerInterval) clearInterval(r.timerInterval);
+                    renderBreakoutModal();
+                    showToast(`Timer set to ${mins} min`, 'clock'); } }
+
+            function startRoomTimer(rid) { const r = getRoomById(rid); if (!r || r.timerRunning) return; if (r
+                    .timerRemaining === null) r.timerRemaining = r.timerMinutes * 60;
+                r.timerRunning = true;
+                r.timerInterval = setInterval(() => { if (r.timerRemaining <= 0) { clearInterval(r.timerInterval);
+                        r.timerRunning = false;
+                        r.timerRemaining = 0;
+                        returnStudentsFromRoom(rid);
+                        playAlarm('alarm');
+                        showToast(`Time's up! "${r.name}" — students returned`, 'clock');
+                        renderBreakoutModal();
+                        updateAllTiles(); return; }
+                    r.timerRemaining--; const tel = document.querySelector(`.room-timer-display[data-room-id="${rid}"]`);
+                    if (tel) { const m = Math.floor(r.timerRemaining / 60),
+                            s = r.timerRemaining % 60;
+                        tel.innerHTML = `<i class="fas fa-clock"></i> ${m}:${String(s).padStart(2,'0')}`;
+                        tel.className = 'room-timer-display' + (r.timerRemaining <= 60 ? ' warning' :
+                            '') + (r.timerRemaining === 0 ? ' expired' : ''); } }, 1000);
+                renderBreakoutModal(); }
+
+            function stopRoomTimer(rid) { const r = getRoomById(rid); if (!r) return; if (r.timerInterval) clearInterval(
+                    r.timerInterval);
+                r.timerRunning = false;
+                renderBreakoutModal(); }
+
+            function returnStudentsFromRoom(rid) { const r = getRoomById(rid); if (!r) return;
+                r.members.forEach(mid => delete breakoutState.studentsInRooms[mid]);
+                r.members = [];
+                stopRoomTimer(rid); if (breakoutState.teacherCurrentRoom === rid) breakoutState.teacherCurrentRoom =
+                null; }
+
+            function moveAllToRooms() { if (breakoutState.rooms.length === 0) { showToast(
+                    'Create a room first', 'exclamation-triangle'); return; }
+                getUnassignedStudents().forEach((s, i) => assignStudentToRoom(s.id, breakoutState.rooms[i % breakoutState
+                    .rooms.length].id));
+                breakoutState.roomsActive = true;
+                breakoutState.rooms.forEach(r => { r.timerRemaining = r.timerMinutes * 60;
+                    startRoomTimer(r.id); });
+                renderBreakoutModal();
+                updateAllTiles();
+                updateBreakoutToolbarButton();
+                showToast('All students moved to breakout rooms!', 'check-circle'); }
+
+            function returnAllToClassroom() { breakoutState.rooms.forEach(r => returnStudentsFromRoom(r.id));
+                breakoutState.roomsActive = false;
+                breakoutState.teacherCurrentRoom = null;
+                breakoutState.teacherMonitoring = false;
+                breakoutState.teacherListeningToRoom = null;
+                document.getElementById('monitoringOverlay').classList.remove('open');
+                renderBreakoutModal();
+                updateAllTiles();
+                updateBreakoutToolbarButton();
+                document.getElementById('bringRoomsToClassBtn').style.display = 'none';
+                showToast('All returned to main classroom', 'door-open'); }
+
+            function updateBreakoutToolbarButton() { const b = document.getElementById('breakoutRoomsBtn'),
+                    bb = document.getElementById('bringRoomsToClassBtn'); if (breakoutState.roomsActive) { b.classList
+                        .add('breakout-active');
+                    bb.style.display = 'inline-flex'; } else { b.classList.remove('breakout-active');
+                    bb.style.display = 'none'; } }
+
+            function openMonitoringView() { if (!breakoutState.roomsActive || breakoutState.rooms.length === 0) { showToast(
+                    'No active rooms to monitor', 'exclamation-triangle'); return; }
+                breakoutState.teacherMonitoring = true;
+                breakoutState.teacherListeningToRoom = null;
+                document.getElementById('monitoringOverlay').classList.add('open');
+                document.getElementById('teacherMicStatus').textContent = breakoutState.teacherMicMutedToRooms ?
+                    'Muted' : 'Live';
+                document.getElementById('teacherMasterMuteBtn').classList.toggle('active-mute', breakoutState
+                    .teacherMicMutedToRooms);
+                renderMonitoringView(); }
+
+            function closeMonitoringView() { breakoutState.teacherMonitoring = false;
+                breakoutState.teacherListeningToRoom = null;
+                document.getElementById('monitoringOverlay').classList.remove('open');
+                updateAllTiles(); }
+
+            function renderMonitoringView() { const grid = document.getElementById('monitoringGrid');
+                grid.innerHTML = '';
+                breakoutState.rooms.forEach(room => { const panel = document.createElement('div');
+                    panel.className = 'monitoring-room-panel'; if (breakoutState.teacherListeningToRoom === room.id)
+                        panel.classList.add('teacher-listening');
+                    panel.innerHTML = `
+                        <div class="mon-room-header"><span class="mon-room-title" style="color:${room.colorHex};"><i class="fas fa-door-open"></i> ${room.name}</span><div class="audio-level-bars">${Array(5).fill('<div class="audio-level-bar"></div>').join('')}</div></div>
+                        <div class="mon-room-members">${room.members.map(mid=>{const p=participants.find(pt=>pt.id===mid);return p?`<div class="mon-member-chip"><span class="live-dot"></span>${p.name}</div>`:'';}).join('')}${room.members.length===0?'<span style="color:#888;font-size:0.7rem;">Empty</span>':''}</div>
+                        <button class="listen-btn ${breakoutState.teacherListeningToRoom===room.id?'listening-active':''}" data-room-id="${room.id}"><i class="fas ${breakoutState.teacherListeningToRoom===room.id?'fa-volume-up':'fa-headphones'}"></i> ${breakoutState.teacherListeningToRoom===room.id?'Listening...':'Listen'}</button>`;
+                    grid.appendChild(panel); });
+                document.querySelectorAll('.monitoring-room-panel .listen-btn').forEach(btn => btn.addEventListener(
+                    'click', () => { const rid = btn.dataset.roomId; if (breakoutState
+                            .teacherListeningToRoom === rid) breakoutState.teacherListeningToRoom =
+                            null; else { breakoutState.teacherListeningToRoom = rid;
+                        showToast(`Listening to "${getRoomById(rid)?.name||'room'}"`, 'headphones'); }
+                        renderMonitoringView(); })); }
+
+            function toggleTeacherMasterMute() { breakoutState.teacherMicMutedToRooms = !breakoutState
+                .teacherMicMutedToRooms;
+                document.getElementById('teacherMicStatus').textContent = breakoutState.teacherMicMutedToRooms ?
+                    'Muted' : 'Live';
+                document.getElementById('teacherMasterMuteBtn').classList.toggle('active-mute', breakoutState
+                    .teacherMicMutedToRooms); }
+
+            function openPoll() {
+                const overlay = document.getElementById('pollsOverlay'),
+                    body = document.getElementById('pollsBody');
+                const pollData = { question: 'What should we focus on today?', options: ['Grammar', 'Vocabulary',
+                        'Speaking Practice', 'Listening Comprehension'
+                    ], votes: [0, 0, 0, 0] };
+                body.innerHTML = `
+                    <h4>${pollData.question}</h4>
+                    ${pollData.options.map((opt,i)=>`<div class="poll-option" data-idx="${i}"><span>${opt}</span><div class="poll-bar-wrap"><div class="poll-bar-fill" style="width:0%"></div><div class="poll-bar-label">0%</div></div></div>`).join('')}
+                    <button id="submitPollVoteBtn" style="background:var(--primary-color);color:white;border:none;padding:10px 20px;border-radius:20px;cursor:pointer;font-weight:600;">Submit Vote</button>`;
+                overlay.classList.add('open');
+                body.querySelectorAll('.poll-option').forEach(opt => opt.addEventListener('click', function() { const
+                    idx = parseInt(this.dataset.idx);
+                    pollData.votes[idx]++;
+                    updatePollDisplay(pollData);
+                    this.classList.add('selected');
+                    document.querySelectorAll('.poll-option').forEach(o => o.style.pointerEvents =
+                        'none'); }));
+                document.getElementById('submitPollVoteBtn').addEventListener('click', () => { updatePollDisplay(
+                        pollData);
+                    showToast('Vote submitted!', 'poll'); });
+
+                function updatePollDisplay(pd) { const total = Math.max(pd.votes.reduce((a, b) => a + b, 0),
+                    1);
+                    document.querySelectorAll('.poll-option').forEach((opt, i) => { const pct = Math.round(pd
+                            .votes[i] / total * 100);
+                        opt.querySelector('.poll-bar-fill').style.width = pct + '%';
+                        opt.querySelector('.poll-bar-label').textContent = pct + '% (' + pd.votes[i] +
+                            ')'; }); }
+            }
+
+            function closePoll() { document.getElementById('pollsOverlay').classList.remove('open'); }
+
+            const sidePanel = document.getElementById('sidePanel');
+            document.getElementById('closeSidePanel').addEventListener('click', () => sidePanel.classList.remove(
+                'open'));
+            document.getElementById('toggleSidebarBtn').addEventListener('click', () => { document.getElementById(
+                    'panelTitle').textContent = 'Participants';
+                document.getElementById('panelContent').innerHTML = participants.map(p =>
+                    `<div style="padding:8px 0;border-bottom:1px solid #eee;display:flex;align-items:center;gap:10px;"><span style="background:${p.bg};color:white;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;">${p.name.charAt(0)}</span>${p.name} ${p.isTeacher?'👑':''} ${breakoutState.studentsInRooms[p.id]?'· '+getStudentRoom(p.id)?.name:''}</div>`
+                ).join('');
+                sidePanel.classList.add('open'); });
+            document.getElementById('shareScreenBtn').addEventListener('click', async () => { try { await navigator
+                    .mediaDevices.getDisplayMedia({ video: true });
+                    showToast('Screen sharing started', 'desktop'); } catch (e) {} });
+            document.getElementById('recordBtn').addEventListener('click', function() { isRecording = !isRecording;
+                this.style.color = isRecording ? '#ff4d4d' : '';
+                showToast(isRecording ? 'Recording started' : 'Recording stopped', 'record-vinyl'); });
+            document.getElementById('muteMicBtn').addEventListener('click', function() { isMuted = !isMuted;
+                this.innerHTML = isMuted ? '<i class="fas fa-microphone-slash"></i><span>Unmute</span>' :
+                    '<i class="fas fa-microphone"></i><span>Mute</span>';
+                this.classList.toggle('active', !isMuted); });
+            document.getElementById('cameraBtn').addEventListener('click', function() { isCameraOn = !isCameraOn;
+                this.innerHTML = isCameraOn ? '<i class="fas fa-video"></i><span>Camera</span>' :
+                    '<i class="fas fa-video-slash"></i><span>Off</span>';
+                this.classList.toggle('active', isCameraOn); });
+            document.getElementById('raiseHandBtn').addEventListener('click', function() { myHandRaised = !myHandRaised;
+                this.querySelector('span').textContent = myHandRaised ? 'Lower Hand' : 'Raise Hand'; const me =
+                    participants.find(p => p.isTeacher); if (me) { me.raisedHand = myHandRaised;
+                    updateAllTiles();
+                    updateHandQueue(); } });
+            document.getElementById('reactBtn').addEventListener('click', () => { const emojis = ['👍', '👏', '❤️', '😂',
+                    '🎉', '🔥', '💡', '👋'
+                ];
+                spawnEmoji(emojis[Math.floor(Math.random() * emojis.length)]); });
+            document.getElementById('pollsBtn').addEventListener('click', openPoll);
+            document.getElementById('closePollsBtn').addEventListener('click', closePoll);
+            document.getElementById('moreBtn').addEventListener('click', () => { const a = prompt(
+                    'Options:\n1. Fullscreen\n2. Shortcuts\n3. Report\n4. About', '1'); if (a === '1') document
+                    .documentElement.requestFullscreen(); if (a === '2') showToast(
+                    'Esc=Close | Ctrl+M=Monitor', 'keyboard'); if (a === '3') showToast('Issue reported',
+                    'flag'); if (a === '4') showToast('British Center Classroom v2.0', 'info-circle'); });
+            document.getElementById('leaveBtn').addEventListener('click', () => { if (confirm(
+                    'Leave this classroom?')) { meetingActive = false;
+                    showToast('You have left the classroom', 'phone-slash'); } });
+            document.getElementById('togetherModeBtn').addEventListener('click', function() { togetherModeActive = !
+                    togetherModeActive;
+                document.body.classList.toggle('together-mode-active', togetherModeActive);
+                this.classList.toggle('active', togetherModeActive);
+                showToast(togetherModeActive ? 'Together Mode ON' : 'Together Mode OFF', 'users-viewfinder'); });
+
+            document.getElementById('breakoutRoomsBtn').addEventListener('click', () => document.getElementById(
+                'breakoutOverlay').classList.add('open'));
+            document.getElementById('closeBreakoutModal').addEventListener('click', () => document.getElementById(
+                'breakoutOverlay').classList.remove('open'));
+            document.getElementById('breakoutOverlay').addEventListener('click', function(e) { if (e.target === this) this
+                    .classList.remove('open'); });
+            document.getElementById('addRoomBtn').addEventListener('click', () => createRoom());
+            document.getElementById('moveAllToRoomsBtn').addEventListener('click', moveAllToRooms);
+            document.getElementById('closeAllRoomsBtn').addEventListener('click', returnAllToClassroom);
+            document.getElementById('applyGlobalTimerBtn').addEventListener('click', () => { const mins = parseInt(
+                    document.getElementById('globalTimerMinutes').value); if (mins > 0) { breakoutState.rooms
+                    .forEach(r => { r.timerMinutes = mins;
+                        r.timerRemaining = mins * 60;
+                        stopRoomTimer(r.id); });
+                    renderBreakoutModal();
+                    showToast(`Global timer set to ${mins} min`, 'clock'); } });
+            document.getElementById('bringRoomsToClassBtn').addEventListener('click', openMonitoringView);
+            document.getElementById('stopMonitoringBtn').addEventListener('click', closeMonitoringView);
+            document.getElementById('returnFromMonitoringBtn').addEventListener('click', closeMonitoringView);
+            document.getElementById('teacherMasterMuteBtn').addEventListener('click', toggleTeacherMasterMute);
+            document.getElementById('monitoringOverlay').addEventListener('click', function(e) { if (e.target === this)
+                    closeMonitoringView(); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (document.getElementById(
+                            'monitoringOverlay').classList.contains('open')) closeMonitoringView(); else if (document
+                        .getElementById('breakoutOverlay').classList.contains('open')) document.getElementById(
+                        'breakoutOverlay').classList.remove('open'); else if (document.getElementById('pollsOverlay')
+                        .classList.contains('open')) closePoll(); } if (e.ctrlKey && e.key === 'm' && breakoutState
+                    .roomsActive) { e.preventDefault();
+                    openMonitoringView(); } });
+
+            setInterval(() => { if (meetingActive) { totalSeconds++; const m = Math.floor(totalSeconds / 60),
+                        s = totalSeconds % 60;
+                    document.getElementById('meetingTimer').innerHTML =
+                        `<i class="far fa-clock"></i> ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; } },
+                1000);
+
+            buildClassroom();
+            updateHandQueue();
+            updateBreakoutToolbarButton();
+            window.resetAllLayout = resetAllLayout;
+            console.log('✅ British Center Classroom fully activated');
+        })();
+    </script>
+</body>
+</html>
