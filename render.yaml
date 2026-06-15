@@ -11,9 +11,9 @@ services:
       - key: BASE_PATH
         value: /
       - key: VITE_API_URL
-        value: https://YOUR_API_SERVICE.onrender.com
+        value: https://britishce44-api.onrender.com
       - key: VITE_SIGNALING_URL
-        value: https://YOUR_SIGNALING_SERVICE.onrender.com
+        value: https://britishce44-api.onrender.com
 
   - type: web
     name: britishce44-api
